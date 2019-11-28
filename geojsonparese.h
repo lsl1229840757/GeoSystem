@@ -23,7 +23,7 @@ public:
 	~GeoJsonParese();
 	GeoDataSource *dataSource;
 	QTreeWidgetItem *addTreeTopLevel(QString name,QString desc);
-	QTreeWidgetItem * addTreeNode(QTreeWidgetItem *parent,QString name,QString desc);
+	QTreeWidgetItem * addTreeNode(QTreeWidgetItem *parent, GeoMap *map, QString name,QString desc);
 	void addNewWindow(GeoMap *map, QString name);
 	void updateParentItem(QTreeWidgetItem *item);
 public slots:

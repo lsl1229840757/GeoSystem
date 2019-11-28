@@ -51,7 +51,7 @@ void GeoJsonParese::readShp(){
 		QTreeWidgetItem * mapItem = addTreeTopLevel(QString::number(dataSource->geoMaps.size()),QString::number(dataSource->geoMaps.size()));
 		for(int i=0;i<geoMap->layers.size();i++){
 			Layer *layer = geoMap->layers[i];
-			addTreeNode(mapItem, QString::number(dataSource->geoMaps.size()),QString::number(dataSource->geoMaps.size()));
+			addTreeNode(mapItem, geoMap, QString::number(dataSource->geoMaps.size()),QString::number(dataSource->geoMaps.size()));
 		}
 	}
 }
@@ -70,14 +70,14 @@ void GeoJsonParese::readFromPgsql(){
 	DatabaseWizard wizard(this);
 	wizard.exec();
 	OGRDataSource *poDS = wizard.poDS;
-	GeoMap *map = GdalUtil::OGRDataSource2Map(poDS);
-	dataSource->geoMaps.push_back(map);
+	GeoMap *geoMap = GdalUtil::OGRDataSource2Map(poDS);
+	dataSource->geoMaps.push_back(geoMap);
 	//添加地图节点
 	QTreeWidgetItem * mapItem = addTreeTopLevel(QString::number(dataSource->geoMaps.size()),QString::number(dataSource->geoMaps.size()));
 	//添加图层节点
-	for(int i=0;i<map->layers.size();i++){
-		Layer *layer = map->layers[i];
-		addTreeNode(mapItem, QString::number(dataSource->geoMaps.size()),QString::number(dataSource->geoMaps.size()));
+	for(int i=0;i<geoMap->layers.size();i++){
+		Layer *layer = geoMap->layers[i];
+		addTreeNode(mapItem, geoMap, QString::number(dataSource->geoMaps.size()),QString::number(dataSource->geoMaps.size()));
 	}
 }
 
@@ -99,15 +99,15 @@ QTreeWidgetItem * GeoJsonParese::addTreeTopLevel(QString id, QString name)
     return item;
 }
 
-QTreeWidgetItem * GeoJsonParese::addTreeNode(QTreeWidgetItem *parent, QString id,QString name)
+QTreeWidgetItem * GeoJsonParese::addTreeNode(QTreeWidgetItem *parent, GeoMap *map, QString id,QString name)
 {
     QTreeWidgetItem* item=new QTreeWidgetItem(QStringList()<<""<<id<<name);
     parent->addChild(item);
-	item->setData(ID_COLUMN, Qt::UserRole,QVariant(dataSource->geoMaps.size()-1));
+	item->setData(ID_COLUMN, Qt::UserRole,QVariant(map->layers.size()-1)); //图层索引
 	//绑定数据为map的名字 TODO 暂时为ID，没有名字
-	item->setData(NAME_COLUMN, Qt::UserRole,QVariant(dataSource->geoMaps.size()));
+	item->setData(NAME_COLUMN, Qt::UserRole,QVariant(map->layers.size()-1)); //暂时使用图层索引
 	item->setCheckState(VISIBLE_COLUMN, Qt::Checked);
-	//TODO绑定属性
+	//TODO 绑定属性
     return item;
 }
 
