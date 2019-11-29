@@ -26,6 +26,7 @@ public:
 	QTreeWidgetItem * addTreeNode(QTreeWidgetItem *parent, GeoMap *map, QString name,QString desc);
 	void addNewWindow(GeoMap *map, QString name);
 	void updateParentItem(QTreeWidgetItem *item);
+	QString log;
 public slots:
 	void parseGeoJson();
 	void readShp();
@@ -34,6 +35,7 @@ public slots:
 	void onPressed(QPoint pos);
 	void drawMap();
 	void treeItemChanged(QTreeWidgetItem *item, int column);
+	void closeTab(int tabIndex);
 private:
 	Ui::GeoJsonPareseClass ui;
 
