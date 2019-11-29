@@ -125,6 +125,9 @@
     <ClCompile Include="GeoDataSource.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeoMultiPolygon.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="geojsonparese.h">
@@ -196,6 +199,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeoDataSource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeoMultiPolygon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
