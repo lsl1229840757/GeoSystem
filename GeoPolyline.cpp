@@ -3,11 +3,13 @@
 
 GeoPolyline::GeoPolyline(void)
 {
+
 }
 
 
 GeoPolyline::~GeoPolyline(void)
 {
+
 }
 
 GeometryType GeoPolyline::getGeometryType(){

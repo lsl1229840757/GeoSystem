@@ -29,7 +29,7 @@ void MyOpenGLWidget::paintGL(){
 	//判断地图是否可见
 	if(!geoMap->isVisible)
 		return;
-
+	
 	if(this->width<this->height){
 		//以宽为参考
 		double ratioHeigt = this->width*geoMap->hwRatio < this->height?this->width*geoMap->hwRatio:this->height;
