@@ -10,3 +10,10 @@ Layer::~Layer(void)
 
 }
 
+
+
+QRectF Layer::getLayerRange()
+{
+	
+	return QRectF();
+}

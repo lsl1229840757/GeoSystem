@@ -33,10 +33,17 @@ GeoJsonParese::~GeoJsonParese()
 void GeoJsonParese::parseGeoJson(){
 	QString filePath = QFileDialog::getOpenFileName(this);
 	if(!filePath.isEmpty()){
-		QJsonObject jsonObj = JsonUtil::JsonRead(filePath);
-		Feature feature = JsonUtil::parseGeoJson(jsonObj);
-		QString str = QString::number(feature.geometry->coordinates[0].toDouble())+","+QString::number(feature.geometry->coordinates[1].toDouble());
-		ui.textBrowser->setText("coordinates:["+str+"]");
+		QJsonObject jsonObj = JsonUtil::JsonRead(filePath);//第一级
+		GeoMap* geoMap = JsonUtil::parseGeoJson(jsonObj);
+		//QString str = QString::number(feature.geometry->coordinates[0].toDouble())+","+QString::number(feature.geometry->coordinates[1].toDouble());
+		//ui.textBrowser->setText("coordinates:["+str+"]");
+		dataSource->geoMaps.push_back(geoMap);
+		//添加节点
+		QTreeWidgetItem * mapItem = addTreeTopLevel(QString::number(dataSource->geoMaps.size()), QString::number(dataSource->geoMaps.size()));
+		for (int i = 0; i < geoMap->layers.size(); i++) {
+			Layer *layer = geoMap->layers[i];
+			addTreeNode(mapItem, QString::number(dataSource->geoMaps.size()), QString::number(dataSource->geoMaps.size()));
+		}
 	}
 }
 

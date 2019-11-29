@@ -1,7 +1,7 @@
 #pragma once
 #include <QJsonArray>
 typedef enum{
-	GEOPOINT,GEOPOLYLINE,GEOPOLYGON,GEOMETRY
+	GEOPOINT,GEOPOLYLINE,GEOPOLYGON,MULTIPOLYGON
 } GeometryType;
 class Geometry
 {
