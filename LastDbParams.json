@@ -1,0 +1,8 @@
+{
+    "address": "localhost",
+    "database_name": "myDB",
+    "password": "123456",
+    "port": "5432",
+    "table_name": "countys",
+    "username": "postgres"
+}

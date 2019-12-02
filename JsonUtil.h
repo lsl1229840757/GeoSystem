@@ -48,5 +48,10 @@ private:
 	static void parseFeatureCollection(QJsonObject geoJson, GeoMap* geoMap);
 	static void parseGeometryCollection(QJsonObject geoJson, GeoMap* geoMap);
 	static QRectF parseGeometry(QJsonObject geomJObj, Feature* feature);
+public:
+	// Ð´ÈëJsonÎÄ¼þ
+	static void jsonWrite(QString destPath, QJsonObject* jsonObj);
+	static QJsonObject storeDbParams(QString tableName, QString dbname, QString addr, QString port, QString username, QString password);
+	static void loadDbParams(QJsonObject* pJsonObj, QString& tableName, QString& dbname, QString& addr, QString& port, QString& username, QString& password);
 };
 

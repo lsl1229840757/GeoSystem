@@ -142,10 +142,17 @@ QRectF JsonUtil::parseGeometry(QJsonObject geomJObj, Feature* feature)
 		{
 			geom->coordinates = geomJObj.value(COORDINATES).toArray();
 			QJsonArray ptCoorArray = geom->coordinates;
+			//初始化range
+			max_x = ptCoorArray.at(0).toDouble();
+			min_x = ptCoorArray.at(0).toDouble();
+			max_y = ptCoorArray.at(1).toDouble();
+			min_y = ptCoorArray.at(1).toDouble();
 			((GeoPoint*)geom)->x = ptCoorArray.at(0).toDouble();  //存储点坐标
 			((GeoPoint*)geom)->y = ptCoorArray.at(1).toDouble();
 			
 		}
+		QPointF bottomRight(max_x, min_y), topLeft(min_x, max_y);
+		geomRange = QRectF(topLeft, bottomRight);
 	}
 	else if(type.compare(POLYLINE) == 0)
 	{
@@ -269,4 +276,51 @@ QRectF JsonUtil::parseGeometry(QJsonObject geomJObj, Feature* feature)
 		}
 	}
 	return geomRange;
+}
+
+
+// 写入Json文件
+void JsonUtil::jsonWrite(QString destPath, QJsonObject* jsonObj)
+{
+	// TODO: 在此处添加实现代码.
+	QFile writeFile(destPath);
+	if (!writeFile.open(QIODevice::ReadWrite))
+	{
+		qDebug()<<"could't open projects json"<<endl;
+		//QMessageBox::warning(NULL, QString("Error"), QString(r1.what()));
+	}
+	
+	QJsonDocument jsonDoc(*jsonObj);  //转为JsonDocument
+	writeFile.resize(0);  //清空文件原有的内容
+	writeFile.write(jsonDoc.toJson());  //写入json
+	writeFile.close();
+}
+
+
+QJsonObject JsonUtil::storeDbParams(QString tableName, QString dbname, QString addr, QString port, QString username, QString password)
+{
+	// TODO: 在此处添加实现代码.
+	QJsonObject jsonObj;
+	jsonObj.insert("table_name", tableName);
+	jsonObj.insert("database_name", dbname);
+	jsonObj.insert("address", addr);
+	jsonObj.insert("port", port);
+	jsonObj.insert("username", username);
+	jsonObj.insert("password", password);
+	return jsonObj;
+}
+
+
+void JsonUtil::loadDbParams(QJsonObject* pJsonObj, QString& tableName, QString& dbname, QString& addr, QString& port, QString& username, QString& password)
+{
+	// TODO: 在此处添加实现代码.
+	if (pJsonObj != NULL)
+	{
+		tableName = pJsonObj->value("table_name").toString();
+		dbname = pJsonObj->value("database_name").toString();
+		addr = pJsonObj->value("address").toString();
+		port = pJsonObj->value("port").toString();
+		username = pJsonObj->value("username").toString();
+		password = pJsonObj->value("password").toString();
+	}
 }

@@ -50,7 +50,7 @@ void GeoJsonParese::parseGeoJson(){
 		QTreeWidgetItem * mapItem = addTreeTopLevel(QString::number(dataSource->geoMaps.size()), QString::number(dataSource->geoMaps.size()));
 		for (int i = 0; i < geoMap->layers.size(); i++) {
 			Layer *layer = geoMap->layers[i];
-			addTreeNode(mapItem, QString::number(dataSource->geoMaps.size()), QString::number(dataSource->geoMaps.size()));
+			addTreeNode(mapItem,geoMap, QString::number(dataSource->geoMaps.size()), QString::number(dataSource->geoMaps.size()));
 		}
 	}
 }
