@@ -1,6 +1,5 @@
 #ifndef QPAINTERWIDGET_H
 #define QPAINTERWIDGET_H
-
 #include <QWidget>
 #include "ui_qpainterwidget.h"
 #include <qpainter.h>

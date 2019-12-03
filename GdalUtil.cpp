@@ -69,12 +69,6 @@ OGRDataSource * GdalUtil::readFromPgsql(QString tableName, QString dbname, QStri
 		 qDebug()<<"Can not open database"<<endl;
 		 return poDS;
 	}
-	pLayer = poDS->GetLayerByName(tableName.toStdString().c_str());
-	if (pLayer == NULL)
-	{
-		qDebug()<<"Can not get layer "<<tableName<<endl;
-		return poDS;
-	}
 	return poDS;
 }
 

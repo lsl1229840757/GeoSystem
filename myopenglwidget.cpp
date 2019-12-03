@@ -29,17 +29,7 @@ void MyOpenGLWidget::paintGL(){
 	//判断地图是否可见
 	if(!geoMap->isVisible)
 		return;
-	
-	if(this->width<this->height){
-		//以宽为参考
-		double ratioHeigt = this->width*geoMap->hwRatio < this->height?this->width*geoMap->hwRatio:this->height;
-		double ratioWidth = ratioHeigt == this->height?ratioHeigt*geoMap->whRatio:this->width;
-		glViewport((this->width-ratioWidth)/2,(this->height-ratioHeigt)/2,ratioWidth, ratioHeigt);//告诉opengl应该绘制在哪个区域
-	}else{
-		double ratioWidth = this->height*geoMap->whRatio < this->width?this->height*geoMap->whRatio:this->width;
-		double ratioHeight = ratioWidth==this->width?ratioWidth*geoMap->hwRatio:this->height;
-		glViewport((this->width-ratioWidth)/2,(this->height-ratioHeight)/2,ratioWidth, ratioHeight);//告诉opengl应该绘制在哪个区域
-	}
+	glViewport(0, 0, this->width, this->height);
 	for(int i=0;i<geoMap->layers.size();i++){
 		Layer *layer = geoMap->layers[i];
 		drawLayer(layer);
@@ -49,6 +39,8 @@ void MyOpenGLWidget::paintGL(){
 void MyOpenGLWidget::resizeGL(int width, int height){
 	this->width = width;
 	this->height = height;
+	//计算比例
+	double whRatio = (float)width / this->height;
 	//设置视口
     glLoadIdentity();//重置单位矩阵
     glMatrixMode(GL_PROJECTION);//投影变化
@@ -61,13 +53,40 @@ void MyOpenGLWidget::resizeGL(int width, int height){
 	double min_x = bottomLeft.x();
 	double min_y = topRight.y();  //top是min_y
 	double max_y = bottomLeft.y();
-	//if(width>height){
-	//	glScalef(1, geoMap->whRatio, 1);
-	//}else{
-	//	glScalef(1, geoMap->hwRatio, 1);
-	//}
-
+	
 	//opengl中y轴向上
+	//修改实际可视区域
+	double mid_x = (max_x - min_x) / 2 + min_x;
+	double mid_y = (max_y - min_y) / 2 + min_y;
+	if(width>height){
+		//以高为基准
+		double dy = max_y - min_y;
+		double dx = dy * whRatio;
+		if (dx < (max_x - min_x)) {
+			//如果可视区域大于dx
+			dx = max_x - min_x;
+			//再修改dy
+			dy = dx / whRatio;
+			max_y = mid_y + dy / 2;
+			min_y = mid_y - dy / 2;
+		}
+		max_x = mid_x + dx / 2;
+		min_x = mid_x - dx / 2;
+	}else{
+		//以宽为基准
+		double dx = max_x - min_x;
+		double dy = dx / whRatio;
+		if (dy < (max_y - min_y)) {
+			//如果可视区域大于dy
+			dy = max_y - min_y;
+			//再修改dx
+			dx = dy * whRatio;
+			max_x = mid_x + dx / 2;
+			min_x = mid_x - dx / 2;
+		}
+		max_y = mid_y + dy / 2;
+		min_y = mid_y - dy / 2;
+	}
 	glOrtho(min_x,max_x,min_y,max_y,-1,1);//创建三维世界中所能观察到的矩形区域
 	//glOrtho(min_x, max_x, max_y, min_y, -1, 1);
 }
