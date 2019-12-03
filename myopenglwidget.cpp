@@ -53,18 +53,23 @@ void MyOpenGLWidget::resizeGL(int width, int height){
     glLoadIdentity();//重置单位矩阵
     glMatrixMode(GL_PROJECTION);//投影变化
 	//计算缩放比例
-	QPointF bottomLeft = geoMap->maxRange.bottomLeft();
-	QPointF topRight = geoMap->maxRange.topRight();
+	QRectF normalRange = geoMap->maxRange.normalized();  //先将地图范围规范化
+	QPointF bottomLeft = normalRange.bottomLeft(); //QRectF的y轴向下
+	QPointF topRight = normalRange.topRight();
+	
 	double max_x = topRight.x();
 	double min_x = bottomLeft.x();
-	double max_y = topRight.y();
-	double min_y = bottomLeft.y();
+	double min_y = topRight.y();  //top是min_y
+	double max_y = bottomLeft.y();
 	//if(width>height){
 	//	glScalef(1, geoMap->whRatio, 1);
 	//}else{
 	//	glScalef(1, geoMap->hwRatio, 1);
 	//}
+
+	//opengl中y轴向上
 	glOrtho(min_x,max_x,min_y,max_y,-1,1);//创建三维世界中所能观察到的矩形区域
+	//glOrtho(min_x, max_x, max_y, min_y, -1, 1);
 }
 
 void MyOpenGLWidget::drawLayer(Layer *layer){
@@ -102,6 +107,23 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				glVertex2f(point->x, point->y);
 			}
 			glEnd();
+		}else if(GeometryType::GEOMULTIPOLYGON==geometry->getGeometryType()){
+			//多面绘制
+			GeoMultiPolygon* multiPly = (GeoMultiPolygon*)geometry;
+			for (int i = 0; i < multiPly->polygons.size(); i++)
+			{
+				
+				glBegin(GL_POLYGON);
+				GeoPolygon *polygon = multiPly->polygons.at(i);
+				for (int j = 0; j < polygon->points.size(); j++) {
+					GeoPoint *point = polygon->points[j];
+					glColor3f(1.0, 0.0, 0.0);
+					glVertex2f(point->x, point->y);
+				}
+				glEnd();
+			}
+		}else {
+			//其他情况，暂不实现
 		}
 	}
 }

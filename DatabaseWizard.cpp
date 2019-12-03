@@ -28,6 +28,12 @@ bool DatabaseWizard::validateCurrentPage()
 		QString port = portLineEdit->text();
 		QString username = usernameLineEdit->text();
 		QString password = passwordLineEdit->text();
+		if (this->rememberInputCkb->isChecked())
+		{
+			//存储上一次输入
+			QJsonObject pJsonObj = JsonUtil::storeDbParams(table, dbname, addr, port, username, password);
+			JsonUtil::jsonWrite((QDir::currentPath() + "/LastDbParams.json"), &pJsonObj);
+		}
 		poDS = GdalUtil::readFromPgsql(table, dbname, addr, port, username, password);
 		if(poDS==NULL){
 			QMessageBox::information(NULL, "failure",
@@ -60,33 +66,46 @@ QWizardPage * DatabaseWizard::createIntroPage(){
 }
 
 QWizardPage * DatabaseWizard::createRegistrationPage(){
+	
+	QString table="", dbname="", addr="", port="", username="", password="";  //可以再封装一个
+	//判断文件是否存在
+	QString filePath = QDir::currentPath() + "/LastDbParams.json";
+	if (QFileInfo(filePath).exists() == true)
+	{
+		QJsonObject jsonObj = JsonUtil::JsonRead(filePath);
+		JsonUtil::loadDbParams(&jsonObj, table, dbname, addr, port, username, password);
+	}
+
 	QWizardPage *page = new QWizardPage;
     page->setTitle("Connection Configuration");
     page->setSubTitle("Please fill both fields.");
 
     QLabel *dbnameLabel = new QLabel("Database Name:");
     dbnameLineEdit = new QLineEdit;
-	dbnameLineEdit->setText("postgis");
+	dbnameLineEdit->setText(dbname);
 	
 	QLabel *tableLabel = new QLabel("Table Name:");
     tableLineEdit = new QLineEdit;
-	tableLineEdit->setText("Export_Output");
+	tableLineEdit->setText(table);
 
 	QLabel *addrLabel = new QLabel("Address:");
 	addrLineEdit = new QLineEdit;
-	addrLineEdit->setText("localhost");
+	addrLineEdit->setText(addr);
 	
 	QLabel *portLabel = new QLabel("Port:");
     portLineEdit = new QLineEdit;
-	portLineEdit->setText("5433");
+	portLineEdit->setText(port);
 
 	QLabel *usernameLabel = new QLabel("username:");
     usernameLineEdit = new QLineEdit;
-	usernameLineEdit->setText("postgres");
+	usernameLineEdit->setText(username);
 
 	QLabel *passwordLabel = new QLabel("password:");
     passwordLineEdit = new QLineEdit;
-	passwordLineEdit->setText("12345");
+	passwordLineEdit->setText(password);
+
+	rememberInputCkb = new QCheckBox(page);
+	rememberInputCkb->setText(QString::fromLocal8Bit("记住本次输入"));  //防止中文乱码
 
     QGridLayout *layout = new QGridLayout;
     layout->addWidget(dbnameLabel, 0, 0);
@@ -106,6 +125,8 @@ QWizardPage * DatabaseWizard::createRegistrationPage(){
     
 	layout->addWidget(passwordLabel, 5, 0);
     layout->addWidget(passwordLineEdit, 5, 1);
+	
+	layout->addWidget(rememberInputCkb, 6, 1);
 
     page->setLayout(layout);
 

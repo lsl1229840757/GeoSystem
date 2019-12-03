@@ -62,7 +62,7 @@ OGRDataSource * GdalUtil::readFromPgsql(QString tableName, QString dbname, QStri
 	QString params = "PG:dbname="+dbname+" host="+addr+" port="+port+" user="+username+" password="+password;
 	OGRLayer *pLayer = NULL;
 	OGRDataSource *poDS = NULL; 
-		poDS = (OGRDataSource*)GDALOpenEx(params.toStdString().c_str(), GDAL_OF_VECTOR, NULL, NULL, NULL);
+	poDS = (OGRDataSource*)GDALOpenEx(params.toStdString().c_str(), GDAL_OF_VECTOR, NULL, NULL, NULL);
 	//GDALDriverManager::GetDriverByName(params.toStdString().c_str());
 	if (poDS == NULL)
 	{
@@ -134,7 +134,8 @@ GeoMap* GdalUtil::OGRDataSource2Map(OGRDataSource *poDS){
 		double max_x = envelope->MaxX;
 		double min_y = envelope->MinY;
 		double max_y = envelope->MaxY;
-		QRectF rect(QPointF(min_x,max_y), QPointF(max_x,min_y));
+		//QRectF rect(QPointF(min_x,max_y), QPointF(max_x,min_y));
+		QRectF rect(QPointF(min_x, min_y), QPointF(max_x, max_y));  //QRectF y轴向下
 		layer->range = rect;
 		OGRFeature *poFeature;
 		while((poFeature=ogrLayer->GetNextFeature())!=NULL){
@@ -161,6 +162,21 @@ GeoMap* GdalUtil::OGRDataSource2Map(OGRDataSource *poDS){
 				//暂时只是考虑外环
 				ogrPolygon2GeoPolygon(ogrPolygon,geoPolygon);
 				feature->geometry = geoPolygon;
+			}else if (OGRwkbGeometryType::wkbMultiPolygon == ogrGeometry->getGeometryType()){
+				//多面转换
+				OGRMultiPolygon* ogrMultiPolygon = (OGRMultiPolygon*)ogrGeometry;
+				GeoMultiPolygon* geoMultiPolygon = new GeoMultiPolygon;
+				ogrMultiPly2GeoMultiPly(ogrMultiPolygon, geoMultiPolygon);
+				feature->geometry = geoMultiPolygon;
+			}
+			else
+			{
+				//处理其他未定义类型,暂时先假定他们是multipolyline，不实现
+				OGRMultiLineString* ogrMultiLineStr = (OGRMultiLineString*)ogrGeometry;
+				GeoMultiPolyline* geoMultiPolyline = new GeoMultiPolyline;
+
+				feature->geometry = geoMultiPolyline;
+				//QMessageBox::warning(NULL, "Error", "Could not support this type");
 			}
 			layer->features.push_back(feature);
 		}
@@ -194,4 +210,20 @@ void GdalUtil::ogrPolygon2GeoPolygon(OGRPolygon *ogrPolygon, GeoPolygon *geoPoly
 		ogrPoint2GeoPoint(ogrPoint, geoPoint);
 		geoPolygon->points.push_back(geoPoint);
 	}
+}
+
+
+// 转换多面
+void GdalUtil::ogrMultiPly2GeoMultiPly(OGRMultiPolygon* ogrMultiPly, GeoMultiPolygon* geoMultiPly)
+{
+	// TODO: 在此处添加实现代码.
+	for (int i = 0; i < ogrMultiPly->getNumGeometries(); i++)
+	{
+		OGRPolygon* ogrPolygon = (OGRPolygon* )ogrMultiPly->getGeometryRef(i);
+		GeoPolygon* geoPolygon = new GeoPolygon;
+		geoMultiPly->polygons.push_back(geoPolygon);
+		//对每个面进行转换
+		ogrPolygon2GeoPolygon(ogrPolygon, geoPolygon);
+	}
+	
 }
