@@ -39,7 +39,7 @@ GeoJsonParese::~GeoJsonParese()
 */
 //解析json
 void GeoJsonParese::parseGeoJson(){
-	QString filePath = QFileDialog::getOpenFileName(this);
+	QString filePath = QFileDialog::getOpenFileName(this, "GeoJson Parse", "", "GeoJson Files(*.geojson)");
 	if(!filePath.isEmpty()){
 		QJsonObject jsonObj = JsonUtil::JsonRead(filePath);//第一级
 		GeoMap* geoMap = JsonUtil::parseGeoJson(jsonObj);
@@ -57,7 +57,7 @@ void GeoJsonParese::parseGeoJson(){
 
 //读取shp
 void GeoJsonParese::readShp(){
-	QString filePath = QFileDialog::getOpenFileName(this);
+	QString filePath = QFileDialog::getOpenFileName(this, "ShapeFile Parse", "", "ShapeFile Files(*.shp)");
 	if(!filePath.isEmpty()){
 		OGRDataSource* poDS = GdalUtil::readFromGeoJson(filePath);
 		//TODO 报错机制
@@ -77,7 +77,7 @@ void GeoJsonParese::readShp(){
 
 //shp文件转json
 void GeoJsonParese::shp2GeoJson(){
-	QString filePath = QFileDialog::getOpenFileName(this);
+	QString filePath = QFileDialog::getOpenFileName(this, "ShapeFile 2 GeoJson", "", "ShapeFile Files(*.shp)");
 	QString outFilePath = "C:\\Users\\Administrator\\Desktop\\result.geojson";
 	if(!filePath.isEmpty()){
 		GdalUtil::shp2GeoJson(filePath, outFilePath);
