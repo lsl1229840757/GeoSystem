@@ -17,4 +17,5 @@ public:
 	bool isVisible; //控制是否可见
 	double dx;
 	double dy;
+	string name;
 };

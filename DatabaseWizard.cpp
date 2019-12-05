@@ -8,6 +8,7 @@ DatabaseWizard::DatabaseWizard(QWidget *parentWidget):QWizard(parentWidget)
     this->addPage(createRegistrationPage());
     this->addPage(createConclusionPage());
     this->setWindowTitle("Database Connectivity Wizard");
+	poDS = NULL;
 }
 
 
