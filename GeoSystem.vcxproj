@@ -221,6 +221,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GeoMap.cpp" />
     <ClCompile Include="myopenglwidget.cpp" />
+    <ClCompile Include="MyOpenGlWidgetFactory.cpp" />
     <ClCompile Include="openglwindow.cpp" />
     <ClCompile Include="GeoPoint.cpp" />
     <ClCompile Include="GeoPolygon.cpp" />
@@ -269,6 +270,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MyOpenGlWidgetFactory.h" />
     <CustomBuild Include="qpainterwidget.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing qpainterwidget.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>

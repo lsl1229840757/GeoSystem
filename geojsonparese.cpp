@@ -26,7 +26,7 @@ GeoJsonParese::GeoJsonParese(QWidget *parent)
 	dataSource = new GeoDataSource;
 
 	//打印日志
-
+	ui.textBrowser->setText(log);
 }
 
 GeoJsonParese::~GeoJsonParese()
@@ -47,11 +47,9 @@ void GeoJsonParese::parseGeoJson(){
 		//ui.textBrowser->setText("coordinates:["+str+"]");
 		dataSource->geoMaps.push_back(geoMap);
 		//添加节点
-		QTreeWidgetItem * mapItem = addTreeTopLevel(QString::number(dataSource->geoMaps.size()), QString::number(dataSource->geoMaps.size()));
-		for (int i = 0; i < geoMap->layers.size(); i++) {
-			Layer *layer = geoMap->layers[i];
-			addTreeNode(mapItem, geoMap, QString::number(dataSource->geoMaps.size()), QString::number(dataSource->geoMaps.size()));
-		}
+		addTreeTopLevel(geoMap, dataSource->geoMaps.size()-1, QString::fromStdString(geoMap->name));
+		log += "GeoJson Load Successfully!\n";
+		ui.textBrowser->setText(log);
 	}
 }
 
@@ -64,15 +62,26 @@ void GeoJsonParese::readShp(){
 		GeoMap *geoMap = GdalUtil::OGRDataSource2Map(poDS);
 		dataSource->geoMaps.push_back(geoMap);
 		//添加节点
-		QTreeWidgetItem * mapItem = addTreeTopLevel(QString::number(dataSource->geoMaps.size()),QString::number(dataSource->geoMaps.size()));
-		for(int i=0;i<geoMap->layers.size();i++){
-			Layer *layer = geoMap->layers[i];
-			addTreeNode(mapItem, geoMap, QString::number(dataSource->geoMaps.size()),QString::number(dataSource->geoMaps.size()));
-		}
+		addTreeTopLevel(geoMap, dataSource->geoMaps.size() - 1, QString::fromStdString(geoMap->name));
 		log += "ShapeFile Load Successfully!\n";
 		ui.textBrowser->setText(log);
-
 	}
+}
+
+//从pgsql中读取数据
+void GeoJsonParese::readFromPgsql() {
+	//使用向导
+	DatabaseWizard wizard(this);
+	wizard.exec();
+	OGRDataSource *poDS = wizard.poDS;
+	if (poDS == NULL)
+		return;
+	GeoMap *geoMap = GdalUtil::OGRDataSource2Map(poDS);
+	dataSource->geoMaps.push_back(geoMap);
+	//添加地图节点
+	addTreeTopLevel(geoMap, dataSource->geoMaps.size() - 1, QString::fromStdString(geoMap->name));
+	log += "Load data from PostgreSQL Successfully!\n";
+	ui.textBrowser->setText(log);
 }
 
 //shp文件转json
@@ -82,25 +91,11 @@ void GeoJsonParese::shp2GeoJson(){
 	if(!filePath.isEmpty()){
 		GdalUtil::shp2GeoJson(filePath, outFilePath);
 		ui.textBrowser->setText("success!filePath:"+outFilePath);
+		log += "shp2GeoJson Successfully!\n";
+		ui.textBrowser->setText(log);
 	}
 }
 
-//从pgsql中读取数据
-void GeoJsonParese::readFromPgsql(){
-	//使用向导
-	DatabaseWizard wizard(this);
-	wizard.exec();
-	OGRDataSource *poDS = wizard.poDS;
-	GeoMap *geoMap = GdalUtil::OGRDataSource2Map(poDS);
-	dataSource->geoMaps.push_back(geoMap);
-	//添加地图节点
-	QTreeWidgetItem * mapItem = addTreeTopLevel(QString::number(dataSource->geoMaps.size()),QString::number(dataSource->geoMaps.size()));
-	//添加图层节点
-	for(int i=0;i<geoMap->layers.size();i++){
-		Layer *layer = geoMap->layers[i];
-		addTreeNode(mapItem, geoMap, QString::number(dataSource->geoMaps.size()),QString::number(dataSource->geoMaps.size()));
-	}
-}
 
 //按压事件
 void GeoJsonParese::onPressed(QPoint pos)
@@ -140,26 +135,28 @@ void GeoJsonParese::treeItemChanged(QTreeWidgetItem *item, int column) {
 	//设置是否可视
 	GeoMap *map;
 	Layer *layer;
+	//获取与GeoMap绑定的MyOpenGLWidget
+	MyOpenGLWidget *myOpenGLWidget;
 	if (parent == NULL) {
 		//为地图顶级节点
 		int mapIndex = item->data(ID_COLUMN, Qt::UserRole).toInt();//获取map节点的index
 		map = dataSource->geoMaps[mapIndex];
+		myOpenGLWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(map);
 	}
 	else {
 		//图层节点
 		int mapIndex = parent->data(ID_COLUMN, Qt::UserRole).toInt();//获取map节点的index
 		map = dataSource->geoMaps[mapIndex];
+		myOpenGLWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(map);
 		int layerIndex = item->data(ID_COLUMN, Qt::UserRole).toInt();
 		layer = map->layers[layerIndex];
 	}
 
 	if (item->checkState(VISIBLE_COLUMN) == Qt::Checked)
 	{
-		if (parent == NULL) {
-			//地图节点
-			map->isVisible = true;
-		}
-		else {
+		//地图节点
+		map->isVisible = true;
+		if (parent != NULL) {
 			layer->isVisble = true;
 		}
 
@@ -199,6 +196,7 @@ void GeoJsonParese::treeItemChanged(QTreeWidgetItem *item, int column) {
 			updateParentItem(item);
 		}
 	}
+	myOpenGLWidget->update();
 }
 
 void GeoJsonParese::closeTab(int tabIndex)
@@ -206,42 +204,48 @@ void GeoJsonParese::closeTab(int tabIndex)
 	ui.tabWidget->removeTab(tabIndex);
 }
 
-
 /*
 辅助函数
 */
 
 //添加新窗口
 void GeoJsonParese::addNewWindow(GeoMap *map, QString name) {
-	MyOpenGLWidget* mapView = new MyOpenGLWidget(map);
+	MyOpenGLWidget* mapView = myOpenGLWidgetFactory.getMyOpenGlWidget(map);
 	//ui.tabWidget->addTab(mapView, name);
 	int currentIndex = ui.tabWidget->currentIndex();
-	ui.tabWidget->insertTab(currentIndex+1, mapView, name);
-	ui.tabWidget->setCurrentIndex(currentIndex + 1);
+	int newIndex = ui.tabWidget->insertTab(currentIndex+1, mapView, name);
+	ui.tabWidget->setCurrentIndex(newIndex);
 	mapView->show();
 }
 
 //添加顶端树节点,地图树节点
-QTreeWidgetItem * GeoJsonParese::addTreeTopLevel(QString id, QString name)
+QTreeWidgetItem * GeoJsonParese::addTreeTopLevel(GeoMap* geoMap, int id, QString name)
 {
-	QTreeWidgetItem * item = new QTreeWidgetItem(QStringList() << "" << id << name);//显示出来的数据
+	QString idStr = QString::number(id);
+	QTreeWidgetItem * item = new QTreeWidgetItem(QStringList() << "" << idStr << name);//显示出来的数据
 	ui.treeWidget->addTopLevelItem(item);
 	//绑定数据为map的索引
 	item->setData(ID_COLUMN, Qt::UserRole, QVariant(dataSource->geoMaps.size() - 1));
 	//绑定数据为map的名字 TODO 暂时为ID，没有名字
 	item->setData(NAME_COLUMN, Qt::UserRole, QVariant(dataSource->geoMaps.size()));
 	item->setCheckState(VISIBLE_COLUMN, Qt::Checked);
+	//添加图层节点
+	for (int i = 0; i < geoMap->layers.size(); i++) {
+		QString name = QString::fromStdString(geoMap->layers[i]->name);
+		addTreeNode(item, geoMap, i, name);
+	}
 	return item;
 }
 
 //添加图层节点
-QTreeWidgetItem * GeoJsonParese::addTreeNode(QTreeWidgetItem *parent, GeoMap *map, QString id, QString name)
+QTreeWidgetItem * GeoJsonParese::addTreeNode(QTreeWidgetItem *parent, GeoMap *map, int id, QString name)
 {
-	QTreeWidgetItem* item = new QTreeWidgetItem(QStringList() << "" << id << name);
+	QString idStr = QString::number(id);
+	QTreeWidgetItem* item = new QTreeWidgetItem(QStringList() << "" << idStr << name);
 	parent->addChild(item);
-	item->setData(ID_COLUMN, Qt::UserRole, QVariant(map->layers.size() - 1)); //图层索引
+	item->setData(ID_COLUMN, Qt::UserRole, QVariant(id)); //图层索引
 	//绑定数据为map的名字 TODO 暂时为ID，没有名字
-	item->setData(NAME_COLUMN, Qt::UserRole, QVariant(map->layers.size() - 1)); //暂时使用图层索引
+	item->setData(NAME_COLUMN, Qt::UserRole, QVariant(name)); //暂时使用图层索引
 	item->setCheckState(VISIBLE_COLUMN, Qt::Checked);
 	//TODO 绑定属性
 	return item;

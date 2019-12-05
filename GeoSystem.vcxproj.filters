@@ -131,6 +131,9 @@
     <ClCompile Include="GeoMultiPolyline.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="MyOpenGlWidgetFactory.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="geojsonparese.h">
@@ -208,6 +211,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeoMultiPolyline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyOpenGlWidgetFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
