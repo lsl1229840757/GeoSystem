@@ -136,7 +136,7 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 						symbolStyle.fillColor.green()/ maxColorComponent, 
 						symbolStyle.fillColor.blue()/ maxColorComponent);
 				else
-					glColor3f(0.0, 1.0, 0.0);
+					glColor3f(1.0, 0.0, 0.0);
 				glVertex2f(point->x, point->y);
 			}
 			glEnd();
