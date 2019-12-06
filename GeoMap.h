@@ -18,4 +18,6 @@ public:
 	double dx;
 	double dy;
 	string name;
+	//标准坐标转世界坐标
+	QPointF NormalCd2worldCd(double x, double y);
 };

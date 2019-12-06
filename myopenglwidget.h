@@ -7,6 +7,9 @@
 #include <qopenglfunctions.h>
 #include "GdalUtil.h"
 #include "GeoMap.h"
+#include  <QMouseEvent>
+#include <GL/glu.h>
+#include "MouseZoomAction.h"
 class MyOpenGLWidget : public QOpenGLWidget,protected QOpenGLFunctions
 {
 	Q_OBJECT
@@ -23,6 +26,17 @@ public:
 	void drawLayer(Layer *layer);
 	int width;
 	int height;
+	double whRatio;
+	//缩放操作
+	MouseZoomAction mouseZoom;
+	double min_x;
+	double min_y;
+	double max_x;
+	double max_y;
+protected:
+	//鼠标按下事件
+	void mousePressEvent(QMouseEvent * event);
+	void mouseReleaseEvent(QMouseEvent *event);
 private:
 	Ui::MyOpenGLWidget ui;
 };

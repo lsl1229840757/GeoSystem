@@ -220,6 +220,7 @@
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GeoMap.cpp" />
+    <ClCompile Include="MouseZoomAction.cpp" />
     <ClCompile Include="myopenglwidget.cpp" />
     <ClCompile Include="MyOpenGlWidgetFactory.cpp" />
     <ClCompile Include="openglwindow.cpp" />
@@ -270,6 +271,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MouseZoomAction.h" />
     <ClInclude Include="MyOpenGlWidgetFactory.h" />
     <CustomBuild Include="qpainterwidget.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing qpainterwidget.h...</Message>
