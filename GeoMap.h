@@ -17,4 +17,7 @@ public:
 	bool isVisible; //控制是否可见
 	double dx;
 	double dy;
+	string name;
+	//标准坐标转世界坐标
+	QPointF NormalCd2worldCd(double x, double y);
 };

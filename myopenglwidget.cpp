@@ -3,8 +3,15 @@
 MyOpenGLWidget::MyOpenGLWidget(GeoMap *geoMap, QWidget *parent):QOpenGLWidget(parent)
 {
 	ui.setupUi(this);
-
 	this->geoMap = geoMap;
+	//è®¡ç®—ç¼©æ”¾æ¯”ä¾‹
+	QRectF normalRange = geoMap->maxRange.normalized();  //å…ˆå°†åœ°å›¾èŒƒå›´è§„èŒƒåŒ–
+	QPointF bottomLeft = normalRange.bottomLeft(); //QRectFçš„yè½´å‘ä¸‹
+	QPointF topRight = normalRange.topRight();
+	this->max_x = topRight.x();
+	this->min_x = bottomLeft.x();
+	this->min_y = topRight.y();  //topæ˜¯min_y
+	this->max_y = bottomLeft.y();
 }
 
 MyOpenGLWidget::~MyOpenGLWidget()
@@ -24,12 +31,50 @@ void MyOpenGLWidget::initializeGL(){
 }
 
 void MyOpenGLWidget::paintGL(){
+
+	//ä¿®æ”¹å®é™…å¯è§†åŒºåŸŸ
+	double mid_x = (max_x - min_x) / 2 + min_x;
+	double mid_y = (max_y - min_y) / 2 + min_y;
+	if (width > height) {
+		//ä»¥é«˜ä¸ºåŸºå‡†
+		double dy = max_y - min_y;
+		double dx = dy * whRatio;
+		if (dx < (max_x - min_x)) {
+			//å¦‚æœå¯è§†åŒºåŸŸå¤§äºdx
+			dx = max_x - min_x;
+			//å†ä¿®æ”¹dy
+			dy = dx / whRatio;
+			max_y = mid_y + dy / 2;
+			min_y = mid_y - dy / 2;
+		}
+		max_x = mid_x + dx / 2;
+		min_x = mid_x - dx / 2;
+	}
+	else {
+		//ä»¥å®½ä¸ºåŸºå‡†
+		double dx = max_x - min_x;
+		double dy = dx / whRatio;
+		if (dy < (max_y - min_y)) {
+			//å¦‚æœå¯è§†åŒºåŸŸå¤§äºdy
+			dy = max_y - min_y;
+			//å†ä¿®æ”¹dx
+			dx = dy * whRatio;
+			max_x = mid_x + dx / 2;
+			min_x = mid_x - dx / 2;
+		}
+		max_y = mid_y + dy / 2;
+		min_y = mid_y - dy / 2;
+	}
+
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	//¿ªÊ¼»æÖÆ
-	//ÅĞ¶ÏµØÍ¼ÊÇ·ñ¿É¼û
+	glLoadIdentity();//é‡ç½®å•ä½çŸ©é˜µ
+	glOrtho(min_x, max_x, min_y, max_y, -1, 1);//åˆ›å»ºä¸‰ç»´ä¸–ç•Œä¸­æ‰€èƒ½è§‚å¯Ÿåˆ°çš„çŸ©å½¢åŒºåŸŸ
+	//è®¾ç½®è§†å£
+	glViewport(0, 0, this->width, this->height);
+	//å¼€å§‹ç»˜åˆ¶
+	//åˆ¤æ–­åœ°å›¾æ˜¯å¦å¯è§
 	if(!geoMap->isVisible)
 		return;
-	glViewport(0, 0, this->width, this->height);
 	for(int i=0;i<geoMap->layers.size();i++){
 		Layer *layer = geoMap->layers[i];
 		drawLayer(layer);
@@ -39,60 +84,17 @@ void MyOpenGLWidget::paintGL(){
 void MyOpenGLWidget::resizeGL(int width, int height){
 	this->width = width;
 	this->height = height;
-	//¼ÆËã±ÈÀı
-	double whRatio = (float)width / this->height;
-	//ÉèÖÃÊÓ¿Ú
-    glLoadIdentity();//ÖØÖÃµ¥Î»¾ØÕó
-    glMatrixMode(GL_PROJECTION);//Í¶Ó°±ä»¯
-	//¼ÆËãËõ·Å±ÈÀı
-	QRectF normalRange = geoMap->maxRange.normalized();  //ÏÈ½«µØÍ¼·¶Î§¹æ·¶»¯
-	QPointF bottomLeft = normalRange.bottomLeft(); //QRectFµÄyÖáÏòÏÂ
-	QPointF topRight = normalRange.topRight();
-	
-	double max_x = topRight.x();
-	double min_x = bottomLeft.x();
-	double min_y = topRight.y();  //topÊÇmin_y
-	double max_y = bottomLeft.y();
-	
-	//openglÖĞyÖáÏòÉÏ
-	//ĞŞ¸ÄÊµ¼Ê¿ÉÊÓÇøÓò
-	double mid_x = (max_x - min_x) / 2 + min_x;
-	double mid_y = (max_y - min_y) / 2 + min_y;
-	if(width>height){
-		//ÒÔ¸ßÎª»ù×¼
-		double dy = max_y - min_y;
-		double dx = dy * whRatio;
-		if (dx < (max_x - min_x)) {
-			//Èç¹û¿ÉÊÓÇøÓò´óÓÚdx
-			dx = max_x - min_x;
-			//ÔÙĞŞ¸Ädy
-			dy = dx / whRatio;
-			max_y = mid_y + dy / 2;
-			min_y = mid_y - dy / 2;
-		}
-		max_x = mid_x + dx / 2;
-		min_x = mid_x - dx / 2;
-	}else{
-		//ÒÔ¿íÎª»ù×¼
-		double dx = max_x - min_x;
-		double dy = dx / whRatio;
-		if (dy < (max_y - min_y)) {
-			//Èç¹û¿ÉÊÓÇøÓò´óÓÚdy
-			dy = max_y - min_y;
-			//ÔÙĞŞ¸Ädx
-			dx = dy * whRatio;
-			max_x = mid_x + dx / 2;
-			min_x = mid_x - dx / 2;
-		}
-		max_y = mid_y + dy / 2;
-		min_y = mid_y - dy / 2;
-	}
-	glOrtho(min_x,max_x,min_y,max_y,-1,1);//´´½¨ÈıÎ¬ÊÀ½çÖĞËùÄÜ¹Û²ìµ½µÄ¾ØĞÎÇøÓò
+	//è®¡ç®—æ¯”ä¾‹
+	this->whRatio = (float)width / this->height;
 	//glOrtho(min_x, max_x, max_y, min_y, -1, 1);
 }
 
+
+/*
+è¾…åŠ©ç”»å›¾å‡½æ•°
+*/
 void MyOpenGLWidget::drawLayer(Layer *layer){
-	//ÅĞ¶ÏÍ¼²ãÊÇ·ñ¿É¼û
+	//åˆ¤æ–­å›¾å±‚æ˜¯å¦å¯è§
 	if(!layer->isVisble)
 		return;
 
@@ -102,19 +104,19 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 		SymbolStyle symbolStyle = feature->symbolStyle;
 		float maxColorComponent = 255.0;
 		if(GeometryType::GEOPOINT==geometry->getGeometryType()){
-			//µã»æÖÆ
+			//ç‚¹ç»˜åˆ¶
 			GeoPoint *point = (GeoPoint*) geometry;
 			glBegin(GL_POINTS);
 				glColor3f(1.0, 0.0, 0.0);
 				glVertex2f(point->x, point->y);
 			glEnd();
 		}else if(GeometryType::GEOPOLYLINE==geometry->getGeometryType()){
-			//Ïß»æÖÆ
+			//çº¿ç»˜åˆ¶
 			glBegin(GL_LINES);
 			GeoPolyline *polyline = (GeoPolyline *)geometry;
 			for(int i=0;i<polyline->points.size();i++){
 				GeoPoint *point = polyline->points[i];
-				//ÅĞ¶Ï±ß½çÑÕÉ«ÊÇ·ñ´¢´æ
+				//åˆ¤æ–­è¾¹ç•Œé¢œè‰²æ˜¯å¦å‚¨å­˜
 				if (symbolStyle.strokeColor.isValid())
 					glColor3f(symbolStyle.strokeColor.red() / maxColorComponent,
 						symbolStyle.strokeColor.green() / maxColorComponent,
@@ -125,23 +127,37 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			}
 			glEnd();
 		}else if(GeometryType::GEOPOLYGON==geometry->getGeometryType()){
-			//Ãæ»æÖÆ
-			glBegin(GL_POLYGON);
+			//é¢ç»˜åˆ¶
 			GeoPolygon *polygon = (GeoPolygon *)geometry;
-			for(int i=0;i<polygon->points.size();i++){
-				GeoPoint *point = polygon->points[i];
-				//ÅĞ¶ÏÃæÌî³äÑÕÉ«ÊÇ·ñ´¢´æ
-				if(symbolStyle.fillColor.isValid())
+			if (!polygon->isConvex()) {
+				//ä¸æ˜¯å‡¸å¤šè¾¹å½¢,å¼€å§‹å‰–åˆ†
+				vector<GeoPolygon *> triangles = polygon->getTriangles();
+				for (int j = 0; j < triangles.size(); j++) {
+					glBegin(GL_POLYGON);
+					for (int i = 0; i < triangles[j]->points.size(); i++) {
+						GeoPoint *point = triangles[j]->points[i];
+						glColor3f(1.0, 0.0, 0.0);
+						glVertex2f(point->x, point->y);
+					}
+					glEnd();
+				}
+			}
+			else {
+				glBegin(GL_POLYGON);
+				for (int i = 0; i < polygon->points.size(); i++) {
+					GeoPoint *point = polygon->points[i];
+					if(symbolStyle.fillColor.isValid())
 					glColor3f(symbolStyle.fillColor.red()/ maxColorComponent,
 						symbolStyle.fillColor.green()/ maxColorComponent, 
 						symbolStyle.fillColor.blue()/ maxColorComponent);
 				else
 					glColor3f(1.0, 0.0, 0.0);
-				glVertex2f(point->x, point->y);
+					glVertex2f(point->x, point->y);
+				}
+				glEnd();
 			}
-			glEnd();
 		}else if(GeometryType::GEOMULTIPOLYGON==geometry->getGeometryType()){
-			//¶àÃæ»æÖÆ
+			//å¤šé¢ç»˜åˆ¶
 			GeoMultiPolygon* multiPly = (GeoMultiPolygon*)geometry;
 			for (int i = 0; i < multiPly->polygons.size(); i++)
 			{
@@ -161,10 +177,74 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				glEnd();
 			}
 		}else {
-			//ÆäËûÇé¿ö£¬Ôİ²»ÊµÏÖ
+			//å…¶ä»–æƒ…å†µï¼Œæš‚ä¸å®ç°
 		}
 	}
 }
+
+void MyOpenGLWidget::mousePressEvent(QMouseEvent* event)
+{
+	//é¼ æ ‡å·¦é”®
+	if (event->button() == Qt::LeftButton) {
+		//å¼€å§‹
+		mouseZoom.start();
+		if (mouseZoom.mouseFlag == 0){
+			QPoint p1 = event->pos();
+			double modelview[16], projection[16];
+			int viewport[4];
+			glGetIntegerv(GL_VIEWPORT, viewport);
+			glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+			glGetDoublev(GL_PROJECTION_MATRIX, projection);
+			double winX = p1.rx();
+			double winY = p1.ry();
+			double winZ = 0;
+			double x;
+			double y;
+			double z;
+			//åè§£æ ‡å‡†åæ ‡
+			gluUnProject(winX, winY, winZ, modelview, projection, viewport, &x, &y, &z);
+			//å¾—åˆ°ä¸–ç•Œåæ ‡
+			QPointF worldPoint = geoMap->NormalCd2worldCd(x, y);
+			mouseZoom.mousePress(worldPoint);
+		}
+	}
+}
+
+void MyOpenGLWidget::mouseReleaseEvent(QMouseEvent * event)
+{
+	//åœ¨é‡Šæ”¾ä¹‹å‰ç‚¹å‡», åœ¨æ­¤ä¹‹å‰å·²ç»æŒ‰å‹
+	if (mouseZoom.mouseFlag == 1) {
+		QPoint p1 = event->pos();
+		double modelview[16], projection[16];
+		int viewport[4];
+		glGetIntegerv(GL_VIEWPORT, viewport);
+		glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+		glGetDoublev(GL_PROJECTION_MATRIX, projection);
+		double winX = p1.rx();
+		double winY = p1.ry();
+		double winZ = 0;
+		double x;
+		double y;
+		double z;
+		//åè§£æ ‡å‡†åæ ‡
+		gluUnProject(winX, winY, winZ, modelview, projection, viewport, &x, &y, &z);
+		//å¾—åˆ°ä¸–ç•Œåæ ‡
+		QPointF worldPoint = geoMap->NormalCd2worldCd(x, y);
+		//è®¡ç®—å‡ºrangeçš„èŒƒå›´
+		mouseZoom.mouseRelease(worldPoint);
+		QRectF range = mouseZoom.range;
+		QRectF normalRange = range.normalized();  //å…ˆå°†åœ°å›¾èŒƒå›´è§„èŒƒåŒ–
+		QPointF bottomLeft = normalRange.bottomLeft(); //QRectFçš„yè½´å‘ä¸‹
+		QPointF topRight = normalRange.topRight();
+		this->max_x = topRight.x();
+		this->min_x = bottomLeft.x();
+		this->min_y = topRight.y();  //topæ˜¯min_y
+		this->max_y = bottomLeft.y();
+		mouseZoom.end();
+		update();
+	}
+}
+
   //   glBegin(GL_TRIANGLES);
   //      glColor3f(1.0, 0.0, 0.0);
   //      glVertex3f(550000, 550000, 0);

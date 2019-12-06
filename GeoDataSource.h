@@ -9,4 +9,3 @@ public:
 	~GeoDataSource(void);
 	vector<GeoMap *> geoMaps;
 };
-

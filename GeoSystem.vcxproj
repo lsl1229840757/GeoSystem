@@ -220,7 +220,9 @@
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GeoMap.cpp" />
+    <ClCompile Include="MouseZoomAction.cpp" />
     <ClCompile Include="myopenglwidget.cpp" />
+    <ClCompile Include="MyOpenGlWidgetFactory.cpp" />
     <ClCompile Include="openglwindow.cpp" />
     <ClCompile Include="GeoPoint.cpp" />
     <ClCompile Include="GeoPolygon.cpp" />
@@ -229,6 +231,7 @@
     <ClCompile Include="SldUtil.cpp" />
     <ClCompile Include="SymbolStyle.cpp" />
     <ClCompile Include="trianglewindow.cpp" />
+    <ClCompile Include="triangulate.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="geojsonparese.h">
@@ -273,6 +276,9 @@
   <ItemGroup>
     <ClInclude Include="SldUtil.h" />
     <ClInclude Include="SymbolStyle.h" />
+    <ClInclude Include="MouseZoomAction.h" />
+    <ClInclude Include="MyOpenGlWidgetFactory.h" />
+    <ClInclude Include="triangulate.h" />
     <CustomBuild Include="qpainterwidget.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing qpainterwidget.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>

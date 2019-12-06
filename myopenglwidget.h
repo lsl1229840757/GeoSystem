@@ -8,6 +8,9 @@
 #include "GdalUtil.h"
 #include "GeoMap.h"
 #include "SymbolStyle.h"
+#include  <QMouseEvent>
+#include <GL/glu.h>
+#include "MouseZoomAction.h"
 class MyOpenGLWidget : public QOpenGLWidget,protected QOpenGLFunctions
 {
 	Q_OBJECT
@@ -18,12 +21,23 @@ public:
 	void initializeGL() Q_DECL_OVERRIDE;
 	void paintGL() Q_DECL_OVERRIDE;
 	void resizeGL(int width, int height) Q_DECL_OVERRIDE;
-	//��ͼ����Դ
+	//绘图数据源
 	GeoMap *geoMap;
 	OGRDataSource *poDS;
 	void drawLayer(Layer *layer);
 	int width;
 	int height;
+	double whRatio;
+	//缩放操作
+	MouseZoomAction mouseZoom;
+	double min_x;
+	double min_y;
+	double max_x;
+	double max_y;
+protected:
+	//鼠标按下事件
+	void mousePressEvent(QMouseEvent * event);
+	void mouseReleaseEvent(QMouseEvent *event);
 private:
 	Ui::MyOpenGLWidget ui;
 };

@@ -15,19 +15,21 @@
 #include "myopenglwidget.h"
 #include "GeoDataSource.h"
 #include "SldUtil.h"
+#include "MyOpenGlWidgetFactory.h"
 class GeoJsonParese : public QMainWindow
 {
 	Q_OBJECT
-
 public:
 	GeoJsonParese(QWidget *parent = 0);
 	~GeoJsonParese();
 	GeoDataSource *dataSource;
-	QTreeWidgetItem *addTreeTopLevel(QString name,QString desc);
-	QTreeWidgetItem * addTreeNode(QTreeWidgetItem *parent, GeoMap *map, QString name,QString desc);
+	QTreeWidgetItem * GeoJsonParese::addTreeTopLevel(GeoMap* geoMap, int id, QString name);
+	QTreeWidgetItem * addTreeNode(QTreeWidgetItem *parent, GeoMap *map, int id, QString name);
 	void addNewWindow(GeoMap *map, QString name);
 	void updateParentItem(QTreeWidgetItem *item);
 	QString log;
+	//¹¤³§Àà
+	MyOpenGlWidgetFactory myOpenGLWidgetFactory;
 public slots:
 	void parseGeoJson();
 	void readShp();
