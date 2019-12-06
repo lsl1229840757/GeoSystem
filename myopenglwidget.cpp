@@ -99,6 +99,8 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 	for(int i=0;i<layer->features.size();i++){
 		Feature *feature = layer->features[i];
 		Geometry *geometry = feature->geometry;
+		SymbolStyle symbolStyle = feature->symbolStyle;
+		float maxColorComponent = 255.0;
 		if(GeometryType::GEOPOINT==geometry->getGeometryType()){
 			//µ„ªÊ÷∆
 			GeoPoint *point = (GeoPoint*) geometry;
@@ -112,7 +114,13 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			GeoPolyline *polyline = (GeoPolyline *)geometry;
 			for(int i=0;i<polyline->points.size();i++){
 				GeoPoint *point = polyline->points[i];
-				glColor3f(1.0, 0.0, 0.0);
+				//≈–∂œ±ﬂΩÁ—’…´ «∑Ò¥¢¥Ê
+				if (symbolStyle.strokeColor.isValid())
+					glColor3f(symbolStyle.strokeColor.red() / maxColorComponent,
+						symbolStyle.strokeColor.green() / maxColorComponent,
+						symbolStyle.strokeColor.blue() / maxColorComponent);
+				else
+					glColor3f(0.0, 1.0, 0.0);
 				glVertex2f(point->x, point->y);
 			}
 			glEnd();
@@ -122,7 +130,13 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			GeoPolygon *polygon = (GeoPolygon *)geometry;
 			for(int i=0;i<polygon->points.size();i++){
 				GeoPoint *point = polygon->points[i];
-				glColor3f(1.0, 0.0, 0.0);
+				//≈–∂œ√ÊÃÓ≥‰—’…´ «∑Ò¥¢¥Ê
+				if(symbolStyle.fillColor.isValid())
+					glColor3f(symbolStyle.fillColor.red()/ maxColorComponent,
+						symbolStyle.fillColor.green()/ maxColorComponent, 
+						symbolStyle.fillColor.blue()/ maxColorComponent);
+				else
+					glColor3f(0.0, 1.0, 0.0);
 				glVertex2f(point->x, point->y);
 			}
 			glEnd();
@@ -136,7 +150,12 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				GeoPolygon *polygon = multiPly->polygons.at(i);
 				for (int j = 0; j < polygon->points.size(); j++) {
 					GeoPoint *point = polygon->points[j];
-					glColor3f(1.0, 0.0, 0.0);
+					if (symbolStyle.fillColor.isValid())
+						glColor3f(symbolStyle.fillColor.red() / maxColorComponent,
+							symbolStyle.fillColor.green() / maxColorComponent, 
+							symbolStyle.fillColor.blue() / maxColorComponent);
+					else
+						glColor3f(0.0, 1.0, 0.0);
 					glVertex2f(point->x, point->y);
 				}
 				glEnd();

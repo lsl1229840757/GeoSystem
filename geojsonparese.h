@@ -14,6 +14,7 @@
 #include <qpainter.h>
 #include "myopenglwidget.h"
 #include "GeoDataSource.h"
+#include "SldUtil.h"
 class GeoJsonParese : public QMainWindow
 {
 	Q_OBJECT

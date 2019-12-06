@@ -131,6 +131,12 @@
     <ClCompile Include="GeoMultiPolyline.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="SldUtil.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SymbolStyle.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="geojsonparese.h">
@@ -208,6 +214,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeoMultiPolyline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SldUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SymbolStyle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

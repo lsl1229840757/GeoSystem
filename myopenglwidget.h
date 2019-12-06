@@ -7,6 +7,7 @@
 #include <qopenglfunctions.h>
 #include "GdalUtil.h"
 #include "GeoMap.h"
+#include "SymbolStyle.h"
 class MyOpenGLWidget : public QOpenGLWidget,protected QOpenGLFunctions
 {
 	Q_OBJECT
