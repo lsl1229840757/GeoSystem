@@ -137,6 +137,9 @@
     <ClCompile Include="MouseZoomAction.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="triangulate.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="geojsonparese.h">
@@ -220,6 +223,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MouseZoomAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="triangulate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

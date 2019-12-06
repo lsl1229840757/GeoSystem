@@ -120,14 +120,29 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			glEnd();
 		}else if(GeometryType::GEOPOLYGON==geometry->getGeometryType()){
 			//面绘制
-			glBegin(GL_POLYGON);
 			GeoPolygon *polygon = (GeoPolygon *)geometry;
-			for(int i=0;i<polygon->points.size();i++){
-				GeoPoint *point = polygon->points[i];
-				glColor3f(1.0, 0.0, 0.0);
-				glVertex2f(point->x, point->y);
+			if (!polygon->isConvex()) {
+				//不是凸多边形,开始剖分
+				vector<GeoPolygon *> triangles = polygon->getTriangles();
+				for (int j = 0; j < triangles.size(); j++) {
+					glBegin(GL_POLYGON);
+					for (int i = 0; i < triangles[j]->points.size(); i++) {
+						GeoPoint *point = triangles[j]->points[i];
+						glColor3f(1.0, 0.0, 0.0);
+						glVertex2f(point->x, point->y);
+					}
+					glEnd();
+				}
 			}
-			glEnd();
+			else {
+				glBegin(GL_POLYGON);
+				for (int i = 0; i < polygon->points.size(); i++) {
+					GeoPoint *point = polygon->points[i];
+					glColor3f(1.0, 0.0, 0.0);
+					glVertex2f(point->x, point->y);
+				}
+				glEnd();
+			}
 		}else if(GeometryType::GEOMULTIPOLYGON==geometry->getGeometryType()){
 			//多面绘制
 			GeoMultiPolygon* multiPly = (GeoMultiPolygon*)geometry;

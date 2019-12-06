@@ -229,6 +229,7 @@
     <ClCompile Include="GeoPolyline.cpp" />
     <ClCompile Include="qpainterwidget.cpp" />
     <ClCompile Include="trianglewindow.cpp" />
+    <ClCompile Include="triangulate.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="geojsonparese.h">
@@ -273,6 +274,7 @@
   <ItemGroup>
     <ClInclude Include="MouseZoomAction.h" />
     <ClInclude Include="MyOpenGlWidgetFactory.h" />
+    <ClInclude Include="triangulate.h" />
     <CustomBuild Include="qpainterwidget.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing qpainterwidget.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
