@@ -42,3 +42,11 @@ Layer* GeoMap::getLayerByName(string name){
 	}
 	return NULL;
 }
+
+QPointF GeoMap::NormalCd2worldCd(double x, double y)
+{
+	maxRange = maxRange.normalized();
+	x = (this->dx * x) / 2 + maxRange.center().x();
+	y = (this->dy * y) / 2 + maxRange.center().y();
+	return QPointF(x, y);
+}
