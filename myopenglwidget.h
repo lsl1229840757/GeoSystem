@@ -7,6 +7,7 @@
 #include <qopenglfunctions.h>
 #include "GdalUtil.h"
 #include "GeoMap.h"
+#include "SymbolStyle.h"
 #include  <QMouseEvent>
 #include <GL/glu.h>
 #include "MouseZoomAction.h"
@@ -20,21 +21,21 @@ public:
 	void initializeGL() Q_DECL_OVERRIDE;
 	void paintGL() Q_DECL_OVERRIDE;
 	void resizeGL(int width, int height) Q_DECL_OVERRIDE;
-	//»æÍ¼Êı¾İÔ´
+	//ç»˜å›¾æ•°æ®æº
 	GeoMap *geoMap;
 	OGRDataSource *poDS;
 	void drawLayer(Layer *layer);
 	int width;
 	int height;
 	double whRatio;
-	//Ëõ·Å²Ù×÷
+	//ç¼©æ”¾æ“ä½œ
 	MouseZoomAction mouseZoom;
 	double min_x;
 	double min_y;
 	double max_x;
 	double max_y;
 protected:
-	//Êó±ê°´ÏÂÊÂ¼ş
+	//é¼ æ ‡æŒ‰ä¸‹äº‹ä»¶
 	void mousePressEvent(QMouseEvent * event);
 	void mouseReleaseEvent(QMouseEvent *event);
 private:

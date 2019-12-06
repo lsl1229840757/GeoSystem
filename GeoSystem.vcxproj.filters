@@ -131,6 +131,11 @@
     <ClCompile Include="GeoMultiPolyline.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="SldUtil.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SymbolStyle.cpp">
+
     <ClCompile Include="MyOpenGlWidgetFactory.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -219,6 +224,10 @@
     <ClInclude Include="GeoMultiPolyline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SldUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SymbolStyle.h">
     <ClInclude Include="MyOpenGlWidgetFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>

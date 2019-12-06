@@ -60,6 +60,12 @@ void GeoJsonParese::readShp(){
 		OGRDataSource* poDS = GdalUtil::readFromGeoJson(filePath);
 		//TODO 报错机制
 		GeoMap *geoMap = GdalUtil::OGRDataSource2Map(poDS);
+
+		//添加layer style
+		QString sldPath = filePath.replace(QRegExp(".shp"), ".sld");
+		QDomDocument* doc = SldUtil::sldRead(sldPath);
+		SldUtil::parseSldDom(doc, geoMap->layers.back());
+
 		dataSource->geoMaps.push_back(geoMap);
 		//添加节点
 		addTreeTopLevel(geoMap, dataSource->geoMaps.size() - 1, QString::fromStdString(geoMap->name));

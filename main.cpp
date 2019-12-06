@@ -4,11 +4,18 @@
 #include "qpainterwidget.h"
 #include "myopenglwidget.h"
 #include "GdalUtil.h"
+#include "qdom.h"
+#include "SldUtil.h"
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
 	GeoJsonParese w;
 	w.show();
+
+	//Layer* layer = new Layer;
+	//QDomDocument* doc = new QDomDocument;
+	//doc = SldUtil::sldRead("C:\\Users\\123\\Desktop\\datas\\centrl_ply_sld3.sld");
+	//SldUtil::parseSldDom(doc, layer);
 
 	//QSurfaceFormat format;
  //format.setSamples(16);

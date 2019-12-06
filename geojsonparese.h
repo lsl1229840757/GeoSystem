@@ -14,6 +14,7 @@
 #include <qpainter.h>
 #include "myopenglwidget.h"
 #include "GeoDataSource.h"
+#include "SldUtil.h"
 #include "MyOpenGlWidgetFactory.h"
 class GeoJsonParese : public QMainWindow
 {
@@ -27,7 +28,7 @@ public:
 	void addNewWindow(GeoMap *map, QString name);
 	void updateParentItem(QTreeWidgetItem *item);
 	QString log;
-	//¹¤³§Àà
+	//Â¹Â¤Â³Â§Ã€Ã 
 	MyOpenGlWidgetFactory myOpenGLWidgetFactory;
 public slots:
 	void parseGeoJson();
