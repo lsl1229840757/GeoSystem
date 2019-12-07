@@ -302,7 +302,7 @@ vector<Feature*>* SldUtil::parseFilterList(QDomNodeList* filterList,Layer* layer
 					//按属性类型转换上下界，判断符合条件的feature
 					if (!layer->features.empty()) {
 						QVariant::Type type = layer->features.back()->attributes.value(propertyName).type();
-						for (int k; k < layer->features.size(); k++)
+						for (int k=0; k < layer->features.size(); k++)
 						{
 							//遍历图层layer
 							if (QVariant::Type::Int == type ) {
@@ -336,7 +336,7 @@ vector<Feature*>* SldUtil::parseFilterList(QDomNodeList* filterList,Layer* layer
 					//按属性类型转换值，判断符合条件的feature
 					if (!layer->features.empty()) {
 						QVariant::Type type = layer->features.back()->attributes.value(propertyName).type();
-						for (int k; k < layer->features.size(); k++)
+						for (int k=0; k < layer->features.size(); k++)
 						{
 							//遍历图层layer
 							if (QVariant::Type::Int == type) {
