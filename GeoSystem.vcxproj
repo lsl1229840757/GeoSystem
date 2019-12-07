@@ -220,6 +220,7 @@
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GeoMap.cpp" />
+    <ClCompile Include="MouseDragAction.cpp" />
     <ClCompile Include="MouseZoomAction.cpp" />
     <ClCompile Include="myopenglwidget.cpp" />
     <ClCompile Include="MyOpenGlWidgetFactory.cpp" />
@@ -274,6 +275,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MouseDragAction.h" />
     <ClInclude Include="SldUtil.h" />
     <ClInclude Include="SymbolStyle.h" />
     <ClInclude Include="MouseZoomAction.h" />

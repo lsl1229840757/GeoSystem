@@ -28,9 +28,9 @@ public:
 	void addNewWindow(GeoMap *map, QString name);
 	void updateParentItem(QTreeWidgetItem *item);
 	QString log;
-	//¹¤³§Àà
 	MyOpenGlWidgetFactory myOpenGLWidgetFactory;
 public slots:
+	void showCurrentPos(QPointF currentPos);
 	void parseGeoJson();
 	void readShp();
 	void shp2GeoJson();

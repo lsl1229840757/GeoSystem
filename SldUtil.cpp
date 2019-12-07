@@ -46,7 +46,7 @@ void SldUtil::parseSldDom(QDomDocument* sldDoc, Layer* layer)
 	if (sldDoc != NULL)
 	{
 		//获取元素
-		QDomElement docElem = sldDoc->documentElement();
+		QDomElement docElem = sldDoc->documentElement();//根节点
 		bool ruleFlag0 = false; //判断是否进入Rule标签
 		parseElement(docElem, layer, ruleFlag0);
 	}

@@ -5,17 +5,20 @@
 class MouseZoomAction
 {
 public:
+	//这里使用的都是世界坐标
 	MouseZoomAction();
+	MouseZoomAction(QRectF mapRange);
 	~MouseZoomAction();
-	QPointF startPoint;
-	QPointF endPoint;
-	int mouseFlag;
-	//生命期中相关操作
-	void mousePress(QPointF startPoint);
-	void mouseRelease(QPointF endPoint);
-	QRectF range;
-	//控制生命周期
-	void start();
-	void end();
+	//控制常量
+	static const int minZoomNum = 1;
+	static const int maxZoomNum = 11;
+	static const int normalZoomNum = 5;
+	//鼠标缩放级数, 1-11级,5级为正常显示,小于5级为放大,大于5级为缩小
+	int zoomNum;
+	//真正地图范围
+	QRectF mapRange;
+	//滑轮向前滚一次放大一级
+	QRectF zoomIn(QPointF centerPos);
+	//滑轮向后滚一次缩小一级
+	QRectF zoomOut(QPointF centerPos);
 };
-

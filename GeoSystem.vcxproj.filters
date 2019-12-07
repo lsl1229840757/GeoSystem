@@ -1,241 +1,94 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="DatabaseWizard.cpp" />
+    <ClCompile Include="Feature.cpp" />
+    <ClCompile Include="GdalUtil.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_DatabaseWizard.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_geojsonparese.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_myopenglwidget.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_openglwindow.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_qpainterwidget.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_trianglewindow.cpp" />
+    <ClCompile Include="GeneratedFiles\qrc_geojsonparese.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_DatabaseWizard.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_geojsonparese.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_myopenglwidget.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_openglwindow.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_qpainterwidget.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_trianglewindow.cpp" />
+    <ClCompile Include="GeoDataSource.cpp" />
+    <ClCompile Include="geojsonparese.cpp" />
+    <ClCompile Include="Geometry.cpp" />
+    <ClCompile Include="GeoMultiPolygon.cpp" />
+    <ClCompile Include="GeoMultiPolyline.cpp" />
+    <ClCompile Include="JsonUtil.cpp" />
+    <ClCompile Include="Layer.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="GeoMap.cpp" />
+    <ClCompile Include="MouseZoomAction.cpp" />
+    <ClCompile Include="myopenglwidget.cpp" />
+    <ClCompile Include="MyOpenGlWidgetFactory.cpp" />
+    <ClCompile Include="openglwindow.cpp" />
+    <ClCompile Include="GeoPoint.cpp" />
+    <ClCompile Include="GeoPolygon.cpp" />
+    <ClCompile Include="GeoPolyline.cpp" />
+    <ClCompile Include="qpainterwidget.cpp" />
+    <ClCompile Include="SldUtil.cpp" />
+    <ClCompile Include="SymbolStyle.cpp" />
+    <ClCompile Include="trianglewindow.cpp" />
+    <ClCompile Include="triangulate.cpp" />
+    <ClCompile Include="MouseDragAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SldUtil.h" />
+    <ClInclude Include="SymbolStyle.h" />
+    <ClInclude Include="MouseZoomAction.h" />
+    <ClInclude Include="MyOpenGlWidgetFactory.h" />
+    <ClInclude Include="triangulate.h" />
+    <ClInclude Include="Feature.h" />
+    <ClInclude Include="GdalUtil.h" />
+    <ClInclude Include="GeneratedFiles\ui_geojsonparese.h" />
+    <ClInclude Include="GeneratedFiles\ui_myopenglwidget.h" />
+    <ClInclude Include="GeneratedFiles\ui_qpainterwidget.h" />
+    <ClInclude Include="GeoDataSource.h" />
+    <ClInclude Include="Geometry.h" />
+    <ClInclude Include="GeoMultiPolygon.h" />
+    <ClInclude Include="GeoMultiPolyline.h" />
+    <ClInclude Include="JsonUtil.h" />
+    <ClInclude Include="Layer.h" />
+    <ClInclude Include="GeoMap.h" />
+    <ClInclude Include="GeoPoint.h" />
+    <ClInclude Include="GeoPolygon.h" />
+    <ClInclude Include="GeoPolyline.h" />
+    <ClInclude Include="MouseDragAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="geojsonparese.h" />
+    <CustomBuild Include="geojsonparese.ui" />
+    <CustomBuild Include="qpainterwidget.h" />
+    <CustomBuild Include="trianglewindow.h" />
+    <CustomBuild Include="DatabaseWizard.h" />
+    <CustomBuild Include="openglwindow.h" />
+    <CustomBuild Include="myopenglwidget.h" />
+    <CustomBuild Include="geojsonparese.qrc" />
+    <CustomBuild Include="qpainterwidget.ui" />
+    <CustomBuild Include="myopenglwidget.ui" />
+  </ItemGroup>
+  <ItemGroup>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h</Extensions>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+      <ParseFiles>true</ParseFiles>
     </Filter>
-    <Filter Include="Form Files">
-      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
-      <Extensions>ui</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
-      <Extensions>qrc;*</Extensions>
-      <ParseFiles>false</ParseFiles>
-    </Filter>
-    <Filter Include="Generated Files">
-      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
-      <Extensions>moc;h;cpp</Extensions>
-      <SourceControlFiles>False</SourceControlFiles>
-    </Filter>
-    <Filter Include="Generated Files\Debug">
-      <UniqueIdentifier>{439a4631-e546-48be-8458-143a80c139d9}</UniqueIdentifier>
-      <Extensions>cpp;moc</Extensions>
-      <SourceControlFiles>False</SourceControlFiles>
-    </Filter>
-    <Filter Include="Generated Files\Release">
-      <UniqueIdentifier>{8456dced-89ff-4727-bd96-6daf7b7ed15b}</UniqueIdentifier>
-      <Extensions>cpp;moc</Extensions>
-      <SourceControlFiles>False</SourceControlFiles>
-    </Filter>
-    <Filter Include="Resource Files\Source Files">
+    <Filter Include="Source Files">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;cxx;c;def</Extensions>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+      <ParseFiles>true</ParseFiles>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Resource Files\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="geojsonparese.cpp">
-      <Filter>Resource Files\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\qrc_geojsonparese.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Feature.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Geometry.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="JsonUtil.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GdalUtil.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DatabaseWizard.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="openglwindow.cpp">
-      <Filter>Resource Files\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="trianglewindow.cpp">
-      <Filter>Resource Files\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="qpainterwidget.cpp">
-      <Filter>Resource Files\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_trianglewindow.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_trianglewindow.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_qpainterwidget.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_qpainterwidget.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_openglwindow.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_openglwindow.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_geojsonparese.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_geojsonparese.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_DatabaseWizard.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_DatabaseWizard.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="myopenglwidget.cpp">
-      <Filter>Resource Files\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_myopenglwidget.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_myopenglwidget.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Layer.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeoPoint.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeoPolyline.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeoPolygon.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeoMap.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeoDataSource.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeoMultiPolygon.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeoMultiPolyline.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SldUtil.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SymbolStyle.cpp">
-
-    <ClCompile Include="MyOpenGlWidgetFactory.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MouseZoomAction.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="triangulate.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="geojsonparese.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="geojsonparese.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="geojsonparese.qrc">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="DatabaseWizard.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="openglwindow.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="trianglewindow.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="qpainterwidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="qpainterwidget.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="myopenglwidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="myopenglwidget.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_geojsonparese.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Feature.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Geometry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="JsonUtil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GdalUtil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_qpainterwidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_myopenglwidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Layer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeoPoint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeoPolyline.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeoPolygon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeoMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeoDataSource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeoMultiPolygon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeoMultiPolyline.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SldUtil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SymbolStyle.h">
-    <ClInclude Include="MyOpenGlWidgetFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MouseZoomAction.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="triangulate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
