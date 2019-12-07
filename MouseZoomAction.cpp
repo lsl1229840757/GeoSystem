@@ -4,44 +4,48 @@
 
 MouseZoomAction::MouseZoomAction()
 {
-	mouseFlag = 0;
+
 }
 
+MouseZoomAction::MouseZoomAction(QRectF mapRange)
+{
+	//初始化
+	this->mapRange = mapRange;
+	zoomNum = 5;
+}
 
 MouseZoomAction::~MouseZoomAction()
 {
+
 }
 
-void MouseZoomAction::start()
+QRectF MouseZoomAction::zoomIn(QPointF centerPos)
 {
-	mouseFlag = 0;
+	//放大,最小到1
+	if (zoomNum > minZoomNum)
+		zoomNum--;
+	//计算放大后实际矩形大小
+	double ratio = (double)zoomNum / normalZoomNum;
+	//得到放大后地图的宽和高
+	double width = mapRange.width() * ratio;
+	double height = mapRange.height() * ratio;
+	QRectF zoomRange = QRect(mapRange.left(), mapRange.top(), width, height);
+	zoomRange.moveCenter(centerPos);
+	return zoomRange;
 }
 
-void MouseZoomAction::end()
+QRectF MouseZoomAction::zoomOut(QPointF centerPos)
 {
-	//以后有必要可以添加清除操作
-	mouseFlag = 0;
+	//缩小
+	if (zoomNum < maxZoomNum)
+		zoomNum++;
+	//计算放大后实际矩形大小
+	double ratio = (double)zoomNum / normalZoomNum;
+	//得到放大后地图的宽和高
+	double width = mapRange.width() * ratio;
+	double height = mapRange.height() * ratio;
+	QRectF zoomRange = QRect(mapRange.left(), mapRange.top(), width, height);
+	zoomRange.moveCenter(centerPos);
+	return zoomRange;
 }
 
-void MouseZoomAction::mousePress(QPointF startPoint)
-{
-	//开始按压
-	if (mouseFlag == 0) {
-		mouseFlag++;
-		this->startPoint = startPoint;
-	}
-}
-
-void MouseZoomAction::mouseRelease(QPointF endPoint)
-{
-	//开始释放
-	if (mouseFlag == 1) {
-		this->endPoint = endPoint;
-		//开始计算矩形范围
-		double maxX = startPoint.x() > endPoint.x() ? startPoint.x() : endPoint.x();
-		double maxY = startPoint.y() > endPoint.y() ? startPoint.y() : endPoint.y();
-		double minX = startPoint.x() < endPoint.x() ? startPoint.x() : endPoint.x();
-		double minY = startPoint.y() < endPoint.y() ? startPoint.y() : endPoint.y();
-		range = QRectF(QPointF(minX, maxY), QPointF(maxX, minY));
-	}
-}

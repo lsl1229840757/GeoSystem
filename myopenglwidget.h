@@ -11,6 +11,7 @@
 #include  <QMouseEvent>
 #include <GL/glu.h>
 #include "MouseZoomAction.h"
+#include "MouseDragAction.h"
 class MyOpenGLWidget : public QOpenGLWidget,protected QOpenGLFunctions
 {
 	Q_OBJECT
@@ -30,14 +31,26 @@ public:
 	double whRatio;
 	//缩放操作
 	MouseZoomAction mouseZoom;
-	double min_x;
-	double min_y;
-	double max_x;
-	double max_y;
+	QRectF viewRange;
+	//跟踪鼠标点, 记录鼠标世界坐标点
+	QPointF centerPos;
+	//移动操作
+	MouseDragAction mouseDrag;
+	//标准化坐标转世界坐标
+	QPointF MyOpenGLWidget::normalCd2worldCd(double x, double y);
+	//屏幕坐标转世界坐标
+	QPointF MyOpenGLWidget::screenCd2worldCd(QPointF screenPoint);
 protected:
-	//鼠标按下事件
+	//鼠标点击释放事件
 	void mousePressEvent(QMouseEvent * event);
 	void mouseReleaseEvent(QMouseEvent *event);
+	//滚轮事件
+	void wheelEvent(QWheelEvent*event);
+	//鼠标移动操作
+	void mouseMoveEvent(QMouseEvent *event);
+signals:
+	//向父类发送当前鼠标的世界坐标
+	void sendCurrentPos(QPointF pos);
 private:
 	Ui::MyOpenGLWidget ui;
 };

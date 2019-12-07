@@ -210,6 +210,12 @@ void GeoJsonParese::closeTab(int tabIndex)
 	ui.tabWidget->removeTab(tabIndex);
 }
 
+void GeoJsonParese::showCurrentPos(QPointF currentPos) {
+	QString xStr = QString::number(currentPos.rx(), 'f', 2);
+	QString yStr = QString::number(currentPos.ry(), 'f', 2);
+	ui.label_3->setText(QString::fromLocal8Bit("当前位置:")+xStr+","+yStr);
+}
+
 /*
 辅助函数
 */
@@ -222,6 +228,7 @@ void GeoJsonParese::addNewWindow(GeoMap *map, QString name) {
 	int newIndex = ui.tabWidget->insertTab(currentIndex+1, mapView, name);
 	ui.tabWidget->setCurrentIndex(newIndex);
 	mapView->show();
+	connect(mapView, SIGNAL(sendCurrentPos(QPointF)), this, SLOT(showCurrentPos(QPointF)));
 }
 
 //添加顶端树节点,地图树节点

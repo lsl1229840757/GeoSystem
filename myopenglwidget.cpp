@@ -4,14 +4,15 @@ MyOpenGLWidget::MyOpenGLWidget(GeoMap *geoMap, QWidget *parent):QOpenGLWidget(pa
 {
 	ui.setupUi(this);
 	this->geoMap = geoMap;
+	//跟踪鼠标轨迹
+	setMouseTracking(true);
+	//初始化mouseZoom
+	mouseZoom = MouseZoomAction(geoMap->maxRange);
+	this->centerPos = geoMap->maxRange.center();
 	//计算缩放比例
 	QRectF normalRange = geoMap->maxRange.normalized();  //先将地图范围规范化
-	QPointF bottomLeft = normalRange.bottomLeft(); //QRectF的y轴向下
-	QPointF topRight = normalRange.topRight();
-	this->max_x = topRight.x();
-	this->min_x = bottomLeft.x();
-	this->min_y = topRight.y();  //top是min_y
-	this->max_y = bottomLeft.y();
+	this->viewRange = normalRange;
+	//QPointF topRight = normalRange.topRight();
 }
 
 MyOpenGLWidget::~MyOpenGLWidget()
@@ -31,7 +32,11 @@ void MyOpenGLWidget::initializeGL(){
 }
 
 void MyOpenGLWidget::paintGL(){
-
+	this->viewRange = this->viewRange.normalized();
+	double max_x = viewRange.right();
+	double min_x = viewRange.left();
+	double min_y = viewRange.top();  //top是min_y
+	double max_y = viewRange.bottom();
 	//修改实际可视区域
 	double mid_x = (max_x - min_x) / 2 + min_x;
 	double mid_y = (max_y - min_y) / 2 + min_y;
@@ -190,65 +195,84 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 
 void MyOpenGLWidget::mousePressEvent(QMouseEvent* event)
 {
-	//鼠标左键
 	if (event->button() == Qt::LeftButton) {
-		//开始
-		mouseZoom.start();
-		if (mouseZoom.mouseFlag == 0){
-			QPoint p1 = event->pos();
-			double modelview[16], projection[16];
-			int viewport[4];
-			glGetIntegerv(GL_VIEWPORT, viewport);
-			glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
-			glGetDoublev(GL_PROJECTION_MATRIX, projection);
-			double winX = p1.rx();
-			double winY = p1.ry();
-			double winZ = 0;
-			double x;
-			double y;
-			double z;
-			//反解标准坐标
-			gluUnProject(winX, winY, winZ, modelview, projection, viewport, &x, &y, &z);
-			//得到世界坐标
-			QPointF worldPoint = geoMap->NormalCd2worldCd(x, y);
-			mouseZoom.mousePress(worldPoint);
-		}
+		QPoint p = event->pos();
+		//记录下来坐标点
+		mouseDrag.begin(screenCd2worldCd(p));
 	}
 }
 
 void MyOpenGLWidget::mouseReleaseEvent(QMouseEvent * event)
 {
-	//在释放之前点击, 在此之前已经按压
-	if (mouseZoom.mouseFlag == 1) {
-		QPoint p1 = event->pos();
-		double modelview[16], projection[16];
-		int viewport[4];
-		glGetIntegerv(GL_VIEWPORT, viewport);
-		glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
-		glGetDoublev(GL_PROJECTION_MATRIX, projection);
-		double winX = p1.rx();
-		double winY = p1.ry();
-		double winZ = 0;
-		double x;
-		double y;
-		double z;
-		//反解标准坐标
-		gluUnProject(winX, winY, winZ, modelview, projection, viewport, &x, &y, &z);
-		//得到世界坐标
-		QPointF worldPoint = geoMap->NormalCd2worldCd(x, y);
-		//计算出range的范围
-		mouseZoom.mouseRelease(worldPoint);
-		QRectF range = mouseZoom.range;
-		QRectF normalRange = range.normalized();  //先将地图范围规范化
-		QPointF bottomLeft = normalRange.bottomLeft(); //QRectF的y轴向下
-		QPointF topRight = normalRange.topRight();
-		this->max_x = topRight.x();
-		this->min_x = bottomLeft.x();
-		this->min_y = topRight.y();  //top是min_y
-		this->max_y = bottomLeft.y();
-		mouseZoom.end();
+	if (event->button() == Qt::LeftButton) {
+		mouseDrag.finish();
+	}
+}
+
+
+void MyOpenGLWidget::wheelEvent(QWheelEvent * event)
+{
+	if (event->delta() > 0) {//如果滚轮往上滚，就放大
+		QRectF vRange = mouseZoom.zoomIn(this->centerPos);
+		this->viewRange = vRange;
 		update();
 	}
+	else {//同样的,缩小
+		QRectF vRange = mouseZoom.zoomOut(this->centerPos);
+		this->viewRange = vRange;
+		update();
+	}
+}
+
+void MyOpenGLWidget::mouseMoveEvent(QMouseEvent * event)
+{
+	QPoint p = event->pos();
+	//记录下来坐标点, 控制放大缩小
+	QPointF currentPos = screenCd2worldCd(p);
+	this->centerPos = currentPos;
+	//控制拖动
+	if (mouseDrag.dragFlag == 1) {//按住左键,虽然在mouseDrag有相应控制，这里加上防止每次都调用update
+		QPointF center = this->viewRange.center();
+		vector<double> moveMent = mouseDrag.end(screenCd2worldCd(p));//相对运动所以相减
+		center.setX(center.rx() - moveMent[0]);
+		center.setY(center.ry() - moveMent[1]);
+		this->viewRange.moveCenter(center);
+		update();
+	}
+	emit sendCurrentPos(currentPos);
+}
+
+QPointF MyOpenGLWidget::normalCd2worldCd(double x, double y)
+{
+	double max_x = viewRange.right();
+	double min_x = viewRange.left();
+	double min_y = viewRange.top();  //top是min_y
+	double max_y = viewRange.bottom();
+	double dx = viewRange.width();
+	double dy = viewRange.height();
+	QPointF p = viewRange.center();
+	x = (dx * x) / 2 + viewRange.center().x();
+	y = (dy * y) / 2 + viewRange.center().y();
+	return QPointF(x, y);
+}
+
+QPointF MyOpenGLWidget::screenCd2worldCd(QPointF screenPoint)
+{
+	double modelview[16], projection[16];
+	int viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+	double x;
+	double y;
+	double z;
+	double winX = screenPoint.rx();
+	double winY = screenPoint.ry();
+	double winZ = 0;
+	//反解标准坐标
+	gluUnProject(winX, winY, winZ, modelview, projection, viewport, &x, &y, &z);
+	// ??这里的标准化坐标是上面-1，下面+1
+	return normalCd2worldCd(x, -y);
 }
 
   //   glBegin(GL_TRIANGLES);
