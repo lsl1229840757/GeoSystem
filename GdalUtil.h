@@ -1,6 +1,7 @@
 #pragma once
 #include "gdal.h"
 #include "ogr_api.h"
+#include "ogr_feature.h"
 #include "ogrsf_frmts.h"
 #include <qstring.h>
 #include <qdebug.h>
@@ -28,4 +29,6 @@ public:
 	static void ogrPolygon2GeoPolygon(OGRPolygon *ogrPolygon, GeoPolygon *geoPolygon);
 	// ×ª»»¶àÃæ
 	static void ogrMultiPly2GeoMultiPly(OGRMultiPolygon* ogrMultiPly, GeoMultiPolygon* geoMultiPly);
+private:
+	static void storeAttributes(Feature* feature, OGRFeature* poFeature, OGRFeatureDefn* poFeatureDefn);
 };

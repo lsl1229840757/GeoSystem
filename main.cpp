@@ -12,6 +12,10 @@ int main(int argc, char *argv[])
 	GeoJsonParese w;
 	w.show();
 
+	/*QVariant k(123);
+	QVariant::Type type = k.type();
+	if (QVariant::Type::Int == type)
+		qDebug() << "111111";*/
 	//Layer* layer = new Layer;
 	//QDomDocument* doc = new QDomDocument;
 	//doc = SldUtil::sldRead("C:\\Users\\123\\Desktop\\datas\\centrl_ply_sld3.sld");

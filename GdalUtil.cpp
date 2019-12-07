@@ -36,6 +36,7 @@ void GdalUtil::readShp(QString filePath){
 
 void GdalUtil::shp2GeoJson(QString inFilePath, QString outFilePath){
 	GDALAllRegister();	
+	
 	//gdal数据集
 	GDALDataset *poDS;
 	//读取数据集
@@ -58,6 +59,7 @@ void GdalUtil::shp2GeoJson(QString inFilePath, QString outFilePath){
 
 OGRDataSource * GdalUtil::readFromPgsql(QString tableName, QString dbname, QString addr, QString port, QString username, QString password){
 	OGRRegisterAll();
+
 	//拼接params
 	QString params = "PG:dbname="+dbname+" host="+addr+" port="+port+" user="+username+" password="+password;
 	OGRLayer *pLayer = NULL;
@@ -102,6 +104,7 @@ OGRDataSource * GdalUtil::readFromPgsqlLocal(QString tableName){
 
 OGRDataSource * GdalUtil::readFromGeoJson(QString filePath){
 	GDALAllRegister();	
+	//CPLSetConfigOption("GDAL_FILENAME_IS_UTF8", "NO"); //支持中文路径 //不需要
 	//gdal数据集
 	OGRDataSource *poDS;
 	//读取数据集
@@ -116,6 +119,7 @@ OGRDataSource * GdalUtil::readFromGeoJson(QString filePath){
 
 GeoMap* GdalUtil::OGRDataSource2Map(OGRDataSource *poDS){
 	GeoMap *map = new GeoMap;
+	CPLSetConfigOption("SHAPE_ENCODING", ""); //支持中文字段
 	//开始绘制feature中的信息
 	for(int i=0;i<poDS->GetLayerCount();i++){
 		//开始转换layer
@@ -132,9 +136,15 @@ GeoMap* GdalUtil::OGRDataSource2Map(OGRDataSource *poDS){
 		QRectF rect(QPointF(min_x, min_y), QPointF(max_x, max_y));  //QRectF y轴向下
 		layer->range = rect;
 		OGRFeature *poFeature;
+		//获取要素个数
+		int featureCount = ogrLayer->GetFeatureCount();
 		while((poFeature=ogrLayer->GetNextFeature())!=NULL){
 			//开始转换feature
 			Feature* feature = new Feature;
+			//获取当前要素集的定义
+			OGRFeatureDefn* poFeatureDefn = ogrLayer->GetLayerDefn();
+			//开始转换属性Attributes
+			storeAttributes(feature, poFeature, poFeatureDefn);
 			//开始转换geometry
 			OGRGeometry *ogrGeometry = poFeature->GetGeometryRef();
 			int a = ogrGeometry->getGeometryType();
@@ -220,4 +230,42 @@ void GdalUtil::ogrMultiPly2GeoMultiPly(OGRMultiPolygon* ogrMultiPly, GeoMultiPol
 		ogrPolygon2GeoPolygon(ogrPolygon, geoPolygon);
 	}
 	
+}
+
+
+void GdalUtil::storeAttributes(Feature* feature, OGRFeature* poFeature, OGRFeatureDefn* poFeatureDefn)
+{
+	// TODO: 在此处添加实现代码.
+	//qDebug()<<poFDefn->GetName();  //shp要素集名与图层名一致  
+	//OGRFeature的GetFiledIndex()按字段名获取索引值
+
+	int fieldCount = poFeatureDefn->GetFieldCount();//获取字段数，不包括前两个字段(FID，Shape)
+	//输出每个字段名称与值
+	for (int j = 0; j < fieldCount; j++)
+	{
+		OGRFieldDefn* poFiledDefn = poFeatureDefn->GetFieldDefn(j);//获取每个字段的定义
+		OGRFieldType fieldType = poFiledDefn->GetType();  //获取字段类型
+		//qDebug() << poFiledDefn->GetNameRef();  
+		//qDebug() << poFeature->GetFieldAsString(j);
+		QString fieldName = poFiledDefn->GetNameRef();//字段名
+		if (OFTInteger == fieldType||OFTInteger64==fieldType)
+		{
+			//整数
+			feature->attributes.insert(fieldName, poFeature->GetFieldAsInteger(j));
+		}
+		else if (OFTReal == fieldType)
+		{
+			//实数
+			feature->attributes.insert(fieldName, poFeature->GetFieldAsDouble(j));
+		}
+		else if (OFTString == fieldType)
+		{
+			//字符串
+			feature->attributes.insert(fieldName, poFeature->GetFieldAsString(j));
+		}
+		else
+		{
+			qDebug() << "Could not support this type at present.";
+		}
+	}
 }

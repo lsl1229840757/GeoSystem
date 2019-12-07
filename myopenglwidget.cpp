@@ -136,7 +136,13 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 					glBegin(GL_POLYGON);
 					for (int i = 0; i < triangles[j]->points.size(); i++) {
 						GeoPoint *point = triangles[j]->points[i];
-						glColor3f(1.0, 0.0, 0.0);
+						if (symbolStyle.fillColor.isValid())
+						{
+							glColor3f(symbolStyle.fillColor.red() / maxColorComponent,
+								symbolStyle.fillColor.green() / maxColorComponent,
+								symbolStyle.fillColor.blue() / maxColorComponent);
+						}
+						else glColor3f(0.0, 1.0, 0.0);
 						glVertex2f(point->x, point->y);
 					}
 					glEnd();
@@ -146,12 +152,13 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				glBegin(GL_POLYGON);
 				for (int i = 0; i < polygon->points.size(); i++) {
 					GeoPoint *point = polygon->points[i];
-					if(symbolStyle.fillColor.isValid())
-					glColor3f(symbolStyle.fillColor.red()/ maxColorComponent,
-						symbolStyle.fillColor.green()/ maxColorComponent, 
-						symbolStyle.fillColor.blue()/ maxColorComponent);
-				else
-					glColor3f(1.0, 0.0, 0.0);
+					if (symbolStyle.fillColor.isValid())
+					{
+						glColor3f(symbolStyle.fillColor.red() / maxColorComponent,
+							symbolStyle.fillColor.green() / maxColorComponent,
+							symbolStyle.fillColor.blue() / maxColorComponent);
+					}
+					else glColor3f(1.0, 0.0, 0.0);
 					glVertex2f(point->x, point->y);
 				}
 				glEnd();
@@ -161,7 +168,6 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			GeoMultiPolygon* multiPly = (GeoMultiPolygon*)geometry;
 			for (int i = 0; i < multiPly->polygons.size(); i++)
 			{
-				
 				glBegin(GL_POLYGON);
 				GeoPolygon *polygon = multiPly->polygons.at(i);
 				for (int j = 0; j < polygon->points.size(); j++) {
