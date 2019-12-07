@@ -255,7 +255,7 @@ void GdalUtil::storeAttributes(Feature* feature, OGRFeature* poFeature, OGRFeatu
 		}
 		else if (OFTReal == fieldType)
 		{
-			//实数
+			//实数,除了ARM平台(嵌入式)相当于float，QReal在windows上相当于double
 			feature->attributes.insert(fieldName, poFeature->GetFieldAsDouble(j));
 		}
 		else if (OFTString == fieldType)
@@ -265,6 +265,7 @@ void GdalUtil::storeAttributes(Feature* feature, OGRFeature* poFeature, OGRFeatu
 		}
 		else
 		{
+			//其他类型暂时不存
 			qDebug() << "Could not support this type at present.";
 		}
 	}

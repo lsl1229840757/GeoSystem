@@ -88,12 +88,12 @@ void SldUtil::parseElement(QDomElement docElem, Layer* layer,bool ruleFlag)
 	{
 		//获取元素所有子节点链表
 		QDomNodeList childNodeList = docElem.childNodes();
-		vector<Feature*> selectFeatures;  //存储filter选出的feature
 		SymbolStyle* tempstyle = NULL;
+		vector<Feature*>* pselectFeatures = NULL;  //存储filter选出的feature
+		bool filterFlag = false;//判断是否存在filter
 		for (int i = 0; i < childNodeList.size(); i++)
 		{
 			QDomNode childNode = childNodeList.at(i);
-			bool filterFlag = false;  //判断是否存在filter
 			if (childNode.isElement())
 			{	//如果子节点为元素
 				QDomElement childElem = childNode.toElement();
@@ -109,6 +109,9 @@ void SldUtil::parseElement(QDomElement docElem, Layer* layer,bool ruleFlag)
 					//未实现
 					qDebug() << "Filter" << endl;
 					filterFlag = true;
+					QDomNodeList filterList = childElem.childNodes();
+					//读取filter内容,筛选feature
+					pselectFeatures = parseFilterList(&filterList, layer);
 				}
 				else if ((childElem.tagName().compare("PolygonSymbolizer") == 0) && ruleFlag == true)
 				{
@@ -119,13 +122,18 @@ void SldUtil::parseElement(QDomElement docElem, Layer* layer,bool ruleFlag)
 					//tempstyle = new SymbolStyle;
 					//读取所有style
 					tempstyle = parseStyleList(&styleList);
-					
 					//记录style
 					if (true == filterFlag)
 					{
 						filterFlag = false;
 						//按选择的feature赋SymbolStyle
-						//
+						if (!pselectFeatures->empty())
+						{
+							for (int k = 0; k < pselectFeatures->size(); k++)
+							{
+								pselectFeatures->at(k)->symbolStyle = *tempstyle;
+							}
+						}
 					}
 					else
 					{
@@ -145,13 +153,18 @@ void SldUtil::parseElement(QDomElement docElem, Layer* layer,bool ruleFlag)
 					//tempstyle = new SymbolStyle;
 					//读取所有style
 					tempstyle = parseStyleList(&styleList);
-
 					//记录style
 					if (true == filterFlag)
 					{
 						filterFlag = false;
 						//按选择的feature赋SymbolStyle
-						//
+						if (!pselectFeatures->empty())
+						{
+							for (int k = 0; k < pselectFeatures->size(); k++)
+							{
+								pselectFeatures->at(k)->symbolStyle = *tempstyle;
+							}
+						}
 					}
 					else
 					{
@@ -165,7 +178,14 @@ void SldUtil::parseElement(QDomElement docElem, Layer* layer,bool ruleFlag)
 				}
 				else if ((childElem.tagName().compare("PointSymbolizer") == 0) && ruleFlag == true)
 				{
-
+					qDebug() << "Point" << endl;
+					//获取子节点
+					QDomNodeList ptSymbolList = childElem.childNodes();  //Graphic
+					//
+					if (true == filterFlag)
+					{
+						filterFlag = false;
+					}
 				}
 				else
 				{
@@ -249,4 +269,100 @@ SymbolStyle* SldUtil::parseStyleList(QDomNodeList* styleList)
 		}
 	}
 	return tempstyle;
+}
+
+
+vector<Feature*>* SldUtil::parseFilterList(QDomNodeList* filterList,Layer* layer)
+{
+	// TODO: 在此处添加实现代码.
+	vector<Feature*>* pselectFeatures = new vector<Feature*>;
+	for (int j = 0; j < filterList->size(); j++)
+	{
+		if (j != 0)continue;//一个filter只能有一种property规则
+		QDomNode filter = filterList->at(j);
+		if (filter.isElement())
+		{
+			QDomElement filterElem = filter.toElement();  //PropertyIsBetween etc.
+			QDomNodeList filterChildList = filterElem.childNodes();
+			if (filterElem.tagName() == "PropertyIsBetween")
+			{
+				if (filterElem.firstChild().toElement().tagName() == "PropertyName")
+				{
+					//获取属性名
+					QString propertyName = filterElem.firstChild().toElement().text();
+					QString lowerpropt, upperpropt;//属性上下界
+					QDomNode lowerNode = filterElem.childNodes().at(1);
+					QDomNode upperNode = filterElem.childNodes().at(2);
+					if (lowerNode.toElement().tagName() == "LowerBoundary") {
+						lowerpropt = lowerNode.firstChild().toElement().text();
+					}
+					if (upperNode.toElement().tagName() == "UpperBoundary") {
+						upperpropt = upperNode.firstChild().toElement().text();
+					}
+					//按属性类型转换上下界，判断符合条件的feature
+					if (!layer->features.empty()) {
+						QVariant::Type type = layer->features.back()->attributes.value(propertyName).type();
+						for (int k; k < layer->features.size(); k++)
+						{
+							//遍历图层layer
+							if (QVariant::Type::Int == type ) {
+								int propt = layer->features.at(k)->attributes.value(propertyName).toInt();
+								//判断是否位于范围内
+								if (propt >= lowerpropt.toInt() && propt <= upperpropt.toInt()) {
+									pselectFeatures->push_back(layer->features.at(k));
+								}
+							}else if (QVariant::Type::Double == type) {
+								double propt = layer->features.at(k)->attributes.value(propertyName).toReal();
+								//判断是否位于范围内
+								if (propt >= lowerpropt.toDouble() && propt <= upperpropt.toDouble()) {
+									pselectFeatures->push_back(layer->features.at(k));
+								}
+							}
+						}
+					}					
+				}
+			}
+			else if (filterElem.tagName() == "PropertyIsEqualTo")
+			{
+				if (filterElem.firstChild().toElement().tagName() == "PropertyName")
+				{
+					//获取属性名
+					QString propertyName = filterElem.firstChild().toElement().text();
+					QString equalpropt;//相等的属性
+					QDomNode equalLiteralNode = filterElem.lastChild();
+					if (equalLiteralNode.toElement().tagName() == "Literal") {
+						equalpropt = equalLiteralNode.toElement().text();
+					}
+					//按属性类型转换值，判断符合条件的feature
+					if (!layer->features.empty()) {
+						QVariant::Type type = layer->features.back()->attributes.value(propertyName).type();
+						for (int k; k < layer->features.size(); k++)
+						{
+							//遍历图层layer
+							if (QVariant::Type::Int == type) {
+								int propt = layer->features.at(k)->attributes.value(propertyName).toInt();
+								//判断是否相等
+								if (equalpropt.toInt()==propt) {
+									pselectFeatures->push_back(layer->features.at(k));
+								}
+							}
+							else if (QVariant::Type::Double == type) {
+								//除了ARM平台(嵌入式)相当于float，QReal在windows上相当于double
+								double propt = layer->features.at(k)->attributes.value(propertyName).toReal();
+								//判断double是否相等
+								if (fabs(fabs(propt)-fabs(equalpropt.toDouble()))< 1e-15) {
+									pselectFeatures->push_back(layer->features.at(k));
+								}
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+
+			}
+		}
+	}
+	return pselectFeatures;
 }

@@ -21,5 +21,7 @@ private:
 	static void parseElement(QDomElement docElem, Layer* layer,bool ruleFlag);
 public:
 	static SymbolStyle* parseStyleList(QDomNodeList* styleList);
+private:
+	static vector<Feature*>* parseFilterList(QDomNodeList* filterList,Layer* layer);
 };
 
