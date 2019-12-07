@@ -2,7 +2,7 @@
 #include "Geometry.h"
 #include "GeoPoint.h"
 #include <vector>
-#include "triangulate.h"
+#include "gpc.h"
 using namespace std;
 class GeoPolygon:public Geometry
 {
@@ -16,5 +16,6 @@ public:
 	bool isConvex();
 	//得到三角剖分的polygon
 	vector<GeoPolygon*> getTriangles();
+	vector<GeoPolygon*> triangles;
 };
 
