@@ -137,8 +137,8 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			if (!polygon->isConvex()) {
 				//不是凸多边形,开始剖分
 				vector<GeoPolygon *> triangles = polygon->getTriangles();
+				glBegin(GL_TRIANGLE_STRIP);
 				for (int j = 0; j < triangles.size(); j++) {
-					glBegin(GL_POLYGON);
 					for (int i = 0; i < triangles[j]->points.size(); i++) {
 						GeoPoint *point = triangles[j]->points[i];
 						if (symbolStyle.fillColor.isValid())
@@ -150,8 +150,8 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 						else glColor3f(0.0, 1.0, 0.0);
 						glVertex2f(point->x, point->y);
 					}
-					glEnd();
 				}
+				glEnd();
 			}
 			else {
 				glBegin(GL_POLYGON);

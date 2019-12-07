@@ -41,6 +41,9 @@
     <ClCompile Include="MouseDragAction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="gpc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SldUtil.h" />
@@ -64,6 +67,9 @@
     <ClInclude Include="GeoPolygon.h" />
     <ClInclude Include="GeoPolyline.h" />
     <ClInclude Include="MouseDragAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gpc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

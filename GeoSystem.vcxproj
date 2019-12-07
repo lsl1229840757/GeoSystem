@@ -216,6 +216,7 @@
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="GeoMultiPolygon.cpp" />
     <ClCompile Include="GeoMultiPolyline.cpp" />
+    <ClCompile Include="gpc.cpp" />
     <ClCompile Include="JsonUtil.cpp" />
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="main.cpp" />
@@ -275,6 +276,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="gpc.h" />
     <ClInclude Include="MouseDragAction.h" />
     <ClInclude Include="SldUtil.h" />
     <ClInclude Include="SymbolStyle.h" />
