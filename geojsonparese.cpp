@@ -82,12 +82,26 @@ void GeoJsonParese::readFromPgsql() {
 	OGRDataSource *poDS = wizard.poDS;
 	if (poDS == NULL)
 		return;
-	GeoMap *geoMap = GdalUtil::OGRDataSource2Map(poDS);
-	dataSource->geoMaps.push_back(geoMap);
-	//添加地图节点
-	addTreeTopLevel(geoMap, dataSource->geoMaps.size() - 1, QString::fromStdString(geoMap->name));
-	log += "Load data from PostgreSQL Successfully!\n";
-	ui.textBrowser->setText(log);
+	//获取table名
+	QString tableName = wizard.tableLineEdit->text();
+	GeoMap *geoMap = NULL;
+	if (tableName == ""){
+		geoMap = GdalUtil::OGRDataSource2Map(poDS);
+	}else{
+		//调用重载的转换函数，之后可以再加一个下拉框来确定打开的Table
+		geoMap = GdalUtil::OGRDataSource2Map(poDS,tableName);
+	}
+	if (geoMap != NULL){
+		dataSource->geoMaps.push_back(geoMap);
+		//添加地图节点
+		addTreeTopLevel(geoMap, dataSource->geoMaps.size() - 1, QString::fromStdString(geoMap->name));
+		log += "Load data from PostgreSQL Successfully!\n";
+		ui.textBrowser->setText(log);
+	}else {
+		log += "Loading data from PostgreSQL failed!\n";
+		ui.textBrowser->setText(log);
+	}
+	
 }
 
 //shp文件转json
