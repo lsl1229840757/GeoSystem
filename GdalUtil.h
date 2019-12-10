@@ -31,4 +31,7 @@ public:
 	static void ogrMultiPly2GeoMultiPly(OGRMultiPolygon* ogrMultiPly, GeoMultiPolygon* geoMultiPly);
 private:
 	static void storeAttributes(Feature* feature, OGRFeature* poFeature, OGRFeatureDefn* poFeatureDefn);
+public:
+	// 为数据库的调用重载转换函数
+	static GeoMap* OGRDataSource2Map(OGRDataSource *poDS, QString tableName);
 };

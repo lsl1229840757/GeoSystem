@@ -40,37 +40,18 @@ void MyOpenGLWidget::paintGL(){
 	//修改实际可视区域
 	double mid_x = (max_x - min_x) / 2 + min_x;
 	double mid_y = (max_y - min_y) / 2 + min_y;
-	if (width > height) {
-		//以高为基准
-		double dy = max_y - min_y;
-		double dx = dy * whRatio;
-		if (dx < (max_x - min_x)) {
-			//如果可视区域大于dx
-			dx = max_x - min_x;
-			//再修改dy
-			dy = dx / whRatio;
-			max_y = mid_y + dy / 2;
-			min_y = mid_y - dy / 2;
-		}
+	double mapwhRatio = (max_x - min_x) / (max_y - min_y);//地图宽高比
+	if (mapwhRatio >= whRatio) {
+		//如果地图宽高比较大,以宽为基准
+		double dy = (max_x - min_x)/whRatio;
+		max_y = mid_y + dy / 2;
+		min_y = mid_y - dy / 2;
+	}else{
+		//如果地图宽高比较小，以高为基准
+		double dx = (max_y - min_y)*whRatio;
 		max_x = mid_x + dx / 2;
 		min_x = mid_x - dx / 2;
 	}
-	else {
-		//以宽为基准
-		double dx = max_x - min_x;
-		double dy = dx / whRatio;
-		if (dy < (max_y - min_y)) {
-			//如果可视区域大于dy
-			dy = max_y - min_y;
-			//再修改dx
-			dx = dy * whRatio;
-			max_x = mid_x + dx / 2;
-			min_x = mid_x - dx / 2;
-		}
-		max_y = mid_y + dy / 2;
-		min_y = mid_y - dy / 2;
-	}
-
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();//重置单位矩阵
 	glOrtho(min_x, max_x, min_y, max_y, -1, 1);//创建三维世界中所能观察到的矩形区域
@@ -108,6 +89,28 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 		Geometry *geometry = feature->geometry;
 		SymbolStyle symbolStyle = feature->symbolStyle;
 		float maxColorComponent = 255.0;
+		GLfloat normalFillRed, normalFillGreen, normalFillBlue, normalStrokeRed, normalStrokeGreen, normalStrokeBlue;
+		//规范化fill颜色
+		if (symbolStyle.fillColor.isValid()) {//判断fill颜色是否储存
+			normalFillRed = symbolStyle.fillColor.red() / maxColorComponent;
+			normalFillGreen = symbolStyle.fillColor.green() / maxColorComponent;
+			normalFillBlue = symbolStyle.fillColor.blue() / maxColorComponent;
+		}else {
+			normalFillRed = 1.0;
+			normalFillGreen = 0.0;
+			normalFillBlue = 0.0;
+		}
+		//规范化stroke颜色
+		if (symbolStyle.strokeColor.isValid()) {
+			normalStrokeRed = symbolStyle.strokeColor.red() / maxColorComponent;
+			normalStrokeGreen = symbolStyle.strokeColor.green() / maxColorComponent;
+			normalStrokeBlue = symbolStyle.strokeColor.blue() / maxColorComponent;
+		}else {
+			normalStrokeRed = 1.0;
+			normalStrokeGreen = 0.0;
+			normalStrokeBlue = 0.0;
+		}
+
 		if(GeometryType::GEOPOINT==geometry->getGeometryType()){
 			//点绘制
 			GeoPoint *point = (GeoPoint*) geometry;
@@ -117,17 +120,14 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			glEnd();
 		}else if(GeometryType::GEOPOLYLINE==geometry->getGeometryType()){
 			//线绘制
+			glLineWidth(symbolStyle.strokeWidth);//线宽
+			//glLineStipple(1, 0xFFFF);  //点绘制实线
 			glBegin(GL_LINES);
 			GeoPolyline *polyline = (GeoPolyline *)geometry;
 			for(int i=0;i<polyline->points.size();i++){
 				GeoPoint *point = polyline->points[i];
-				//判断边界颜色是否储存
-				if (symbolStyle.strokeColor.isValid())
-					glColor3f(symbolStyle.strokeColor.red() / maxColorComponent,
-						symbolStyle.strokeColor.green() / maxColorComponent,
-						symbolStyle.strokeColor.blue() / maxColorComponent);
-				else
-					glColor3f(0.0, 1.0, 0.0);
+				
+				glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
 				glVertex2f(point->x, point->y);
 			}
 			glEnd();
@@ -141,13 +141,7 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				for (int j = 0; j < triangles.size(); j++) {
 					for (int i = 0; i < triangles[j]->points.size(); i++) {
 						GeoPoint *point = triangles[j]->points[i];
-						if (symbolStyle.fillColor.isValid())
-						{
-							glColor3f(symbolStyle.fillColor.red() / maxColorComponent,
-								symbolStyle.fillColor.green() / maxColorComponent,
-								symbolStyle.fillColor.blue() / maxColorComponent);
-						}
-						else glColor3f(0.0, 1.0, 0.0);
+						glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
 						glVertex2f(point->x, point->y);
 					}
 				}
@@ -157,17 +151,21 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				glBegin(GL_POLYGON);
 				for (int i = 0; i < polygon->points.size(); i++) {
 					GeoPoint *point = polygon->points[i];
-					if (symbolStyle.fillColor.isValid())
-					{
-						glColor3f(symbolStyle.fillColor.red() / maxColorComponent,
-							symbolStyle.fillColor.green() / maxColorComponent,
-							symbolStyle.fillColor.blue() / maxColorComponent);
-					}
-					else glColor3f(1.0, 0.0, 0.0);
+					glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
 					glVertex2f(point->x, point->y);
 				}
 				glEnd();
 			}
+			//描绘多边形边界
+			glLineWidth(symbolStyle.strokeWidth);
+			//glLineStipple(1, 0xFFFF);  //点绘制实线
+			glBegin(GL_LINES);
+			for (int i = 0; i < polygon->points.size(); i++) {
+				GeoPoint *point = polygon->points[i];
+				glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
+				glVertex2f(point->x, point->y);
+			}
+			glEnd();
 		}else if(GeometryType::GEOMULTIPOLYGON==geometry->getGeometryType()){
 			//多面绘制
 			GeoMultiPolygon* multiPly = (GeoMultiPolygon*)geometry;
@@ -177,12 +175,7 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				GeoPolygon *polygon = multiPly->polygons.at(i);
 				for (int j = 0; j < polygon->points.size(); j++) {
 					GeoPoint *point = polygon->points[j];
-					if (symbolStyle.fillColor.isValid())
-						glColor3f(symbolStyle.fillColor.red() / maxColorComponent,
-							symbolStyle.fillColor.green() / maxColorComponent, 
-							symbolStyle.fillColor.blue() / maxColorComponent);
-					else
-						glColor3f(0.0, 1.0, 0.0);
+					glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
 					glVertex2f(point->x, point->y);
 				}
 				glEnd();

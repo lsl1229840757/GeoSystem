@@ -1,8 +1,8 @@
 {
     "address": "localhost",
-    "database_name": "postgis",
-    "password": "12345",
-    "port": "5433",
-    "table_name": "grid_5km",
+    "database_name": "myDB",
+    "password": "123456",
+    "port": "5432",
+    "table_name": "centrl_ply",
     "username": "postgres"
 }
