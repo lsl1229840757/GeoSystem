@@ -47,6 +47,7 @@ void SldUtil::parseSldDom(QDomDocument* sldDoc, Layer* layer)
 	{
 		//获取元素
 		QDomElement docElem = sldDoc->documentElement();//根节点
+
 		bool ruleFlag0 = false; //判断是否进入Rule标签
 		parseElement(docElem, layer, ruleFlag0);
 	}
@@ -365,4 +366,36 @@ vector<Feature*>* SldUtil::parseFilterList(QDomNodeList* filterList,Layer* layer
 		}
 	}
 	return pselectFeatures;
+}
+
+
+void SldUtil::parseSldDomFromName(QDomDocument* sldDoc, Layer* layer, QString lyname)
+{
+	// TODO: 在此处添加实现代码.
+	if (sldDoc != NULL)
+	{
+		//获取元素
+		QDomElement docElem = sldDoc->documentElement();//根节点
+		if (docElem.hasChildNodes())
+		{
+			QDomNodeList rootChilds = docElem.childNodes();
+			for (int i = 0; i < rootChilds.size(); i++)
+			{
+				QString elemtxt = rootChilds.at(i).firstChild().toElement().text();
+				//判断是否当前图层是否有对应的style
+				if (elemtxt == lyname)
+				{
+					bool ruleFlag0 = false; //判断是否进入Rule标签
+					parseElement(rootChilds.at(i).toElement(), layer, ruleFlag0);
+				}
+				else continue;
+			}
+		}
+		
+	}
+	else
+	{
+		qDebug() << "Could not parse the DOM";
+		return;
+	}
 }

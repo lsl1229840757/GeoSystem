@@ -16,6 +16,7 @@
 #include "GeoDataSource.h"
 #include "SldUtil.h"
 #include "MyOpenGlWidgetFactory.h"
+#include "MapPrjUtil.h"
 class GeoJsonParese : public QMainWindow
 {
 	Q_OBJECT
@@ -39,9 +40,13 @@ public slots:
 	void drawMap();
 	void treeItemChanged(QTreeWidgetItem *item, int column);
 	void closeTab(int tabIndex);
+	void changeMapProjection();
+	void setStyleFromSLD();
 private:
 	Ui::GeoJsonPareseClass ui;
 
+public:
+	
 };
 
 #endif // GEOJSONPARESE_H

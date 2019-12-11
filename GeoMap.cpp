@@ -3,11 +3,16 @@
 GeoMap::GeoMap(void)
 {
 	isVisible = true;//默认可见
+	mapPrj = NULL;
 }
 
 GeoMap::~GeoMap(void)
 {
-
+	if (mapPrj != NULL)
+	{
+		delete mapPrj;
+		mapPrj = NULL;
+	}
 }
 
 void GeoMap::addLayer(Layer *layer){
@@ -43,3 +48,22 @@ Layer* GeoMap::getLayerByName(string name){
 	return NULL;
 }
 
+
+
+void GeoMap::setMapPrj(MapPrjType type)
+{
+	// TODO: 在此处添加实现代码.
+	if (mapPrj != NULL)
+	{
+		qDebug() << "You have defined map projection";
+		return;
+	}
+	if (MapPrjType::LAMBERT == type)
+	{
+		this->mapPrj = new MapPrjLambert;
+	}
+	else if (MapPrjType::MERCATOR == type)
+	{
+		this->mapPrj = new MapPrjMercator;
+	}
+}

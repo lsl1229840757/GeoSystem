@@ -9,8 +9,14 @@ MyOpenGLWidget::MyOpenGLWidget(GeoMap *geoMap, QWidget *parent):QOpenGLWidget(pa
 	//初始化mouseZoom
 	mouseZoom = MouseZoomAction(geoMap->maxRange);
 	this->centerPos = geoMap->maxRange.center();
+	QRectF normalRange;
 	//计算缩放比例
-	QRectF normalRange = geoMap->maxRange.normalized();  //先将地图范围规范化
+	if (geoMap->mapPrj != NULL){
+		QRectF prjRange = geoMap->mapPrj->getPrjRange(geoMap->maxRange.normalized());
+		normalRange = prjRange.normalized();  //将地图范围规范化
+	}else {
+		normalRange = geoMap->maxRange.normalized();  //先将地图范围规范化
+	}
 	this->viewRange = normalRange;
 	//QPointF topRight = normalRange.topRight();
 }
@@ -32,6 +38,16 @@ void MyOpenGLWidget::initializeGL(){
 }
 
 void MyOpenGLWidget::paintGL(){
+	QRectF normalRange;
+	if (geoMap->mapPrj != NULL) {
+		QRectF prjRange = geoMap->mapPrj->getPrjRange(geoMap->maxRange.normalized());
+		normalRange = prjRange.normalized();  //将地图范围规范化
+	}
+	else {
+		normalRange = geoMap->maxRange.normalized();  //先将地图范围规范化
+	}
+	this->viewRange = normalRange;
+	//
 	this->viewRange = this->viewRange.normalized();
 	double max_x = viewRange.right();
 	double min_x = viewRange.left();
@@ -116,7 +132,13 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			GeoPoint *point = (GeoPoint*) geometry;
 			glBegin(GL_POINTS);
 				glColor3f(1.0, 0.0, 0.0);
-				glVertex2f(point->x, point->y);
+				if (geoMap->mapPrj != NULL) {
+					double prjx, prjy;
+					geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+					glVertex2f(prjx, prjy);
+				}else{
+					glVertex2f(point->x, point->y);
+				}
 			glEnd();
 		}else if(GeometryType::GEOPOLYLINE==geometry->getGeometryType()){
 			//线绘制
@@ -128,7 +150,14 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				GeoPoint *point = polyline->points[i];
 				
 				glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
-				glVertex2f(point->x, point->y);
+				if (geoMap->mapPrj != NULL) {
+					double prjx, prjy;
+					geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+					glVertex2f(prjx, prjy);
+				}
+				else {
+					glVertex2f(point->x, point->y);
+				}
 			}
 			glEnd();
 		}else if(GeometryType::GEOPOLYGON==geometry->getGeometryType()){
@@ -142,7 +171,14 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 					for (int i = 0; i < triangles[j]->points.size(); i++) {
 						GeoPoint *point = triangles[j]->points[i];
 						glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
-						glVertex2f(point->x, point->y);
+						if (geoMap->mapPrj != NULL) {
+							double prjx, prjy;
+							geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+							glVertex2f(prjx, prjy);
+						}
+						else {
+							glVertex2f(point->x, point->y);
+						}
 					}
 				}
 				glEnd();
@@ -152,7 +188,14 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				for (int i = 0; i < polygon->points.size(); i++) {
 					GeoPoint *point = polygon->points[i];
 					glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
-					glVertex2f(point->x, point->y);
+					if (geoMap->mapPrj != NULL) {
+						double prjx, prjy;
+						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+						glVertex2f(prjx, prjy);
+					}
+					else {
+						glVertex2f(point->x, point->y);
+					}
 				}
 				glEnd();
 			}
@@ -163,7 +206,14 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			for (int i = 0; i < polygon->points.size(); i++) {
 				GeoPoint *point = polygon->points[i];
 				glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
-				glVertex2f(point->x, point->y);
+				if (geoMap->mapPrj != NULL) {
+					double prjx, prjy;
+					geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+					glVertex2f(prjx, prjy);
+				}
+				else {
+					glVertex2f(point->x, point->y);
+				}
 			}
 			glEnd();
 		}else if(GeometryType::GEOMULTIPOLYGON==geometry->getGeometryType()){
@@ -176,7 +226,14 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				for (int j = 0; j < polygon->points.size(); j++) {
 					GeoPoint *point = polygon->points[j];
 					glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
-					glVertex2f(point->x, point->y);
+					if (geoMap->mapPrj != NULL) {
+						double prjx, prjy;
+						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+						glVertex2f(prjx, prjy);
+					}
+					else {
+						glVertex2f(point->x, point->y);
+					}
 				}
 				glEnd();
 			}
