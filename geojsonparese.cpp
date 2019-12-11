@@ -43,8 +43,13 @@ GeoJsonParese::~GeoJsonParese()
 void GeoJsonParese::parseGeoJson(){
 	QString filePath = QFileDialog::getOpenFileName(this, "GeoJson Parse", "", "GeoJson Files(*.geojson)");
 	if(!filePath.isEmpty()){
-		QJsonObject jsonObj = JsonUtil::JsonRead(filePath);//第一级
-		GeoMap* geoMap = JsonUtil::parseGeoJson(jsonObj);
+		GeoMap* geoMap = JsonUtil::parseGeoJson(filePath);
+		//设置地图投影
+		//判断是否为经纬度
+		double &onex = geoMap->maxRange.topRight().rx();
+		double &oney = geoMap->maxRange.topRight().ry();
+		if (fabs(onex) <= 360 && fabs(oney) <= 90)
+			geoMap->setMapPrj(MapPrjType::MERCATOR);
 		//QString str = QString::number(feature.geometry->coordinates[0].toDouble())+","+QString::number(feature.geometry->coordinates[1].toDouble());
 		//ui.textBrowser->setText("coordinates:["+str+"]");
 		dataSource->geoMaps.push_back(geoMap);
@@ -62,11 +67,16 @@ void GeoJsonParese::readShp(){
 		OGRDataSource* poDS = GdalUtil::readFromGeoJson(filePath);
 		//TODO 报错机制
 		GeoMap *geoMap = GdalUtil::OGRDataSource2Map(poDS);
-
+		//设置地图投影
+		//判断是否为经纬度
+		double &onex = geoMap->maxRange.topRight().rx();
+		double &oney = geoMap->maxRange.topRight().ry();
+		if (fabs(onex) <= 360 && fabs(oney) <= 90)
+			geoMap->setMapPrj(MapPrjType::MERCATOR);
 		//添加layer style
-		QString sldPath = filePath.replace(QRegExp(".shp"), ".sld");
-		QDomDocument* doc = SldUtil::sldRead(sldPath);
-		SldUtil::parseSldDom(doc, geoMap->layers.back());
+		//QString sldPath = filePath.replace(QRegExp(".shp"), ".sld");
+		//QDomDocument* doc = SldUtil::sldRead(sldPath);
+		//SldUtil::parseSldDom(doc, geoMap->layers.back());
 
 		dataSource->geoMaps.push_back(geoMap);
 		//添加节点
@@ -134,8 +144,14 @@ void GeoJsonParese::onPressed(QPoint pos)
 		GeoMap* map = dataSource->geoMaps[v.toInt()];
 		QMenu *pMenu = new QMenu(this);
 		QAction *drawTask = new QAction(tr("Draw Map"), this);
+		QAction *changeMapPrj = new QAction(tr("Change Map Projection"), this);
+		QAction *setStyleSLD = new QAction(tr("Set Style From SLD"), this);
 		connect(drawTask, SIGNAL(triggered()), this, SLOT(drawMap()));
+		connect(changeMapPrj, SIGNAL(triggered()), this, SLOT(changeMapProjection()));
+		connect(setStyleSLD, SIGNAL(triggered()), this, SLOT(setStyleFromSLD()));
 		pMenu->addAction(drawTask);
+		pMenu->addAction(changeMapPrj);
+		pMenu->addAction(setStyleSLD);
 		pMenu->exec(QCursor::pos());//弹出右键菜单，菜单位置为光标位置
 	}
 }
@@ -281,7 +297,7 @@ QTreeWidgetItem * GeoJsonParese::addTreeTopLevel(GeoMap* geoMap, int id, QString
 	//绑定数据为map的索引
 	item->setData(ID_COLUMN, Qt::UserRole, QVariant(dataSource->geoMaps.size() - 1));
 	//绑定数据为map的名字 TODO 暂时为ID，没有名字
-	item->setData(NAME_COLUMN, Qt::UserRole, QVariant(dataSource->geoMaps.size()));
+	item->setData(NAME_COLUMN, Qt::UserRole, QVariant(QString::fromStdString(geoMap->name)));
 	item->setCheckState(VISIBLE_COLUMN, Qt::Checked);
 	//添加图层节点
 	for (int i = 0; i < geoMap->layers.size(); i++) {
@@ -352,3 +368,47 @@ void GeoJsonParese::updateParentItem(QTreeWidgetItem *item)
 //    //如果有父节点就要用父节点的takeChild删除节点
 //    delete currentItem->parent()->takeChild(ui->tv_Source->currentIndex().row());
 //}
+
+void GeoJsonParese::changeMapProjection()
+{
+	// TODO: 在此处添加实现代码.
+	//获取被选择item的id
+	QTreeWidgetItem *currentItem = ui.treeWidget->currentItem();
+	QVariant vId = currentItem->data(ID_COLUMN, Qt::UserRole);
+	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
+	//改变地图投影
+	if (dataSource->geoMaps[vId.toInt()]->mapPrj != NULL)
+	{
+		switch (dataSource->geoMaps[vId.toInt()]->mapPrj->getMapPrjType())
+		{
+		case MapPrjType::MERCATOR:
+			delete dataSource->geoMaps[vId.toInt()]->mapPrj;
+			dataSource->geoMaps[vId.toInt()]->mapPrj = new MapPrjLambert;
+			break;
+		case MapPrjType::LAMBERT:
+			delete dataSource->geoMaps[vId.toInt()]->mapPrj;
+			dataSource->geoMaps[vId.toInt()]->mapPrj = new MapPrjMercator;
+			break;
+		}
+		log += "Map projection changed successfully!\n";
+		ui.textBrowser->setText(log);
+	}
+}
+
+
+void GeoJsonParese::setStyleFromSLD()
+{
+	//获取被选择item的id
+	QTreeWidgetItem *currentItem = ui.treeWidget->currentItem();
+	QVariant vId = currentItem->data(ID_COLUMN, Qt::UserRole);
+	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
+	GeoMap* map = dataSource->geoMaps[vId.toInt()];
+	QString layerName = QString::fromStdString(map->layers.back()->name);
+	//设置style
+	QString sldPath = QFileDialog::getOpenFileName(NULL, "Read SLD", "", "SLD Files(*.sld)");
+	if (!sldPath.isEmpty()) {
+		QDomDocument* doc = SldUtil::sldRead(sldPath);
+		SldUtil::parseSldDomFromName(doc, dataSource->geoMaps[vId.toInt()]->layers.back(),layerName);
+	}
+	
+}

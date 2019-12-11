@@ -2,6 +2,10 @@
 #include "qrect.h"
 #include "Layer.h"
 #include <vector>
+#include "MapPrjUtil.h"
+#include "MapPrjLambert.h"
+#include "MapPrjMercator.h"
+#include "qdebug.h"
 using namespace std;
 class GeoMap
 {
@@ -18,4 +22,6 @@ public:
 	double dx;
 	double dy;
 	string name;
+	MapPrjUtil* mapPrj;
+	void setMapPrj(MapPrjType type);
 };

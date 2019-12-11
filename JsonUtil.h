@@ -42,7 +42,7 @@ public:
     //¸¨Öúkey
     static QString COORDINATES;
 
-    static GeoMap* parseGeoJson(QJsonObject geoJson);
+    static GeoMap* parseGeoJson(QString filePath);
 private:
     static QRectF parseFeature(QJsonObject feaJObj,Layer* layer) throw(runtime_error);
 	static void parseFeatureCollection(QJsonObject geoJson, GeoMap* geoMap);

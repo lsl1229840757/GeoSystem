@@ -19,6 +19,7 @@
 #include "QNetworkAccessManager"
 #include "QNetworkReply"
 #include "QTextCodec"
+#include "MapPrjUtil.h"
 class GeoJsonParese : public QMainWindow
 {
 	Q_OBJECT
@@ -44,9 +45,13 @@ public slots:
 	void closeTab(int tabIndex);
 	void searchRegion();
 	void replyFinished(QNetworkReply*);
+	void changeMapProjection();
+	void setStyleFromSLD();
 private:
 	Ui::GeoJsonPareseClass ui;
 
+public:
+	
 };
 
 #endif // GEOJSONPARESE_H
