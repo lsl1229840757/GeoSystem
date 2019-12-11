@@ -46,9 +46,13 @@ QJsonObject JsonUtil::JsonRead(QString filePath) throw(runtime_error){
     return rootObj;
 }
 
-GeoMap* JsonUtil::parseGeoJson(QJsonObject geoJson){
+GeoMap* JsonUtil::parseGeoJson(QString filePath){
+	QJsonObject geoJson = JsonUtil::JsonRead(filePath);
+	//从文件名字中获取地图名字
+	QString mapName = filePath.mid(filePath.lastIndexOf("/")+1, filePath.lastIndexOf(".")-filePath.lastIndexOf("/")-1);
     //解析type
 	GeoMap* geoMap = new GeoMap;
+	geoMap->name = mapName.toStdString();
     QString type = geoJson.take(TYPE).toString();
     if(type.compare(FEATURECOLLECTION)==0)
 	{
@@ -59,7 +63,6 @@ GeoMap* JsonUtil::parseGeoJson(QJsonObject geoJson){
 		parseGeometryCollection(geoJson, geoMap);  //解析几何集
 	}
     return geoMap;
-
 }
 //TODO
 QRectF JsonUtil::parseFeature(QJsonObject feaJObj ,Layer* layer) throw(runtime_error){

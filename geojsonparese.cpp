@@ -41,8 +41,7 @@ GeoJsonParese::~GeoJsonParese()
 void GeoJsonParese::parseGeoJson(){
 	QString filePath = QFileDialog::getOpenFileName(this, "GeoJson Parse", "", "GeoJson Files(*.geojson)");
 	if(!filePath.isEmpty()){
-		QJsonObject jsonObj = JsonUtil::JsonRead(filePath);//第一级
-		GeoMap* geoMap = JsonUtil::parseGeoJson(jsonObj);
+		GeoMap* geoMap = JsonUtil::parseGeoJson(filePath);
 		//设置地图投影
 		//判断是否为经纬度
 		double &onex = geoMap->maxRange.topRight().rx();
@@ -271,7 +270,7 @@ QTreeWidgetItem * GeoJsonParese::addTreeTopLevel(GeoMap* geoMap, int id, QString
 	//绑定数据为map的索引
 	item->setData(ID_COLUMN, Qt::UserRole, QVariant(dataSource->geoMaps.size() - 1));
 	//绑定数据为map的名字 TODO 暂时为ID，没有名字
-	item->setData(NAME_COLUMN, Qt::UserRole, QVariant(dataSource->geoMaps.size()));
+	item->setData(NAME_COLUMN, Qt::UserRole, QVariant(QString::fromStdString(geoMap->name)));
 	item->setCheckState(VISIBLE_COLUMN, Qt::Checked);
 	//添加图层节点
 	for (int i = 0; i < geoMap->layers.size(); i++) {
