@@ -121,12 +121,14 @@ OGRDataSource * GdalUtil::readFromGeoJson(QString filePath){
 GeoMap* GdalUtil::OGRDataSource2Map(OGRDataSource *poDS){
 	GeoMap *map = new GeoMap;
 	CPLSetConfigOption("SHAPE_ENCODING", ""); //支持中文字段
+
 	//开始绘制feature中的信息
 	for(int i=0;i<poDS->GetLayerCount();i++){ //读取了DataSource中所有的图层
 		//开始转换layer
 		OGRLayer *ogrLayer = poDS->GetLayer(i);
 		QString name = ogrLayer->GetName();
 		Layer *layer = new Layer;
+		layer->name = name.toStdString();
 		//构建layer的范围矩形
 		OGREnvelope *envelope = new OGREnvelope;
 		ogrLayer->GetExtent(envelope);

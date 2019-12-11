@@ -23,5 +23,7 @@ public:
 	static SymbolStyle* parseStyleList(QDomNodeList* styleList);
 private:
 	static vector<Feature*>* parseFilterList(QDomNodeList* filterList,Layer* layer);
+public:
+	static void parseSldDomFromName(QDomDocument* sldDoc, Layer* layer, QString lyname);
 };
 

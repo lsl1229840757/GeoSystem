@@ -221,6 +221,9 @@
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GeoMap.cpp" />
+    <ClCompile Include="MapPrjLambert.cpp" />
+    <ClCompile Include="MapPrjMercator.cpp" />
+    <ClCompile Include="MapPrjUtil.cpp" />
     <ClCompile Include="MouseDragAction.cpp" />
     <ClCompile Include="MouseZoomAction.cpp" />
     <ClCompile Include="myopenglwidget.cpp" />
@@ -277,6 +280,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gpc.h" />
+    <ClInclude Include="MapPrjLambert.h" />
+    <ClInclude Include="MapPrjMercator.h" />
+    <ClInclude Include="MapPrjUtil.h" />
     <ClInclude Include="MouseDragAction.h" />
     <ClInclude Include="SldUtil.h" />
     <ClInclude Include="SymbolStyle.h" />
