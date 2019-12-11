@@ -20,6 +20,8 @@ GeoJsonParese::GeoJsonParese(QWidget *parent)
 	connect(ui.action_PostgreSQL,SIGNAL(triggered()),this,SLOT(readFromPgsql()));
 	connect(ui.treeWidget,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(onPressed(QPoint)));
 	connect(ui.tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+	connect(ui.pushButton, SIGNAL(clicked()), this, SLOT(searchRegion()));
+
 	//添加是否可视控制
 	connect(ui.treeWidget,SIGNAL(itemChanged(QTreeWidgetItem*,int)),this,SLOT(treeItemChanged(QTreeWidgetItem*,int)));
 	//初始化数据源
@@ -222,6 +224,31 @@ void GeoJsonParese::treeItemChanged(QTreeWidgetItem *item, int column) {
 void GeoJsonParese::closeTab(int tabIndex)
 {
 	ui.tabWidget->removeTab(tabIndex);
+}
+
+void GeoJsonParese::searchRegion()
+{
+	bool isOK;
+	QString text = QInputDialog::getText(NULL, "Search",
+		"Please input your region name",
+		QLineEdit::Normal,
+		"",
+		&isOK);
+	if (isOK) {
+		QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+		manager->setNetworkAccessible(QNetworkAccessManager::Accessible);
+		QNetworkRequest qnr(QUrl("http://www.cartovision.cn/LuceneDemo/search?name="+text));
+		QNetworkReply *reply = manager->get(qnr);
+		connect(manager, SIGNAL(finished(QNetworkReply*)),this, SLOT(replyFinished(QNetworkReply*)));
+	}
+}
+
+void GeoJsonParese::replyFinished(QNetworkReply *reply)
+{
+	QString all = reply->readAll();
+	ui.textBrowser->setText(all);
+	//释放
+	reply->deleteLater();
 }
 
 void GeoJsonParese::showCurrentPos(QPointF currentPos) {
