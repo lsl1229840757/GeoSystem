@@ -25,9 +25,9 @@ void MapPrjMercator::getXY(double x1,double y1,double *px,double *py)
 	//int a = 6378137;
 	double xx = x1 * 1.0 * a*Pi / 180;
 	double d = (90 + y1 * 1.0)*(Pi / 360);
-	double c = tan((90 + y1 * 1.0)*(Pi / 360));
-	double k = log(tan((90 + y1 * 1.0)*(Pi / 360)));
-	double yy = log(tan((90 + y1 * 1.0 )*(Pi / 360)));
+	double U = tan((90 + y1 * 1.0)*(Pi / 360))*pow((1-e*sin(y1))/(1+e*sin(y1)),e/2);
+	double k = log(U);
+	double yy = k;
 	yy = yy * a;
 	*px = xx;
 	*py = yy;
@@ -35,3 +35,19 @@ void MapPrjMercator::getXY(double x1,double y1,double *px,double *py)
 
 
 
+
+
+void MapPrjMercator::getBL(double x1, double y1, double *pL, double *pB)
+{
+	// TODO: 在此处添加实现代码.
+	int iterativeTimes = 10;     //迭代次数为10
+	double iterativeValue = 0;        //迭代初始值
+	double ll = (x1 / a)*(180 / Pi);
+	double bb = iterativeValue;
+	for (int i = 0; i < iterativeTimes; i++) {
+		bb = Pi/2-(2 * atan(pow(e, (y1 / a))* pow(E, (e / 2)*log((1 - e * sin(bb)) / (1 + e * sin(bb))))));
+	}
+	bb = (bb-Pi/4)*(180 / Pi); //???这里必须减45度
+	*pL = ll;
+	*pB = bb;
+}

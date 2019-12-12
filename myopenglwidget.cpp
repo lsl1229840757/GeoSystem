@@ -6,9 +6,6 @@ MyOpenGLWidget::MyOpenGLWidget(GeoMap *geoMap, QWidget *parent):QOpenGLWidget(pa
 	this->geoMap = geoMap;
 	//跟踪鼠标轨迹
 	setMouseTracking(true);
-	//初始化mouseZoom
-	mouseZoom = MouseZoomAction(geoMap->maxRange);
-	this->centerPos = geoMap->maxRange.center();
 	QRectF normalRange;
 	//计算缩放比例
 	if (geoMap->mapPrj != NULL){
@@ -19,6 +16,9 @@ MyOpenGLWidget::MyOpenGLWidget(GeoMap *geoMap, QWidget *parent):QOpenGLWidget(pa
 	}
 	this->viewRange = normalRange;
 	//QPointF topRight = normalRange.topRight();
+	//初始化mouseZoom
+	mouseZoom = MouseZoomAction(this->viewRange);  //改成传入实际显示的range,避免投影坐标反算
+	this->centerPos = geoMap->maxRange.center();
 }
 
 MyOpenGLWidget::~MyOpenGLWidget()
@@ -38,15 +38,14 @@ void MyOpenGLWidget::initializeGL(){
 }
 
 void MyOpenGLWidget::paintGL(){
-	QRectF normalRange;
-	if (geoMap->mapPrj != NULL) {
+	//改变地图投影之后绘制前，重置范围
+	if (geoMap->mapPrj->mapPrjChanged == true)
+	{
+		geoMap->mapPrj->mapPrjChanged = false;
 		QRectF prjRange = geoMap->mapPrj->getPrjRange(geoMap->maxRange.normalized());
-		normalRange = prjRange.normalized();  //将地图范围规范化
+		QRectF normalRange= prjRange.normalized();  //将地图范围规范化
+		this->viewRange = normalRange;
 	}
-	else {
-		normalRange = geoMap->maxRange.normalized();  //先将地图范围规范化
-	}
-	this->viewRange = normalRange;
 	//
 	this->viewRange = this->viewRange.normalized();
 	double max_x = viewRange.right();
@@ -262,8 +261,22 @@ void MyOpenGLWidget::mouseReleaseEvent(QMouseEvent * event)
 
 void MyOpenGLWidget::wheelEvent(QWheelEvent * event)
 {
+	/*
+	QPointF blCenterPos = this->centerPos;
+	double bb, ll;  //经纬度
+	if (geoMap->mapPrj != NULL)
+	{
+		//有投影时先反算经纬度
+		geoMap->mapPrj->getBL(this->centerPos.rx(),this->centerPos.ry(),&ll,&bb);
+		blCenterPos = QPointF(ll,bb);
+	}*/
+
 	if (event->delta() > 0) {//如果滚轮往上滚，就放大
-		QRectF vRange = mouseZoom.zoomIn(this->centerPos);
+		
+		QRectF vRange = mouseZoom.zoomIn(this->centerPos); 
+		//if (geoMap->mapPrj != NULL){
+		//	this->viewRange = geoMap->mapPrj->getPrjRange(vRange);
+		//}
 		this->viewRange = vRange;
 		update();
 	}
@@ -304,6 +317,7 @@ QPointF MyOpenGLWidget::normalCd2worldCd(double x, double y)
 	x = (dx * x) / 2 + viewRange.center().x();
 	y = (dy * y) / 2 + viewRange.center().y();
 	return QPointF(x, y);
+
 }
 
 QPointF MyOpenGLWidget::screenCd2worldCd(QPointF screenPoint)

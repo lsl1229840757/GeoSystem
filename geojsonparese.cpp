@@ -350,22 +350,27 @@ void GeoJsonParese::changeMapProjection()
 	QTreeWidgetItem *currentItem = ui.treeWidget->currentItem();
 	QVariant vId = currentItem->data(ID_COLUMN, Qt::UserRole);
 	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
-	//改变地图投影
-	if (dataSource->geoMaps[vId.toInt()]->mapPrj != NULL)
+	//改变地图投影,改变之后画一次才能继续改变
+	if (dataSource->geoMaps[vId.toInt()]->mapPrj != NULL &&
+		dataSource->geoMaps[vId.toInt()]->mapPrj->mapPrjChanged == false)
 	{
 		switch (dataSource->geoMaps[vId.toInt()]->mapPrj->getMapPrjType())
 		{
 		case MapPrjType::MERCATOR:
 			delete dataSource->geoMaps[vId.toInt()]->mapPrj;
 			dataSource->geoMaps[vId.toInt()]->mapPrj = new MapPrjLambert;
+			dataSource->geoMaps[vId.toInt()]->mapPrj->mapPrjChanged = true;
 			break;
 		case MapPrjType::LAMBERT:
 			delete dataSource->geoMaps[vId.toInt()]->mapPrj;
 			dataSource->geoMaps[vId.toInt()]->mapPrj = new MapPrjMercator;
+			dataSource->geoMaps[vId.toInt()]->mapPrj->mapPrjChanged = true;
 			break;
 		}
 		log += "Map projection changed successfully!\n";
+		ui.tabWidget->widget(vId.toInt())->update();
 		ui.textBrowser->setText(log);
+	
 	}
 }
 
