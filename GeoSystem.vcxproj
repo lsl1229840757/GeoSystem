@@ -284,6 +284,7 @@
     <ClInclude Include="MapPrjMercator.h" />
     <ClInclude Include="MapPrjUtil.h" />
     <ClInclude Include="MouseDragAction.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SldUtil.h" />
     <ClInclude Include="SymbolStyle.h" />
     <ClInclude Include="MouseZoomAction.h" />
@@ -454,6 +455,9 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="GeoSystem.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

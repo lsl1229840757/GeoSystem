@@ -20,6 +20,7 @@
 #include "QNetworkReply"
 #include "QTextCodec"
 #include "MapPrjUtil.h"
+#include "QPushButton"
 class GeoJsonParese : public QMainWindow
 {
 	Q_OBJECT
