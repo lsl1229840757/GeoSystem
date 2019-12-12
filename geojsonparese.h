@@ -21,6 +21,9 @@
 #include "QTextCodec"
 #include "MapPrjUtil.h"
 #include "QPushButton"
+#include "QColorDialog"
+#include "MyAction.h"
+#include "StyleWidget.h"
 class GeoJsonParese : public QMainWindow
 {
 	Q_OBJECT
@@ -48,6 +51,8 @@ public slots:
 	void replyFinished(QNetworkReply*);
 	void changeMapProjection();
 	void setStyleFromSLD();
+	void setStyle(int mapIndex, int layerIndex); //通过窗口设置样式
+	void refreshStyle(int mapIndex, int layerIndex);
 private:
 	Ui::GeoJsonPareseClass ui;
 

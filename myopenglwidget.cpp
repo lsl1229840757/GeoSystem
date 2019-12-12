@@ -116,6 +116,7 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			normalFillGreen = 0.0;
 			normalFillBlue = 0.0;
 		}
+
 		//规范化stroke颜色
 		if (symbolStyle.strokeColor.isValid()) {
 			normalStrokeRed = symbolStyle.strokeColor.red() / maxColorComponent;
@@ -239,7 +240,7 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			//描绘多边形边界
 			glLineWidth(symbolStyle.strokeWidth);
 			//glLineStipple(1, 0xFFFF);  //点绘制实线
-			glBegin(GL_LINES);
+			glBegin(GL_LINE_STRIP);
 			for (int i = 0; i < polygon->points.size(); i++) {
 				GeoPoint *point = polygon->points[i];
 				if (feature->isSelected) {

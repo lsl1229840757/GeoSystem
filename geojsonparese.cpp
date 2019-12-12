@@ -161,7 +161,8 @@ void GeoJsonParese::onPressed(QPoint pos)
 	{
 		return;
 	}
-	if (currentItem->parent() == Q_NULLPTR)
+	QTreeWidgetItem* parent = currentItem->parent();
+	if (parent == Q_NULLPTR)
 	{
 		//顶级节点绘制地图
 		QVariant v = currentItem->data(0, Qt::UserRole);
@@ -177,6 +178,19 @@ void GeoJsonParese::onPressed(QPoint pos)
 		pMenu->addAction(changeMapPrj);
 		pMenu->addAction(setStyleSLD);
 		pMenu->exec(QCursor::pos());//弹出右键菜单，菜单位置为光标位置
+	}
+	else {
+		//图层节点
+		int mapIndex = parent->data(ID_COLUMN, Qt::UserRole).toInt();
+		int layerIndex = currentItem->data(ID_COLUMN, Qt::UserRole).toInt();
+		Layer* layer = dataSource->geoMaps[mapIndex]->layers[layerIndex];
+		QMenu *pMenu = new QMenu(this);
+		MyAction* setStyleAction = new MyAction(mapIndex, layerIndex, tr("Set Style"), this);
+		connect(setStyleAction, SIGNAL(triggered()), setStyleAction, SLOT(mtriggle()));
+		connect(setStyleAction, SIGNAL(sendIndex(int, int)), this, SLOT(setStyle(int,int)));
+		pMenu->addAction(setStyleAction);
+		pMenu->exec(QCursor::pos());
+		qDebug()<<layer->features.size()<<endl;
 	}
 }
 
@@ -268,8 +282,12 @@ void GeoJsonParese::closeTab(int tabIndex)
 //区域全文检索
 void GeoJsonParese::searchRegion()
 {
-	bool isOK;
+	//调色盘
+	//QColorDialog *m_pColorDialog = new QColorDialog();
+	//m_pColorDialog->exec();
+	//connect(m_pColorDialog, SIGNAL(colorSelected(QColor)), this, SLOT(slot_getColor(QColor)));
 
+	bool isOK;
 	QString text = ui.lineEdit->text();
 	if (!text.isNull()) {
 		QNetworkAccessManager *manager = new QNetworkAccessManager(this);
@@ -483,4 +501,18 @@ void GeoJsonParese::setStyleFromSLD()
 		SldUtil::parseSldDomFromName(doc, dataSource->geoMaps[vId.toInt()]->layers.back(),layerName);
 	}
 	
+}
+
+void GeoJsonParese::setStyle(int mapIndex, int layerIndex)
+{
+	Layer *layer = dataSource->geoMaps[mapIndex]->layers[layerIndex];
+	StyleWidget* styleWidget = new StyleWidget(mapIndex, layerIndex, layer);
+	connect(styleWidget, SIGNAL(update(int, int)), this, SLOT(refreshStyle(int, int)));
+	styleWidget->show();
+}
+
+void GeoJsonParese::refreshStyle(int mapIndex, int layerIndex) {
+	GeoMap * geoMap = dataSource->geoMaps[mapIndex];
+	MyOpenGLWidget* myOpenGLWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(geoMap);
+	myOpenGLWidget->update();
 }

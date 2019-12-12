@@ -6,6 +6,7 @@
 #include "GdalUtil.h"
 #include "qdom.h"
 #include "SldUtil.h"
+#include "StyleWidget.h"
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
