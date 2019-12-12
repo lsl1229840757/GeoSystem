@@ -1,4 +1,8 @@
 <RCC>
-    <qresource prefix="GeoJsonParese">
+    <qresource prefix="/GeoJsonParese"/>
+    <qresource prefix="/images">
+        <file alias="icon_search_hover">icon_search_hover.png</file>
+        <file alias="icon_search_normal">icon_search_normal.png</file>
+        <file alias="icon_search_press">icon_search_press.png</file>
     </qresource>
 </RCC>
