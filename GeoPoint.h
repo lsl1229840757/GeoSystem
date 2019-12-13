@@ -9,4 +9,6 @@ public:
 	double x;
 	double y;
 	GeometryType getGeometryType();
+	double prjx, prjy;
+	double isFirstProjeted;
 };

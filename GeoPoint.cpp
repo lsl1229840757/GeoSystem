@@ -3,10 +3,12 @@
 
 GeoPoint::GeoPoint(void)
 {
+	isFirstProjeted = true;
 }
 
 GeoPoint::GeoPoint(double x, double y)
 {
+	isFirstProjeted = true;
 	this->x = x;
 	this->y = y;
 }

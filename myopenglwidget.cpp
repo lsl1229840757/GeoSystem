@@ -162,9 +162,17 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				//查询和后被选中点变成蓝色
 				glColor3f(0.0, 0.0, 1.0);
 				if (geoMap->mapPrj != NULL) {
-					double prjx, prjy;
-					geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-					glVertex2f(prjx, prjy);
+					//判断是否为第一次投影，并储存投影坐标
+					if(point->isFirstProjeted){
+						point->isFirstProjeted = false;
+						double prjx, prjy;
+						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+						point->prjx = prjx;
+						point->prjy = prjy;
+						glVertex2f(prjx, prjy);
+					}else{
+						glVertex2f(point->prjx, point->prjy);
+					}
 				}
 				else {
 					glVertex2f(point->x, point->y);
@@ -173,9 +181,17 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			else {
 				glColor3f(1.0, 0.0, 0.0);
 				if (geoMap->mapPrj != NULL) {
-					double prjx, prjy;
-					geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-					glVertex2f(prjx, prjy);
+					if (point->isFirstProjeted) {
+						point->isFirstProjeted = false;
+						double prjx, prjy;
+						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+						point->prjx = prjx;
+						point->prjy = prjy;
+						glVertex2f(prjx, prjy);
+					}
+					else {
+						glVertex2f(point->prjx, point->prjy);
+					}
 				}
 				else {
 					glVertex2f(point->x, point->y);
@@ -194,9 +210,17 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 					//查询后被选中线变为蓝色
 					glColor3f(0, 0, 1);
 					if (geoMap->mapPrj != NULL) {
-						double prjx, prjy;
-						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-						glVertex2f(prjx, prjy);
+						if (point->isFirstProjeted) {
+							point->isFirstProjeted = false;
+							double prjx, prjy;
+							geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+							point->prjx = prjx;
+							point->prjy = prjy;
+							glVertex2f(prjx, prjy);
+						}
+						else {
+							glVertex2f(point->prjx, point->prjy);
+						}
 					}
 					else {
 						glVertex2f(point->x, point->y);
@@ -205,9 +229,17 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				else {
 					glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
 					if (geoMap->mapPrj != NULL) {
-						double prjx, prjy;
-						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-						glVertex2f(prjx, prjy);
+						if (point->isFirstProjeted) {
+							point->isFirstProjeted = false;
+							double prjx, prjy;
+							geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+							point->prjx = prjx;
+							point->prjy = prjy;
+							glVertex2f(prjx, prjy);
+						}
+						else {
+							glVertex2f(point->prjx, point->prjy);
+						}
 					}
 					else {
 						glVertex2f(point->x, point->y);
@@ -231,9 +263,17 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 							glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
 						}
 						if (geoMap->mapPrj != NULL) {
-							double prjx, prjy;
-							geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-							glVertex2f(prjx, prjy);
+							if (point->isFirstProjeted) {
+								point->isFirstProjeted = false;
+								double prjx, prjy;
+								geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+								point->prjx = prjx;
+								point->prjy = prjy;
+								glVertex2f(prjx, prjy);
+							}
+							else {
+								glVertex2f(point->prjx, point->prjy);
+							}
 						}
 						else {
 							glVertex2f(point->x, point->y);
@@ -253,9 +293,17 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 						glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
 					}
 					if (geoMap->mapPrj != NULL) {
-						double prjx, prjy;
-						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-						glVertex2f(prjx, prjy);
+						if (point->isFirstProjeted) {
+							point->isFirstProjeted = false;
+							double prjx, prjy;
+							geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+							point->prjx = prjx;
+							point->prjy = prjy;
+							glVertex2f(prjx, prjy);
+						}
+						else {
+							glVertex2f(point->prjx, point->prjy);
+						}
 					}
 					else {
 						glVertex2f(point->x, point->y);
@@ -273,9 +321,17 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 					//如果被查询后选中,边界变成蓝色
 					glColor3f(0, 0, 1);
 					if (geoMap->mapPrj != NULL) {
-						double prjx, prjy;
-						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-						glVertex2f(prjx, prjy);
+						if (point->isFirstProjeted) {
+							point->isFirstProjeted = false;
+							double prjx, prjy;
+							geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+							point->prjx = prjx;
+							point->prjy = prjy;
+							glVertex2f(prjx, prjy);
+						}
+						else {
+							glVertex2f(point->prjx, point->prjy);
+						}
 					}
 					else {
 						glVertex2f(point->x, point->y);
@@ -284,9 +340,17 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				else {
 					glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
 					if (geoMap->mapPrj != NULL) {
-						double prjx, prjy;
-						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-						glVertex2f(prjx, prjy);
+						if (point->isFirstProjeted) {
+							point->isFirstProjeted = false;
+							double prjx, prjy;
+							geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+							point->prjx = prjx;
+							point->prjy = prjy;
+							glVertex2f(prjx, prjy);
+						}
+						else {
+							glVertex2f(point->prjx, point->prjy);
+						}
 					}
 					else {
 						glVertex2f(point->x, point->y);
