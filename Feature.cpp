@@ -4,7 +4,7 @@
 Feature::Feature(void)
 {
 	ogrGrom = NULL;
-	isSelected = false; //Ä¬ÈÏÃ»ÓÐ±»Ñ¡ÖÐ
+	isSelected = false; //是否选中
 }
 
 
