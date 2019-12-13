@@ -142,6 +142,7 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			normalFillGreen = 0.0;
 			normalFillBlue = 0.0;
 		}
+
 		//规范化stroke颜色
 		if (symbolStyle.strokeColor.isValid()) {
 			normalStrokeRed = symbolStyle.strokeColor.red() / maxColorComponent;
@@ -157,14 +158,29 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			//点绘制
 			GeoPoint *point = (GeoPoint*) geometry;
 			glBegin(GL_POINTS);
+			if (feature->isSelected) {
+				//查询和后被选中点变成蓝色
+				glColor3f(0.0, 0.0, 1.0);
+				if (geoMap->mapPrj != NULL) {
+					double prjx, prjy;
+					geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+					glVertex2f(prjx, prjy);
+				}
+				else {
+					glVertex2f(point->x, point->y);
+				}
+			}
+			else {
 				glColor3f(1.0, 0.0, 0.0);
 				if (geoMap->mapPrj != NULL) {
 					double prjx, prjy;
 					geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
 					glVertex2f(prjx, prjy);
-				}else{
+				}
+				else {
 					glVertex2f(point->x, point->y);
 				}
+			}
 			glEnd();
 		}else if(GeometryType::GEOPOLYLINE==geometry->getGeometryType()){
 			//线绘制
@@ -174,15 +190,28 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			GeoPolyline *polyline = (GeoPolyline *)geometry;
 			for(int i=0;i<polyline->points.size();i++){
 				GeoPoint *point = polyline->points[i];
-				
-				glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
-				if (geoMap->mapPrj != NULL) {
-					double prjx, prjy;
-					geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-					glVertex2f(prjx, prjy);
+				if (feature->isSelected) {
+					//查询后被选中线变为蓝色
+					glColor3f(0, 0, 1);
+					if (geoMap->mapPrj != NULL) {
+						double prjx, prjy;
+						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+						glVertex2f(prjx, prjy);
+					}
+					else {
+						glVertex2f(point->x, point->y);
+					}
 				}
 				else {
-					glVertex2f(point->x, point->y);
+					glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
+					if (geoMap->mapPrj != NULL) {
+						double prjx, prjy;
+						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+						glVertex2f(prjx, prjy);
+					}
+					else {
+						glVertex2f(point->x, point->y);
+					}
 				}
 			}
 			glEnd();
@@ -196,7 +225,11 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				for (int j = 0; j < triangles.size(); j++) {
 					for (int i = 0; i < triangles[j]->points.size(); i++) {
 						GeoPoint *point = triangles[j]->points[i];
-						glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
+						if (feature->isSelected) {
+							glColor3f(0, 0, 1);
+						}else{
+							glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
+						}
 						if (geoMap->mapPrj != NULL) {
 							double prjx, prjy;
 							geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
@@ -213,7 +246,12 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				glBegin(GL_POLYGON);
 				for (int i = 0; i < polygon->points.size(); i++) {
 					GeoPoint *point = polygon->points[i];
-					glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
+					if (feature->isSelected) {
+						glColor3f(0, 0, 1);
+					}
+					else {
+						glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
+					}
 					if (geoMap->mapPrj != NULL) {
 						double prjx, prjy;
 						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
@@ -228,17 +266,31 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			//描绘多边形边界
 			glLineWidth(symbolStyle.strokeWidth);
 			//glLineStipple(1, 0xFFFF);  //点绘制实线
-			glBegin(GL_LINES);
+			glBegin(GL_LINE_STRIP);
 			for (int i = 0; i < polygon->points.size(); i++) {
 				GeoPoint *point = polygon->points[i];
-				glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
-				if (geoMap->mapPrj != NULL) {
-					double prjx, prjy;
-					geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-					glVertex2f(prjx, prjy);
+				if (feature->isSelected) {
+					//如果被查询后选中,边界变成蓝色
+					glColor3f(0, 0, 1);
+					if (geoMap->mapPrj != NULL) {
+						double prjx, prjy;
+						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+						glVertex2f(prjx, prjy);
+					}
+					else {
+						glVertex2f(point->x, point->y);
+					}
 				}
 				else {
-					glVertex2f(point->x, point->y);
+					glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
+					if (geoMap->mapPrj != NULL) {
+						double prjx, prjy;
+						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+						glVertex2f(prjx, prjy);
+					}
+					else {
+						glVertex2f(point->x, point->y);
+					}
 				}
 			}
 			glEnd();

@@ -8,4 +8,5 @@ public:
 	GeoDataSource(void);
 	~GeoDataSource(void);
 	vector<GeoMap *> geoMaps;
+	GeoMap* getGeoMapByName(QString name);
 };

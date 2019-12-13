@@ -1,5 +1,5 @@
-#include "geojsonparese.h"
-//¶¨ÒåÒ»Ğ©Êı¾İ°ó¶¨È«¾Ö±äÁ¿·½±ãĞŞ¸Ä
+ï»¿#include "geojsonparese.h"
+//å®šä¹‰ä¸€äº›æ•°æ®ç»‘å®šå…¨å±€å˜é‡æ–¹ä¾¿ä¿®æ”¹
 static int VISIBLE_COLUMN = 0;
 static int ID_COLUMN = 1;
 static int NAME_COLUMN = 2;
@@ -20,12 +20,38 @@ GeoJsonParese::GeoJsonParese(QWidget *parent)
 	connect(ui.action_PostgreSQL,SIGNAL(triggered()),this,SLOT(readFromPgsql()));
 	connect(ui.treeWidget,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(onPressed(QPoint)));
 	connect(ui.tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
-	//Ìí¼ÓÊÇ·ñ¿ÉÊÓ¿ØÖÆ
+
+	//æ·»åŠ æ£€ç´¢æ¡†
+	
+	QPushButton *pSearchButton = new QPushButton();
+
+	pSearchButton->setCursor(Qt::PointingHandCursor);
+	pSearchButton->setFixedSize(22, 22);
+	pSearchButton->setToolTip(QStringLiteral("æœç´¢"));
+	pSearchButton->setStyleSheet("QPushButton{border-image:url(:/images/icon_search_normal); background:transparent;} \
+                                     QPushButton:hover{border-image:url(:/images/icon_search_hover)} \
+                                     QPushButton:pressed{border-image:url(:/images/icon_search_press)}");
+
+	//é˜²æ­¢æ–‡æœ¬æ¡†è¾“å…¥å†…å®¹ä½äºæŒ‰é’®ä¹‹ä¸‹
+	QMargins margins = ui.lineEdit->textMargins();
+	ui.lineEdit->setTextMargins(margins.left(), margins.top(), pSearchButton->width(), margins.bottom());
+	ui.lineEdit->setPlaceholderText(QStringLiteral("è¯·è¾“å…¥æœç´¢å†…å®¹"));
+
+	QHBoxLayout *pSearchLayout = new QHBoxLayout();
+	pSearchLayout->addStretch();
+	pSearchLayout->addWidget(pSearchButton);
+	pSearchLayout->setSpacing(0);
+	pSearchLayout->setContentsMargins(0, 0, 0, 0);
+	ui.lineEdit->setLayout(pSearchLayout);
+	//æ·»åŠ æœç´¢äº‹ä»¶
+	connect(pSearchButton, SIGNAL(clicked(bool)), this, SLOT(searchRegion()));
+
+	//æ·»åŠ æ˜¯å¦å¯è§†æ§åˆ¶
 	connect(ui.treeWidget,SIGNAL(itemChanged(QTreeWidgetItem*,int)),this,SLOT(treeItemChanged(QTreeWidgetItem*,int)));
-	//³õÊ¼»¯Êı¾İÔ´
+	//åˆå§‹åŒ–æ•°æ®æº
 	dataSource = new GeoDataSource;
 
-	//´òÓ¡ÈÕÖ¾
+	//æ‰“å°æ—¥å¿—
 	ui.textBrowser->setText(log);
 }
 
@@ -35,16 +61,15 @@ GeoJsonParese::~GeoJsonParese()
 }
 
 /*
-²Ûº¯Êı
+æ§½å‡½æ•°
 */
-//½âÎöjson
+//è§£æjson
 void GeoJsonParese::parseGeoJson(){
 	QString filePath = QFileDialog::getOpenFileName(this, "GeoJson Parse", "", "GeoJson Files(*.geojson)");
 	if(!filePath.isEmpty()){
-		QJsonObject jsonObj = JsonUtil::JsonRead(filePath);//µÚÒ»¼¶
-		GeoMap* geoMap = JsonUtil::parseGeoJson(jsonObj);
-		//ÉèÖÃµØÍ¼Í¶Ó°
-		//ÅĞ¶ÏÊÇ·ñÎª¾­Î³¶È
+		GeoMap* geoMap = JsonUtil::parseGeoJson(filePath);
+		//è®¾ç½®åœ°å›¾æŠ•å½±
+		//åˆ¤æ–­æ˜¯å¦ä¸ºç»çº¬åº¦
 		double &onex = geoMap->maxRange.topRight().rx();
 		double &oney = geoMap->maxRange.topRight().ry();
 		if (fabs(onex) <= 360 && fabs(oney) <= 90)
@@ -52,59 +77,59 @@ void GeoJsonParese::parseGeoJson(){
 		//QString str = QString::number(feature.geometry->coordinates[0].toDouble())+","+QString::number(feature.geometry->coordinates[1].toDouble());
 		//ui.textBrowser->setText("coordinates:["+str+"]");
 		dataSource->geoMaps.push_back(geoMap);
-		//Ìí¼Ó½Úµã
+		//æ·»åŠ èŠ‚ç‚¹
 		addTreeTopLevel(geoMap, dataSource->geoMaps.size()-1, QString::fromStdString(geoMap->name));
 		log += "GeoJson Load Successfully!\n";
 		ui.textBrowser->setText(log);
 	}
 }
 
-//¶ÁÈ¡shp
+//è¯»å–shp
 void GeoJsonParese::readShp(){
 	QString filePath = QFileDialog::getOpenFileName(this, "ShapeFile Parse", "", "ShapeFile Files(*.shp)");
 	if(!filePath.isEmpty()){
 		OGRDataSource* poDS = GdalUtil::readFromGeoJson(filePath);
-		//TODO ±¨´í»úÖÆ
+		//TODO æŠ¥é”™æœºåˆ¶
 		GeoMap *geoMap = GdalUtil::OGRDataSource2Map(poDS);
-		//ÉèÖÃµØÍ¼Í¶Ó°
-		//ÅĞ¶ÏÊÇ·ñÎª¾­Î³¶È
+		//è®¾ç½®åœ°å›¾æŠ•å½±
+		//åˆ¤æ–­æ˜¯å¦ä¸ºç»çº¬åº¦
 		double &onex = geoMap->maxRange.topRight().rx();
 		double &oney = geoMap->maxRange.topRight().ry();
 		if (fabs(onex) <= 360 && fabs(oney) <= 90)
 			geoMap->setMapPrj(MapPrjType::MERCATOR);
-		//Ìí¼Ólayer style
+		//æ·»åŠ layer style
 		//QString sldPath = filePath.replace(QRegExp(".shp"), ".sld");
 		//QDomDocument* doc = SldUtil::sldRead(sldPath);
 		//SldUtil::parseSldDom(doc, geoMap->layers.back());
 
 		dataSource->geoMaps.push_back(geoMap);
-		//Ìí¼Ó½Úµã
+		//æ·»åŠ èŠ‚ç‚¹
 		addTreeTopLevel(geoMap, dataSource->geoMaps.size() - 1, QString::fromStdString(geoMap->name));
 		log += "ShapeFile Load Successfully!\n";
 		ui.textBrowser->setText(log);
 	}
 }
 
-//´ÓpgsqlÖĞ¶ÁÈ¡Êı¾İ
+//ä»pgsqlä¸­è¯»å–æ•°æ®
 void GeoJsonParese::readFromPgsql() {
-	//Ê¹ÓÃÏòµ¼
+	//ä½¿ç”¨å‘å¯¼
 	DatabaseWizard wizard(this);
 	wizard.exec();
 	OGRDataSource *poDS = wizard.poDS;
 	if (poDS == NULL)
 		return;
-	//»ñÈ¡tableÃû
+	//è·å–tableå
 	QString tableName = wizard.tableLineEdit->text();
 	GeoMap *geoMap = NULL;
 	if (tableName == ""){
 		geoMap = GdalUtil::OGRDataSource2Map(poDS);
 	}else{
-		//µ÷ÓÃÖØÔØµÄ×ª»»º¯Êı£¬Ö®ºó¿ÉÒÔÔÙ¼ÓÒ»¸öÏÂÀ­¿òÀ´È·¶¨´ò¿ªµÄTable
+		//è°ƒç”¨é‡è½½çš„è½¬æ¢å‡½æ•°ï¼Œä¹‹åå¯ä»¥å†åŠ ä¸€ä¸ªä¸‹æ‹‰æ¡†æ¥ç¡®å®šæ‰“å¼€çš„Table
 		geoMap = GdalUtil::OGRDataSource2Map(poDS,tableName);
 	}
 	if (geoMap != NULL){
 		dataSource->geoMaps.push_back(geoMap);
-		//Ìí¼ÓµØÍ¼½Úµã
+		//æ·»åŠ åœ°å›¾èŠ‚ç‚¹
 		addTreeTopLevel(geoMap, dataSource->geoMaps.size() - 1, QString::fromStdString(geoMap->name));
 		log += "Load data from PostgreSQL Successfully!\n";
 		ui.textBrowser->setText(log);
@@ -115,7 +140,7 @@ void GeoJsonParese::readFromPgsql() {
 	
 }
 
-//shpÎÄ¼ş×ªjson
+//shpæ–‡ä»¶è½¬json
 void GeoJsonParese::shp2GeoJson(){
 	QString filePath = QFileDialog::getOpenFileName(this, "ShapeFile 2 GeoJson", "", "ShapeFile Files(*.shp)");
 	QString outFilePath = "C:\\Users\\Administrator\\Desktop\\result.geojson";
@@ -128,17 +153,18 @@ void GeoJsonParese::shp2GeoJson(){
 }
 
 
-//°´Ñ¹ÊÂ¼ş
+//æŒ‰å‹äº‹ä»¶
 void GeoJsonParese::onPressed(QPoint pos)
 {
-	QTreeWidgetItem* currentItem = ui.treeWidget->itemAt(pos);  //»ñÈ¡µ±Ç°±»µã»÷µÄ½Úµã
+	QTreeWidgetItem* currentItem = ui.treeWidget->itemAt(pos);  //è·å–å½“å‰è¢«ç‚¹å‡»çš„èŠ‚ç‚¹
 	if (currentItem == Q_NULLPTR)
 	{
 		return;
 	}
-	if (currentItem->parent() == Q_NULLPTR)
+	QTreeWidgetItem* parent = currentItem->parent();
+	if (parent == Q_NULLPTR)
 	{
-		//¶¥¼¶½Úµã»æÖÆµØÍ¼
+		//é¡¶çº§èŠ‚ç‚¹ç»˜åˆ¶åœ°å›¾
 		QVariant v = currentItem->data(0, Qt::UserRole);
 		GeoMap* map = dataSource->geoMaps[v.toInt()];
 		QMenu *pMenu = new QMenu(this);
@@ -156,38 +182,51 @@ void GeoJsonParese::onPressed(QPoint pos)
 		pMenu->addAction(changeMapPrj);
 		pMenu->addAction(setStyleSLD);
 		pMenu->addMenu(chooseIndex);
-		pMenu->exec(QCursor::pos());//µ¯³öÓÒ¼ü²Ëµ¥£¬²Ëµ¥Î»ÖÃÎª¹â±êÎ»ÖÃ
+		pMenu->exec(QCursor::pos());//å¼¹å‡ºå³é”®èœå•ï¼Œèœå•ä½ç½®ä¸ºå…‰æ ‡ä½ç½®
+	}
+	else {
+		//å›¾å±‚èŠ‚ç‚¹
+		int mapIndex = parent->data(ID_COLUMN, Qt::UserRole).toInt();
+		int layerIndex = currentItem->data(ID_COLUMN, Qt::UserRole).toInt();
+		Layer* layer = dataSource->geoMaps[mapIndex]->layers[layerIndex];
+		QMenu *pMenu = new QMenu(this);
+		MyAction* setStyleAction = new MyAction(mapIndex, layerIndex, tr("Set Style"), this);
+		connect(setStyleAction, SIGNAL(triggered()), setStyleAction, SLOT(mtriggle()));
+		connect(setStyleAction, SIGNAL(sendIndex(int, int)), this, SLOT(setStyle(int,int)));
+		pMenu->addAction(setStyleAction);
+		pMenu->exec(QCursor::pos());
+		qDebug()<<layer->features.size()<<endl;
 	}
 }
 
-//»æÖÆµØÍ¼
+//ç»˜åˆ¶åœ°å›¾
 void GeoJsonParese::drawMap() {
-	//»ñÈ¡±»Ñ¡ÔñitemµÄid
+	//è·å–è¢«é€‰æ‹©itemçš„id
 	QTreeWidgetItem *currentItem = ui.treeWidget->currentItem();
 	QVariant vId = currentItem->data(ID_COLUMN, Qt::UserRole);
 	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
-	//»æÖÆÍ¼ĞÎ
+	//ç»˜åˆ¶å›¾å½¢
 	addNewWindow(dataSource->geoMaps[vId.toInt()], vName.toString());
 }
 
-//Ê÷½Úµã¸Ä±ä
+//æ ‘èŠ‚ç‚¹æ”¹å˜
 void GeoJsonParese::treeItemChanged(QTreeWidgetItem *item, int column) {
-	//»ñÈ¡¸¸½Úµã
+	//è·å–çˆ¶èŠ‚ç‚¹
 	QTreeWidgetItem *parent = item->parent();
-	//ÉèÖÃÊÇ·ñ¿ÉÊÓ
+	//è®¾ç½®æ˜¯å¦å¯è§†
 	GeoMap *map;
 	Layer *layer;
-	//»ñÈ¡ÓëGeoMap°ó¶¨µÄMyOpenGLWidget
+	//è·å–ä¸GeoMapç»‘å®šçš„MyOpenGLWidget
 	MyOpenGLWidget *myOpenGLWidget;
 	if (parent == NULL) {
-		//ÎªµØÍ¼¶¥¼¶½Úµã
-		int mapIndex = item->data(ID_COLUMN, Qt::UserRole).toInt();//»ñÈ¡map½ÚµãµÄindex
+		//ä¸ºåœ°å›¾é¡¶çº§èŠ‚ç‚¹
+		int mapIndex = item->data(ID_COLUMN, Qt::UserRole).toInt();//è·å–mapèŠ‚ç‚¹çš„index
 		map = dataSource->geoMaps[mapIndex];
 		myOpenGLWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(map);
 	}
 	else {
-		//Í¼²ã½Úµã
-		int mapIndex = parent->data(ID_COLUMN, Qt::UserRole).toInt();//»ñÈ¡map½ÚµãµÄindex
+		//å›¾å±‚èŠ‚ç‚¹
+		int mapIndex = parent->data(ID_COLUMN, Qt::UserRole).toInt();//è·å–mapèŠ‚ç‚¹çš„index
 		map = dataSource->geoMaps[mapIndex];
 		myOpenGLWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(map);
 		int layerIndex = item->data(ID_COLUMN, Qt::UserRole).toInt();
@@ -196,7 +235,7 @@ void GeoJsonParese::treeItemChanged(QTreeWidgetItem *item, int column) {
 
 	if (item->checkState(VISIBLE_COLUMN) == Qt::Checked)
 	{
-		//µØÍ¼½Úµã
+		//åœ°å›¾èŠ‚ç‚¹
 		map->isVisible = true;
 		if (parent != NULL) {
 			layer->isVisble = true;
@@ -219,7 +258,7 @@ void GeoJsonParese::treeItemChanged(QTreeWidgetItem *item, int column) {
 	else if (item->checkState(VISIBLE_COLUMN) == Qt::Unchecked)
 	{
 		if (parent == NULL) {
-			//µØÍ¼½Úµã
+			//åœ°å›¾èŠ‚ç‚¹
 			map->isVisible = false;
 		}
 		else {
@@ -245,18 +284,95 @@ void GeoJsonParese::closeTab(int tabIndex)
 {
 	ui.tabWidget->removeTab(tabIndex);
 }
+//åŒºåŸŸå…¨æ–‡æ£€ç´¢
+void GeoJsonParese::searchRegion()
+{
+	//è°ƒè‰²ç›˜
+	//QColorDialog *m_pColorDialog = new QColorDialog();
+	//m_pColorDialog->exec();
+	//connect(m_pColorDialog, SIGNAL(colorSelected(QColor)), this, SLOT(slot_getColor(QColor)));
+
+	bool isOK;
+	QString text = ui.lineEdit->text();
+	if (!text.isNull()) {
+		QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+		manager->setNetworkAccessible(QNetworkAccessManager::Accessible);
+		QNetworkRequest qnr(QUrl("http://www.cartovision.cn/LuceneDemo/search?name=" + text));
+		QNetworkReply *reply = manager->get(qnr);
+		connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
+	}
+}
+//å®Œæˆç½‘ç»œè¯·æ±‚
+void GeoJsonParese::replyFinished(QNetworkReply *reply)
+{
+	QString result = reply->readAll();
+	//å¼€å§‹è§£æç»“æœjson
+	QJsonParseError parseError;
+	QJsonDocument jsonDocument = QJsonDocument::fromJson(result.toUtf8(), &parseError);
+	if (parseError.error != QJsonParseError::NoError)
+	{
+		qDebug() << parseError.error << endl;
+	}
+	QJsonObject jsonObject = jsonDocument.object();
+	//åˆ†æå†…å®¹
+	if (jsonObject["flag"].toInt() == 1) {
+		//æŸ¥è¯¢åˆ°ç»“æœ
+		QString name = jsonObject["name"].toString(); //è¦ç´ åå­—
+		double area = jsonObject["area"].toString().toDouble(); //é¢ç§¯
+		int index = jsonObject["id"].toString().toInt(); //è¦ç´ åœ¨åœ°å›¾ä¸­çš„ä½ç½®
+		//é€šè¿‡å·¥å‚å¾—åˆ°test.jsonå”¯ä¸€ç»‘å®šçš„tabWidget
+		GeoMap* testMap = dataSource->getGeoMapByName("test");
+		if (testMap != NULL) {
+			MyOpenGLWidget* myOpenGLWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(testMap);
+			Layer* layer = testMap->layers[0];//æ­¤æ•°æ®åªæœ‰ç¬¬ä¸€å±‚
+			Feature* feature = layer->features[index];
+			feature->isSelected = true; //è¦ç´ è¢«é€‰ä¸­
+			//æ›´æ–°æ¸²æŸ“
+			myOpenGLWidget->update();
+			//å°†æ­¤widgetæ¿€æ´»
+			addNewWindow(testMap, QString::fromStdString(testMap->name));
+			//å¼¹å‡ºä¿¡æ¯æ¡†
+			QMessageBox msgBox;
+			msgBox.setText(QString::fromLocal8Bit("æŸ¥è¯¢ç»“æœ"));
+			msgBox.setInformativeText(QString::fromLocal8Bit("æŸ¥è¯¢åˆ°çš„åœ°åŒº:")+name+"\n"+QString::fromLocal8Bit("åŒºåŸŸé¢ç§¯:")+QString::number(area)+ QString::fromLocal8Bit("ä¸‡å¹³æ–¹åƒç±³"));
+			msgBox.setStandardButtons(QMessageBox::Ok);
+			msgBox.setDefaultButton(QMessageBox::Ok);
+			msgBox.setDetailedText(QString::fromLocal8Bit("ç›®å‰æ²¡æœ‰è¯¦ç»†ä»‹ç»"));
+			int ret = msgBox.exec();
+			switch (ret) {
+			case QMessageBox::Ok:
+				feature->isSelected = false;
+				myOpenGLWidget->update();
+				break;
+			default:
+				break;
+			}
+		}
+		//MyOpenGLWidget* testWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(testMap);
+	}
+	else {
+		QMessageBox msgBox;
+		msgBox.setText(QString::fromLocal8Bit("æŸ¥è¯¢ç»“æœ"));
+		msgBox.setInformativeText(QString::fromLocal8Bit("æœªæŸ¥è¯¢åˆ°è¯¥åœ°åŒº"));
+		msgBox.setStandardButtons(QMessageBox::Ok);
+		msgBox.setDefaultButton(QMessageBox::Ok);
+		int ret = msgBox.exec();
+	}
+	//é‡Šæ”¾
+	reply->deleteLater();
+}
 
 void GeoJsonParese::showCurrentPos(QPointF currentPos) {
 	QString xStr = QString::number(currentPos.rx(), 'f', 2);
 	QString yStr = QString::number(currentPos.ry(), 'f', 2);
-	ui.label_3->setText(QString::fromLocal8Bit("µ±Ç°Î»ÖÃ:")+xStr+","+yStr);
+	ui.label_3->setText(QString::fromLocal8Bit("å½“å‰ä½ç½®:")+xStr+","+yStr);
 }
 
 /*
-¸¨Öúº¯Êı
+è¾…åŠ©å‡½æ•°
 */
 
-//Ìí¼ÓĞÂ´°¿Ú
+//æ·»åŠ æ–°çª—å£
 void GeoJsonParese::addNewWindow(GeoMap *map, QString name) {
 	MyOpenGLWidget* mapView = myOpenGLWidgetFactory.getMyOpenGlWidget(map);
 	//ui.tabWidget->addTab(mapView, name);
@@ -267,18 +383,18 @@ void GeoJsonParese::addNewWindow(GeoMap *map, QString name) {
 	connect(mapView, SIGNAL(sendCurrentPos(QPointF)), this, SLOT(showCurrentPos(QPointF)));
 }
 
-//Ìí¼Ó¶¥¶ËÊ÷½Úµã,µØÍ¼Ê÷½Úµã
+//æ·»åŠ é¡¶ç«¯æ ‘èŠ‚ç‚¹,åœ°å›¾æ ‘èŠ‚ç‚¹
 QTreeWidgetItem * GeoJsonParese::addTreeTopLevel(GeoMap* geoMap, int id, QString name)
 {
 	QString idStr = QString::number(id);
-	QTreeWidgetItem * item = new QTreeWidgetItem(QStringList() << "" << idStr << name);//ÏÔÊ¾³öÀ´µÄÊı¾İ
+	QTreeWidgetItem * item = new QTreeWidgetItem(QStringList() << "" << idStr << name);//æ˜¾ç¤ºå‡ºæ¥çš„æ•°æ®
 	ui.treeWidget->addTopLevelItem(item);
-	//°ó¶¨Êı¾İÎªmapµÄË÷Òı
+	//ç»‘å®šæ•°æ®ä¸ºmapçš„ç´¢å¼•
 	item->setData(ID_COLUMN, Qt::UserRole, QVariant(dataSource->geoMaps.size() - 1));
-	//°ó¶¨Êı¾İÎªmapµÄÃû×Ö TODO ÔİÊ±ÎªID£¬Ã»ÓĞÃû×Ö
-	item->setData(NAME_COLUMN, Qt::UserRole, QVariant(dataSource->geoMaps.size()));
+	//ç»‘å®šæ•°æ®ä¸ºmapçš„åå­— TODO æš‚æ—¶ä¸ºIDï¼Œæ²¡æœ‰åå­—
+	item->setData(NAME_COLUMN, Qt::UserRole, QVariant(QString::fromStdString(geoMap->name)));
 	item->setCheckState(VISIBLE_COLUMN, Qt::Checked);
-	//Ìí¼ÓÍ¼²ã½Úµã
+	//æ·»åŠ å›¾å±‚èŠ‚ç‚¹
 	for (int i = 0; i < geoMap->layers.size(); i++) {
 		QString name = QString::fromStdString(geoMap->layers[i]->name);
 		addTreeNode(item, geoMap, i, name);
@@ -286,21 +402,21 @@ QTreeWidgetItem * GeoJsonParese::addTreeTopLevel(GeoMap* geoMap, int id, QString
 	return item;
 }
 
-//Ìí¼ÓÍ¼²ã½Úµã
+//æ·»åŠ å›¾å±‚èŠ‚ç‚¹
 QTreeWidgetItem * GeoJsonParese::addTreeNode(QTreeWidgetItem *parent, GeoMap *map, int id, QString name)
 {
 	QString idStr = QString::number(id);
 	QTreeWidgetItem* item = new QTreeWidgetItem(QStringList() << "" << idStr << name);
 	parent->addChild(item);
-	item->setData(ID_COLUMN, Qt::UserRole, QVariant(id)); //Í¼²ãË÷Òı
-	//°ó¶¨Êı¾İÎªmapµÄÃû×Ö TODO ÔİÊ±ÎªID£¬Ã»ÓĞÃû×Ö
-	item->setData(NAME_COLUMN, Qt::UserRole, QVariant(name)); //ÔİÊ±Ê¹ÓÃÍ¼²ãË÷Òı
+	item->setData(ID_COLUMN, Qt::UserRole, QVariant(id)); //å›¾å±‚ç´¢å¼•
+	//ç»‘å®šæ•°æ®ä¸ºmapçš„åå­— TODO æš‚æ—¶ä¸ºIDï¼Œæ²¡æœ‰åå­—
+	item->setData(NAME_COLUMN, Qt::UserRole, QVariant(name)); //æš‚æ—¶ä½¿ç”¨å›¾å±‚ç´¢å¼•
 	item->setCheckState(VISIBLE_COLUMN, Qt::Checked);
-	//TODO °ó¶¨ÊôĞÔ
+	//TODO ç»‘å®šå±æ€§
 	return item;
 }
 
-//¸üĞÂ¸¸½Úµã
+//æ›´æ–°çˆ¶èŠ‚ç‚¹
 void GeoJsonParese::updateParentItem(QTreeWidgetItem *item)
 {
 	QTreeWidgetItem *parent = item->parent();
@@ -308,7 +424,7 @@ void GeoJsonParese::updateParentItem(QTreeWidgetItem *item)
 	{
 		return;
 	}
-	//Ñ¡ÖĞµÄ×Ó½Úµã¸öÊı
+	//é€‰ä¸­çš„å­èŠ‚ç‚¹ä¸ªæ•°
 	int selectedCount = 0;
 	int childCount = parent->childCount();
 	for (int i = 0; i < childCount; i++)
@@ -321,17 +437,17 @@ void GeoJsonParese::updateParentItem(QTreeWidgetItem *item)
 	}
 	if (selectedCount <= 0)
 	{
-		//Î´Ñ¡ÖĞ×´Ì¬
+		//æœªé€‰ä¸­çŠ¶æ€
 		parent->setCheckState(VISIBLE_COLUMN, Qt::Unchecked);
 	}
 	else if (selectedCount > 0 && selectedCount < childCount)
 	{
-		//²¿·ÖÑ¡ÖĞ×´Ì¬
+		//éƒ¨åˆ†é€‰ä¸­çŠ¶æ€
 		parent->setCheckState(VISIBLE_COLUMN, Qt::PartiallyChecked);
 	}
 	else if (selectedCount == childCount)
 	{
-		//Ñ¡ÖĞ×´Ì¬
+		//é€‰ä¸­çŠ¶æ€
 		parent->setCheckState(VISIBLE_COLUMN, Qt::Checked);
 	}
 	updateParentItem(parent);
@@ -344,18 +460,19 @@ void GeoJsonParese::updateParentItem(QTreeWidgetItem *item)
 //}
 //else
 //{
-//    //Èç¹ûÓĞ¸¸½Úµã¾ÍÒªÓÃ¸¸½ÚµãµÄtakeChildÉ¾³ı½Úµã
+//    //å¦‚æœæœ‰çˆ¶èŠ‚ç‚¹å°±è¦ç”¨çˆ¶èŠ‚ç‚¹çš„takeChildåˆ é™¤èŠ‚ç‚¹
 //    delete currentItem->parent()->takeChild(ui->tv_Source->currentIndex().row());
 //}
 
 void GeoJsonParese::changeMapProjection()
 {
-	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
-	//»ñÈ¡±»Ñ¡ÔñitemµÄid
+	// TODO: åœ¨æ­¤å¤„æ·»åŠ å®ç°ä»£ç .
+	//è·å–è¢«é€‰æ‹©itemçš„id
 	QTreeWidgetItem *currentItem = ui.treeWidget->currentItem();
 	QVariant vId = currentItem->data(ID_COLUMN, Qt::UserRole);
 	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
-	//¸Ä±äµØÍ¼Í¶Ó°,¸Ä±äÖ®ºó»­Ò»´Î²ÅÄÜ¼ÌĞø¸Ä±ä
+
+  	//æ”¹å˜åœ°å›¾æŠ•å½±
 	if (dataSource->geoMaps[vId.toInt()]->mapPrj != NULL &&
 		dataSource->geoMaps[vId.toInt()]->mapPrj->mapPrjChanged == false)
 	{
@@ -382,13 +499,13 @@ void GeoJsonParese::changeMapProjection()
 
 void GeoJsonParese::setStyleFromSLD()
 {
-	//»ñÈ¡±»Ñ¡ÔñitemµÄid
+	//è·å–è¢«é€‰æ‹©itemçš„id
 	QTreeWidgetItem *currentItem = ui.treeWidget->currentItem();
 	QVariant vId = currentItem->data(ID_COLUMN, Qt::UserRole);
 	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
 	GeoMap* map = dataSource->geoMaps[vId.toInt()];
 	QString layerName = QString::fromStdString(map->layers.back()->name);
-	//ÉèÖÃstyle
+	//è®¾ç½®style
 	QString sldPath = QFileDialog::getOpenFileName(NULL, "Read SLD", "", "SLD Files(*.sld)");
 	if (!sldPath.isEmpty()) {
 		QDomDocument* doc = SldUtil::sldRead(sldPath);
@@ -397,12 +514,10 @@ void GeoJsonParese::setStyleFromSLD()
 	
 }
 
-
-// ÉèÖÃ¸ñÍøË÷Òı
+// è®¾ç½®æ ¼ç½‘ç´¢å¼•
 void GeoJsonParese::setGridIndex()
 {
-	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
-	//»ñÈ¡±»Ñ¡ÔñitemµÄid
+	//è·å–è¢«é€‰æ‹©itemçš„id
 	QTreeWidgetItem *currentItem = ui.treeWidget->currentItem();
 	QVariant vId = currentItem->data(ID_COLUMN, Qt::UserRole);
 	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
@@ -410,13 +525,27 @@ void GeoJsonParese::setGridIndex()
 	if (map->index == NULL)
 	{
 		map->index = new GridIndex(map->maxRange);
-		((GridIndex*)map->index)->setColRow(10, 10);  //ÉèÖÃĞĞÊıºÍÁĞÊı
+		((GridIndex*)map->index)->setColRow(10, 10);  //è®¾ç½®è¡Œæ•°å’Œåˆ—æ•°
 		map->index->createIndex();
 		for (int i = 0; i < map->layers.size(); i++) {
-			map->index->addAllObjID(map->layers.at(i));  //Ìí¼ÓË÷ÒıÄ¿±ê
+			map->index->addAllObjID(map->layers.at(i));   //æ·»åŠ ç´¢å¼•ç›®æ ‡
 		}
 			
 	}
 	log += "Create Grid Spatial Index successfully!\n";
 	ui.textBrowser->setText(log);
 }
+void GeoJsonParese::setStyle(int mapIndex, int layerIndex)
+{
+	Layer *layer = dataSource->geoMaps[mapIndex]->layers[layerIndex];
+	StyleWidget* styleWidget = new StyleWidget(mapIndex, layerIndex, layer);
+	connect(styleWidget, SIGNAL(update(int, int)), this, SLOT(refreshStyle(int, int)));
+	styleWidget->show();
+}
+
+void GeoJsonParese::refreshStyle(int mapIndex, int layerIndex) {
+	GeoMap * geoMap = dataSource->geoMaps[mapIndex];
+	MyOpenGLWidget* myOpenGLWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(geoMap);
+	myOpenGLWidget->update();
+}
+

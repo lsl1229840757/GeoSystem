@@ -16,8 +16,15 @@
 #include "GeoDataSource.h"
 #include "SldUtil.h"
 #include "MyOpenGlWidgetFactory.h"
+#include "QNetworkAccessManager"
+#include "QNetworkReply"
+#include "QTextCodec"
 #include "MapPrjUtil.h"
 #include "GridIndex.h"
+#include "QPushButton"
+#include "QColorDialog"
+#include "MyAction.h"
+#include "StyleWidget.h"
 class GeoJsonParese : public QMainWindow
 {
 	Q_OBJECT
@@ -41,9 +48,13 @@ public slots:
 	void drawMap();
 	void treeItemChanged(QTreeWidgetItem *item, int column);
 	void closeTab(int tabIndex);
+	void searchRegion();
+	void replyFinished(QNetworkReply*);
 	void changeMapProjection();
 	void setStyleFromSLD();
-	void setGridIndex();	// ���ø�������
+	void setGridIndex();	// ÉèÖÃ¸ñÍøË÷Òý
+	void setStyle(int mapIndex, int layerIndex); //Í¨¹ý´°¿ÚÉèÖÃÑùÊ½
+	void refreshStyle(int mapIndex, int layerIndex);
 private:
 	Ui::GeoJsonPareseClass ui;
 

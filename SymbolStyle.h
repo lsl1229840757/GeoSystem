@@ -18,7 +18,5 @@ public:
 	float fillOpacity;
 	QColor fillColor;
 	//font,暂时用不上
-
-
 };
 
