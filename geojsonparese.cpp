@@ -489,8 +489,9 @@ void GeoJsonParese::changeMapProjection()
 			dataSource->geoMaps[vId.toInt()]->mapPrj->mapPrjChanged = true;
 			break;
 		}
+		MyOpenGLWidget* myOpenGlWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(dataSource->geoMaps[vId.toInt()]);
+		myOpenGlWidget->update();
 		log += "Map projection changed successfully!\n";
-		ui.tabWidget->widget(vId.toInt())->update();
 		ui.textBrowser->setText(log);
 	
 	}
@@ -532,6 +533,8 @@ void GeoJsonParese::setGridIndex()
 		}
 			
 	}
+	MyOpenGLWidget* myOpenGlWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(map);
+	myOpenGlWidget->update();
 	log += "Create Grid Spatial Index successfully!\n";
 	ui.textBrowser->setText(log);
 }
