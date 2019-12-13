@@ -88,6 +88,7 @@ void GridIndex::addAllObjID(Layer *layer)
 					lyAndFeaID.first = layer->layerID;
 					lyAndFeaID.second = fea->featureID;
 					grid->featureIDs.push_back(lyAndFeaID);
+					grid->pfeatures.push_back(fea); //加入目标的指针
 					qDebug() << this->grids.at(k)->gridID << "::layer:" << lyAndFeaID.first << " feature:" << lyAndFeaID.second;
 				}
 			}

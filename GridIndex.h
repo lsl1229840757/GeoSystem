@@ -19,6 +19,6 @@ public:
 	// 添加索引目标ID
 	virtual void addAllObjID(Layer *layer);
 private:
-	bool isIntersect(OGRGeometry *fea, OGRGeometry *gridBound);
+	virtual bool isIntersect(OGRGeometry *fea, OGRGeometry *gridBound);
 };
 

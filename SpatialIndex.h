@@ -1,7 +1,8 @@
 #pragma once
 #include <vector>
 #include "Grid.h"
-#include"Layer.h"
+#include "Layer.h"
+#include "geos.h"
 typedef enum {
 	GRID,QUADTREE
 }SpatialIndexType;
@@ -15,5 +16,7 @@ public:
 	QRectF mapRange;
 	virtual SpatialIndexType getIndexType() = 0;//获取索引类型
 	virtual void addAllObjID(Layer *layer) =0;//添加索引目标
+private:
+	virtual bool isIntersect(OGRGeometry *ogrGeom, OGRGeometry *ogrGridBound);
 };
 
