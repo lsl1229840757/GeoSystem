@@ -6,6 +6,7 @@ MyOpenGLWidget::MyOpenGLWidget(GeoMap *geoMap, QWidget *parent):QOpenGLWidget(pa
 	this->geoMap = geoMap;
 	//跟踪鼠标轨迹
 	setMouseTracking(true);
+
 	QRectF normalRange;
 	//计算缩放比例
 	if (geoMap->mapPrj != NULL){
@@ -39,7 +40,7 @@ void MyOpenGLWidget::initializeGL(){
 
 void MyOpenGLWidget::paintGL(){
 	//改变地图投影之后绘制前，重置范围
-	if (geoMap->mapPrj->mapPrjChanged == true)
+	if (geoMap->mapPrj!=NULL && geoMap->mapPrj->mapPrjChanged == true)
 	{
 		geoMap->mapPrj->mapPrjChanged = false;
 		QRectF prjRange = geoMap->mapPrj->getPrjRange(geoMap->maxRange.normalized());
@@ -73,6 +74,32 @@ void MyOpenGLWidget::paintGL(){
 	//设置视口
 	glViewport(0, 0, this->width, this->height);
 	//开始绘制
+	//判断索引情况
+	if (geoMap->index != NULL && geoMap->index->isIndexCreated)
+	{
+		if (SpatialIndexType::GRID == geoMap->index->getIndexType())
+		{ 
+			//绘制线框
+			for (int i = 0; i < ((GridIndex*)geoMap->index)->grids.size(); i++)
+			{
+				Grid* grid = ((GridIndex*)geoMap->index)->grids.at(i);
+				QRectF gridBound = grid->gridBoundary;
+				if (geoMap->mapPrj != NULL)
+					gridBound = geoMap->mapPrj->getPrjRange(gridBound);
+				glBegin(GL_LINES);
+					glColor3f(1, 1, 1);
+					glVertex2f(gridBound.left(), gridBound.top());
+					glVertex2f(gridBound.right(), gridBound.top());
+				glEnd();
+				glBegin(GL_LINES);
+					glColor3f(1, 1, 1);
+					glVertex2f(gridBound.left(), gridBound.top());
+					glVertex2f(gridBound.left(), gridBound.bottom());
+				glEnd();
+				
+			}
+		}
+	}
 	//判断地图是否可见
 	if(!geoMap->isVisible)
 		return;

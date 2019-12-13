@@ -47,7 +47,7 @@ void MapPrjMercator::getBL(double x1, double y1, double *pL, double *pB)
 	for (int i = 0; i < iterativeTimes; i++) {
 		bb = Pi/2-(2 * atan(pow(e, (y1 / a))* pow(E, (e / 2)*log((1 - e * sin(bb)) / (1 + e * sin(bb))))));
 	}
-	bb = (bb-Pi/4)*(180 / Pi); //???这里必须减45度
+	bb = (bb-Pi/4)*(180 / Pi); //???这里必须减45度?
 	*pL = ll;
 	*pB = bb;
 }

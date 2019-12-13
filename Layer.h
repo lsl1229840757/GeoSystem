@@ -9,6 +9,7 @@ public:
 	Layer(void);
 	~Layer(void);
 	vector<Feature*> features;
+	int layerID;
 	QRectF range;
 	string name;
 	bool isVisble;

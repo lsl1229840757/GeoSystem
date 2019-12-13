@@ -17,6 +17,7 @@
 #include "SldUtil.h"
 #include "MyOpenGlWidgetFactory.h"
 #include "MapPrjUtil.h"
+#include "GridIndex.h"
 class GeoJsonParese : public QMainWindow
 {
 	Q_OBJECT
@@ -42,10 +43,12 @@ public slots:
 	void closeTab(int tabIndex);
 	void changeMapProjection();
 	void setStyleFromSLD();
+	void setGridIndex();	// ÉèÖÃ¸ñÍøË÷Òý
 private:
 	Ui::GeoJsonPareseClass ui;
 
 public:
+	
 	
 };
 

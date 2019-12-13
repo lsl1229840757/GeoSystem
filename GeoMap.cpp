@@ -4,6 +4,7 @@ GeoMap::GeoMap(void)
 {
 	isVisible = true;//д╛хо©и╪Ш
 	mapPrj = NULL;
+	index = NULL;
 }
 
 GeoMap::~GeoMap(void)
@@ -12,6 +13,11 @@ GeoMap::~GeoMap(void)
 	{
 		delete mapPrj;
 		mapPrj = NULL;
+	}
+	if (index != NULL)
+	{
+		delete index;
+		index = NULL;
 	}
 }
 

@@ -217,6 +217,8 @@
     <ClCompile Include="GeoMultiPolygon.cpp" />
     <ClCompile Include="GeoMultiPolyline.cpp" />
     <ClCompile Include="gpc.cpp" />
+    <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="GridIndex.cpp" />
     <ClCompile Include="JsonUtil.cpp" />
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="main.cpp" />
@@ -234,6 +236,7 @@
     <ClCompile Include="GeoPolyline.cpp" />
     <ClCompile Include="qpainterwidget.cpp" />
     <ClCompile Include="SldUtil.cpp" />
+    <ClCompile Include="SpatialIndex.cpp" />
     <ClCompile Include="SymbolStyle.cpp" />
     <ClCompile Include="trianglewindow.cpp" />
     <ClCompile Include="triangulate.cpp" />
@@ -280,11 +283,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gpc.h" />
+    <ClInclude Include="Grid.h" />
+    <ClInclude Include="GridIndex.h" />
     <ClInclude Include="MapPrjLambert.h" />
     <ClInclude Include="MapPrjMercator.h" />
     <ClInclude Include="MapPrjUtil.h" />
     <ClInclude Include="MouseDragAction.h" />
     <ClInclude Include="SldUtil.h" />
+    <ClInclude Include="SpatialIndex.h" />
     <ClInclude Include="SymbolStyle.h" />
     <ClInclude Include="MouseZoomAction.h" />
     <ClInclude Include="MyOpenGlWidgetFactory.h" />

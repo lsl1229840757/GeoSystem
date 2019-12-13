@@ -145,12 +145,17 @@ void GeoJsonParese::onPressed(QPoint pos)
 		QAction *drawTask = new QAction(tr("Draw Map"), this);
 		QAction *changeMapPrj = new QAction(tr("Change Map Projection"), this);
 		QAction *setStyleSLD = new QAction(tr("Set Style From SLD"), this);
+		QMenu *chooseIndex = new QMenu(tr("Choose Spatial Index"), this);
+		QAction *gridIndex = new QAction(tr("Grid Index"), this);
+		chooseIndex->addAction(gridIndex);
 		connect(drawTask, SIGNAL(triggered()), this, SLOT(drawMap()));
 		connect(changeMapPrj, SIGNAL(triggered()), this, SLOT(changeMapProjection()));
 		connect(setStyleSLD, SIGNAL(triggered()), this, SLOT(setStyleFromSLD()));
+		connect(gridIndex, SIGNAL(triggered()), this, SLOT(setGridIndex()));
 		pMenu->addAction(drawTask);
 		pMenu->addAction(changeMapPrj);
 		pMenu->addAction(setStyleSLD);
+		pMenu->addMenu(chooseIndex);
 		pMenu->exec(QCursor::pos());//弹出右键菜单，菜单位置为光标位置
 	}
 }
@@ -390,4 +395,28 @@ void GeoJsonParese::setStyleFromSLD()
 		SldUtil::parseSldDomFromName(doc, dataSource->geoMaps[vId.toInt()]->layers.back(),layerName);
 	}
 	
+}
+
+
+// 设置格网索引
+void GeoJsonParese::setGridIndex()
+{
+	// TODO: 在此处添加实现代码.
+	//获取被选择item的id
+	QTreeWidgetItem *currentItem = ui.treeWidget->currentItem();
+	QVariant vId = currentItem->data(ID_COLUMN, Qt::UserRole);
+	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
+	GeoMap* map = dataSource->geoMaps[vId.toInt()];
+	if (map->index == NULL)
+	{
+		map->index = new GridIndex(map->maxRange);
+		((GridIndex*)map->index)->setColRow(10, 10);  //设置行数和列数
+		map->index->createIndex();
+		for (int i = 0; i < map->layers.size(); i++) {
+			map->index->addAllObjID(map->layers.at(i));  //添加索引目标
+		}
+			
+	}
+	log += "Create Grid Spatial Index successfully!\n";
+	ui.textBrowser->setText(log);
 }

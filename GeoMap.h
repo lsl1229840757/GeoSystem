@@ -6,6 +6,7 @@
 #include "MapPrjLambert.h"
 #include "MapPrjMercator.h"
 #include "qdebug.h"
+#include "SpatialIndex.h"
 using namespace std;
 class GeoMap
 {
@@ -22,6 +23,7 @@ public:
 	double dx;
 	double dy;
 	string name;
-	MapPrjUtil* mapPrj;
+	MapPrjUtil* mapPrj;  //µØÍ¼Í¶Ó°
 	void setMapPrj(MapPrjType type);
+	SpatialIndex *index;
 };
