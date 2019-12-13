@@ -12,6 +12,7 @@
 #include <GL/glu.h>
 #include "MouseZoomAction.h"
 #include "MouseDragAction.h"
+#include "GridIndex.h"
 class MyOpenGLWidget : public QOpenGLWidget,protected QOpenGLFunctions
 {
 	Q_OBJECT

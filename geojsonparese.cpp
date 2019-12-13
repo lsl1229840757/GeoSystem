@@ -171,12 +171,17 @@ void GeoJsonParese::onPressed(QPoint pos)
 		QAction *drawTask = new QAction(tr("Draw Map"), this);
 		QAction *changeMapPrj = new QAction(tr("Change Map Projection"), this);
 		QAction *setStyleSLD = new QAction(tr("Set Style From SLD"), this);
+		QMenu *chooseIndex = new QMenu(tr("Choose Spatial Index"), this);
+		QAction *gridIndex = new QAction(tr("Grid Index"), this);
+		chooseIndex->addAction(gridIndex);
 		connect(drawTask, SIGNAL(triggered()), this, SLOT(drawMap()));
 		connect(changeMapPrj, SIGNAL(triggered()), this, SLOT(changeMapProjection()));
 		connect(setStyleSLD, SIGNAL(triggered()), this, SLOT(setStyleFromSLD()));
+		connect(gridIndex, SIGNAL(triggered()), this, SLOT(setGridIndex()));
 		pMenu->addAction(drawTask);
 		pMenu->addAction(changeMapPrj);
 		pMenu->addAction(setStyleSLD);
+		pMenu->addMenu(chooseIndex);
 		pMenu->exec(QCursor::pos());//弹出右键菜单，菜单位置为光标位置
 	}
 	else {
@@ -466,22 +471,28 @@ void GeoJsonParese::changeMapProjection()
 	QTreeWidgetItem *currentItem = ui.treeWidget->currentItem();
 	QVariant vId = currentItem->data(ID_COLUMN, Qt::UserRole);
 	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
-	//改变地图投影
-	if (dataSource->geoMaps[vId.toInt()]->mapPrj != NULL)
+
+  	//改变地图投影
+	if (dataSource->geoMaps[vId.toInt()]->mapPrj != NULL &&
+		dataSource->geoMaps[vId.toInt()]->mapPrj->mapPrjChanged == false)
 	{
 		switch (dataSource->geoMaps[vId.toInt()]->mapPrj->getMapPrjType())
 		{
 		case MapPrjType::MERCATOR:
 			delete dataSource->geoMaps[vId.toInt()]->mapPrj;
 			dataSource->geoMaps[vId.toInt()]->mapPrj = new MapPrjLambert;
+			dataSource->geoMaps[vId.toInt()]->mapPrj->mapPrjChanged = true;
 			break;
 		case MapPrjType::LAMBERT:
 			delete dataSource->geoMaps[vId.toInt()]->mapPrj;
 			dataSource->geoMaps[vId.toInt()]->mapPrj = new MapPrjMercator;
+			dataSource->geoMaps[vId.toInt()]->mapPrj->mapPrjChanged = true;
 			break;
 		}
 		log += "Map projection changed successfully!\n";
+		ui.tabWidget->widget(vId.toInt())->update();
 		ui.textBrowser->setText(log);
+	
 	}
 }
 
@@ -503,6 +514,27 @@ void GeoJsonParese::setStyleFromSLD()
 	
 }
 
+// 设置格网索引
+void GeoJsonParese::setGridIndex()
+{
+	//获取被选择item的id
+	QTreeWidgetItem *currentItem = ui.treeWidget->currentItem();
+	QVariant vId = currentItem->data(ID_COLUMN, Qt::UserRole);
+	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
+	GeoMap* map = dataSource->geoMaps[vId.toInt()];
+	if (map->index == NULL)
+	{
+		map->index = new GridIndex(map->maxRange);
+		((GridIndex*)map->index)->setColRow(10, 10);  //设置行数和列数
+		map->index->createIndex();
+		for (int i = 0; i < map->layers.size(); i++) {
+			map->index->addAllObjID(map->layers.at(i));   //添加索引目标
+		}
+			
+	}
+	log += "Create Grid Spatial Index successfully!\n";
+	ui.textBrowser->setText(log);
+}
 void GeoJsonParese::setStyle(int mapIndex, int layerIndex)
 {
 	Layer *layer = dataSource->geoMaps[mapIndex]->layers[layerIndex];
@@ -516,3 +548,4 @@ void GeoJsonParese::refreshStyle(int mapIndex, int layerIndex) {
 	MyOpenGLWidget* myOpenGLWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(geoMap);
 	myOpenGLWidget->update();
 }
+

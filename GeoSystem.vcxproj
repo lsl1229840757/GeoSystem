@@ -241,6 +241,8 @@
     <ClCompile Include="GeoMultiPolygon.cpp" />
     <ClCompile Include="GeoMultiPolyline.cpp" />
     <ClCompile Include="gpc.cpp" />
+    <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="GridIndex.cpp" />
     <ClCompile Include="JsonUtil.cpp" />
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="main.cpp" />
@@ -260,6 +262,7 @@
     <ClCompile Include="GeoPolyline.cpp" />
     <ClCompile Include="qpainterwidget.cpp" />
     <ClCompile Include="SldUtil.cpp" />
+    <ClCompile Include="SpatialIndex.cpp" />
     <ClCompile Include="StyleWidget.cpp" />
     <ClCompile Include="SymbolStyle.cpp" />
     <ClCompile Include="trianglewindow.cpp" />
@@ -308,6 +311,8 @@
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_StyleWidget.h" />
     <ClInclude Include="gpc.h" />
+    <ClInclude Include="Grid.h" />
+    <ClInclude Include="GridIndex.h" />
     <ClInclude Include="MapPrjLambert.h" />
     <ClInclude Include="MapPrjMercator.h" />
     <ClInclude Include="MapPrjUtil.h" />
@@ -350,6 +355,7 @@
     </CustomBuild>
     <ClInclude Include="resource.h" />
     <ClInclude Include="SldUtil.h" />
+    <ClInclude Include="SpatialIndex.h" />
     <CustomBuild Include="StyleWidget.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Identity)...</Message>

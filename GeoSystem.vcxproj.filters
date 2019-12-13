@@ -53,6 +53,13 @@
     <ClCompile Include="MapPrjMercator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SpatialIndex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GridIndex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Grid.cpp">
     <ClCompile Include="MyAction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -117,6 +124,14 @@
     <ClInclude Include="MapPrjMercator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SpatialIndex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GridIndex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Grid.h">
+      <Filter>Header Files</Filter>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>

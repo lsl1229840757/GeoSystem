@@ -128,6 +128,7 @@ GeoMap* GdalUtil::OGRDataSource2Map(OGRDataSource *poDS){
 		OGRLayer *ogrLayer = poDS->GetLayer(i);
 		QString name = ogrLayer->GetName();
 		Layer *layer = new Layer;
+		layer->layerID = i;
 		layer->name = name.toStdString();
 		//构建layer的范围矩形
 		OGREnvelope *envelope = new OGREnvelope;
@@ -140,11 +141,14 @@ GeoMap* GdalUtil::OGRDataSource2Map(OGRDataSource *poDS){
 		QRectF rect(QPointF(min_x, min_y), QPointF(max_x, max_y));  //QRectF y轴向下
 		layer->range = rect;
 		OGRFeature *poFeature;
+		int feaID = 0; //记录要素ID
 		//获取要素个数
 		int featureCount = ogrLayer->GetFeatureCount();
 		while((poFeature=ogrLayer->GetNextFeature())!=NULL){
 			//开始转换feature
 			Feature* feature = new Feature;
+			feature->featureID = feaID;   //储存要素ID
+			feaID++;
 			//获取当前要素集的定义
 			OGRFeatureDefn* poFeatureDefn = ogrLayer->GetLayerDefn();
 			//开始转换属性Attributes
@@ -155,17 +159,27 @@ GeoMap* GdalUtil::OGRDataSource2Map(OGRDataSource *poDS){
 			if(OGRwkbGeometryType::wkbPoint==ogrGeometry->getGeometryType()){
 				//点转换
 				OGRPoint *ogrPoint = (OGRPoint *)ogrGeometry;
+				//存储OGR对象
+				feature->ogrGrom = new OGRPoint;
+				*feature->ogrGrom = *ogrPoint;
+
 				GeoPoint *geoPoint = new GeoPoint;
 				ogrPoint2GeoPoint(ogrPoint, geoPoint);
 				feature->geometry = geoPoint;
 			}else if(OGRwkbGeometryType::wkbLineString==ogrGeometry->getGeometryType()){
 				//线转换
 				OGRLineString *lineString = (OGRLineString *)ogrGeometry;
+				//存储OGR对象
+				feature->ogrGrom = new OGRLineString;
+				*feature->ogrGrom = *lineString;
 				GeoPolyline *geoPolyline = new GeoPolyline;
 				ogrLineString2GeoPolyline(lineString, geoPolyline);
 				feature->geometry = geoPolyline;
 			}else if(OGRwkbGeometryType::wkbPolygon==ogrGeometry->getGeometryType()){
 				OGRPolygon *ogrPolygon = (OGRPolygon *)ogrGeometry;
+				//存储OGR对象
+				feature->ogrGrom = new OGRPolygon;
+				*feature->ogrGrom = *ogrPolygon;
 				GeoPolygon *geoPolygon = new GeoPolygon;
 				//暂时只是考虑外环
 				ogrPolygon2GeoPolygon(ogrPolygon,geoPolygon);
@@ -173,6 +187,9 @@ GeoMap* GdalUtil::OGRDataSource2Map(OGRDataSource *poDS){
 			}else if (OGRwkbGeometryType::wkbMultiPolygon == ogrGeometry->getGeometryType()){
 				//多面转换
 				OGRMultiPolygon* ogrMultiPolygon = (OGRMultiPolygon*)ogrGeometry;
+				//存储OGR对象
+				feature->ogrGrom = new OGRMultiPolygon;
+				*feature->ogrGrom = *ogrMultiPolygon;
 				GeoMultiPolygon* geoMultiPolygon = new GeoMultiPolygon;
 				ogrMultiPly2GeoMultiPly(ogrMultiPolygon, geoMultiPolygon);
 				feature->geometry = geoMultiPolygon;
@@ -181,6 +198,9 @@ GeoMap* GdalUtil::OGRDataSource2Map(OGRDataSource *poDS){
 			{
 				//处理其他未定义类型,暂时先假定他们是multipolyline，不实现
 				OGRMultiLineString* ogrMultiLineStr = (OGRMultiLineString*)ogrGeometry;
+				//存储OGR对象
+				feature->ogrGrom = new OGRMultiLineString;
+				*feature->ogrGrom = *ogrMultiLineStr;
 				GeoMultiPolyline* geoMultiPolyline = new GeoMultiPolyline;
 
 				feature->geometry = geoMultiPolyline;

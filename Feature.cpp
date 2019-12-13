@@ -3,10 +3,16 @@
 
 Feature::Feature(void)
 {
-	isSelected = false; //默认没有被选中
+	ogrGrom = NULL;
+	isSelected = false; //脛卢脠脧脙禄脫脨卤禄脩隆脰脨
 }
 
 
 Feature::~Feature(void)
 {
+	if (ogrGrom != NULL)
+	{
+		delete ogrGrom;
+		ogrGrom = NULL;
+	}
 }

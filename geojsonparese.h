@@ -20,6 +20,7 @@
 #include "QNetworkReply"
 #include "QTextCodec"
 #include "MapPrjUtil.h"
+#include "GridIndex.h"
 #include "QPushButton"
 #include "QColorDialog"
 #include "MyAction.h"
@@ -51,12 +52,14 @@ public slots:
 	void replyFinished(QNetworkReply*);
 	void changeMapProjection();
 	void setStyleFromSLD();
-	void setStyle(int mapIndex, int layerIndex); //ͨ������������ʽ
+	void setGridIndex();	// ÉèÖÃ¸ñÍøË÷Òý
+	void setStyle(int mapIndex, int layerIndex); //Í¨¹ý´°¿ÚÉèÖÃÑùÊ½
 	void refreshStyle(int mapIndex, int layerIndex);
 private:
 	Ui::GeoJsonPareseClass ui;
 
 public:
+	
 	
 };
 
