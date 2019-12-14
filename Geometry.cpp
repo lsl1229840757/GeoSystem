@@ -1,11 +1,11 @@
 #include "Geometry.h"
 
 
-Geometry::Geometry(void)
+mgeo::Geometry::Geometry(void)
 {
 }
 
 
-Geometry::~Geometry(void)
+mgeo::Geometry::~Geometry(void)
 {
 }

@@ -3,16 +3,22 @@
 
 Feature::Feature(void)
 {
-	ogrGrom = NULL;
+	ogrGeom = NULL;
+	geosGeom = NULL;
 	isSelected = false; //是否选中
 }
 
 
 Feature::~Feature(void)
 {
-	if (ogrGrom != NULL)
+	if (ogrGeom != NULL)
 	{
-		delete ogrGrom;
-		ogrGrom = NULL;
+		delete ogrGeom;
+		ogrGeom = NULL;
+	}
+	if (geosGeom != NULL)
+	{
+		delete geosGeom;
+		geosGeom = NULL;
 	}
 }

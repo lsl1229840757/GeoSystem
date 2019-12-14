@@ -128,7 +128,7 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 
 	for(int i=0;i<layer->features.size();i++){
 		Feature *feature = layer->features[i];
-		Geometry *geometry = feature->geometry;
+		mgeo::Geometry *geometry = feature->geometry;
 		SymbolStyle symbolStyle = feature->symbolStyle;
 		float maxColorComponent = 255.0;
 		GLfloat normalFillRed, normalFillGreen, normalFillBlue, normalStrokeRed, normalStrokeGreen, normalStrokeBlue;

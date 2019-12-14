@@ -160,8 +160,9 @@ GeoMap* GdalUtil::OGRDataSource2Map(OGRDataSource *poDS){
 				//点转换
 				OGRPoint *ogrPoint = (OGRPoint *)ogrGeometry;
 				//存储OGR对象
-				feature->ogrGrom = new OGRPoint;
-				*feature->ogrGrom = *ogrPoint;
+				feature->ogrGeom = ogrPoint;
+				//存储为GEOS对象
+				feature->geosGeom = MGeosUtil::OGR2GEOSGeom(feature->ogrGeom);
 
 				GeoPoint *geoPoint = new GeoPoint;
 				ogrPoint2GeoPoint(ogrPoint, geoPoint);
@@ -170,16 +171,18 @@ GeoMap* GdalUtil::OGRDataSource2Map(OGRDataSource *poDS){
 				//线转换
 				OGRLineString *lineString = (OGRLineString *)ogrGeometry;
 				//存储OGR对象
-				feature->ogrGrom = new OGRLineString;
-				*feature->ogrGrom = *lineString;
+				feature->ogrGeom = lineString;
+				//存储为GEOS对象
+				feature->geosGeom = MGeosUtil::OGR2GEOSGeom(feature->ogrGeom);
 				GeoPolyline *geoPolyline = new GeoPolyline;
 				ogrLineString2GeoPolyline(lineString, geoPolyline);
 				feature->geometry = geoPolyline;
 			}else if(OGRwkbGeometryType::wkbPolygon==ogrGeometry->getGeometryType()){
 				OGRPolygon *ogrPolygon = (OGRPolygon *)ogrGeometry;
 				//存储OGR对象
-				feature->ogrGrom = new OGRPolygon;
-				*feature->ogrGrom = *ogrPolygon;
+				feature->ogrGeom = ogrPolygon;
+				//存储为GEOS对象
+				feature->geosGeom = MGeosUtil::OGR2GEOSGeom(feature->ogrGeom);
 				GeoPolygon *geoPolygon = new GeoPolygon;
 				//暂时只是考虑外环
 				ogrPolygon2GeoPolygon(ogrPolygon,geoPolygon);
@@ -188,8 +191,9 @@ GeoMap* GdalUtil::OGRDataSource2Map(OGRDataSource *poDS){
 				//多面转换
 				OGRMultiPolygon* ogrMultiPolygon = (OGRMultiPolygon*)ogrGeometry;
 				//存储OGR对象
-				feature->ogrGrom = new OGRMultiPolygon;
-				*feature->ogrGrom = *ogrMultiPolygon;
+				feature->ogrGeom = ogrMultiPolygon;
+				//存储为GEOS对象
+				feature->geosGeom = MGeosUtil::OGR2GEOSGeom(feature->ogrGeom);
 				GeoMultiPolygon* geoMultiPolygon = new GeoMultiPolygon;
 				ogrMultiPly2GeoMultiPly(ogrMultiPolygon, geoMultiPolygon);
 				feature->geometry = geoMultiPolygon;
@@ -199,8 +203,9 @@ GeoMap* GdalUtil::OGRDataSource2Map(OGRDataSource *poDS){
 				//处理其他未定义类型,暂时先假定他们是multipolyline，不实现
 				OGRMultiLineString* ogrMultiLineStr = (OGRMultiLineString*)ogrGeometry;
 				//存储OGR对象
-				feature->ogrGrom = new OGRMultiLineString;
-				*feature->ogrGrom = *ogrMultiLineStr;
+				feature->ogrGeom = ogrMultiLineStr;
+				//存储为GEOS对象
+				feature->geosGeom = MGeosUtil::OGR2GEOSGeom(feature->ogrGeom);
 				GeoMultiPolyline* geoMultiPolyline = new GeoMultiPolyline;
 
 				feature->geometry = geoMultiPolyline;
@@ -375,3 +380,5 @@ GeoMap* GdalUtil::OGRDataSource2Map(OGRDataSource *poDS, QString tableName)
 	map->addLayer(layer);//附带跟新map的范围
 	return map;
 }
+
+

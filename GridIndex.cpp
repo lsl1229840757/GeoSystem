@@ -21,7 +21,7 @@ GridIndex::~GridIndex()
 bool GridIndex::createIndex()
 {
 	// TODO: 在此处添加实现代码.
-	if (isIndexCreated == true ) return false;
+	if (this->isIndexCreated == true ) return false;
 	int gridID;
 	//QRectF gridBoundary;  //格子边界坐标
 	//每一格子的长宽
@@ -40,13 +40,13 @@ bool GridIndex::createIndex()
 			double top = mapRange.top() + dy * i;
 			//gridBoundary.right = mapRange.right() + dx * (j + 1);
 			//gridBoundary.bottom = mapRange.bottom() + dy * (i + 1);
-			grid->setGridBoundary(QRectF(left, top, dx, dy));
+			grid->setGridBoundary(QRectF(left, top, dx, dy));  //将边界记录为QRectF和OGR和GEOS
 			grid->gridID = gridID;
 			this->grids.push_back(grid);
 		}
 	}
 
-	isIndexCreated = true;
+	this->isIndexCreated = true;
 	return true;
 }
 
@@ -81,7 +81,7 @@ void GridIndex::addAllObjID(Layer *layer)
 			for (int k = 0; k < this->grids.size(); k++)
 			{
 				Grid *grid = this->grids.at(k);
-				if (isIntersect(fea->ogrGrom, grid->ogrBound))
+				if (SpatialIndex::isIntersect(fea->geosGeom, grid->geosBound))
 				{
 					QPair<int, int> lyAndFeaID;
 					//在有交集的格网中存储要素的图层
@@ -96,22 +96,4 @@ void GridIndex::addAllObjID(Layer *layer)
 	}
 }
 
-//判断相交,需要GEOS库支持
-bool GridIndex::isIntersect(OGRGeometry *ogrGeom, OGRGeometry *ogrGridBound)
-{
-	// TODO: 在此处添加实现代码.
-	//wkt的方式转为GEOS对象，也可用wkb 。避免重新编译Gdal
-	if(ogrGeom==NULL || ogrGridBound==NULL)
-	{ 
-		return false;
-	}
-	int featureType = ogrGeom->getGeometryType();
-	OGRGeometry *intersection = ogrGeom->Intersection(ogrGridBound);  //判断是否相交
-	if (intersection != NULL)
-	{
-		return true;
-	}
-	else {
-		return false;
-	}
-}
+

@@ -128,7 +128,7 @@ QRectF JsonUtil::parseGeometry(QJsonObject geomJObj, Feature* feature)
 {
 	// TODO: 在此处添加实现代码.
 	QString type = geomJObj.take(TYPE).toString();
-	Geometry* geom = NULL;
+	mgeo::Geometry* geom = NULL;
 
 	//记录边界
 	QRectF geomRange;
@@ -152,7 +152,7 @@ QRectF JsonUtil::parseGeometry(QJsonObject geomJObj, Feature* feature)
 			min_y = ptCoorArray.at(1).toDouble();
 			((GeoPoint*)geom)->x = ptCoorArray.at(0).toDouble();  //存储点坐标
 			((GeoPoint*)geom)->y = ptCoorArray.at(1).toDouble();
-			
+			//feature->geosGeom = MGeosUtil::geosGeomFactory.createPoint(Coordinate(((GeoPoint*)geom)->x, ((GeoPoint*)geom)->y));  //创建GEOS点
 		}
 		QPointF bottomRight(max_x, min_y), topLeft(min_x, max_y);
 		geomRange = QRectF(topLeft, bottomRight);
@@ -170,6 +170,8 @@ QRectF JsonUtil::parseGeometry(QJsonObject geomJObj, Feature* feature)
 			min_x = lineCoorArray.at(0).toArray().at(0).toDouble();
 			max_y = lineCoorArray.at(0).toArray().at(1).toDouble();
 			min_y = lineCoorArray.at(0).toArray().at(1).toDouble();
+			//构建点序列
+			//CoordinateArraySequence* cas = new CoordinateArraySequence;
 			for (int i = 0; i < lineCoorArray.count(); i++)
 			{
 				if (lineCoorArray.at(i).isArray())
@@ -180,6 +182,8 @@ QRectF JsonUtil::parseGeometry(QJsonObject geomJObj, Feature* feature)
 
 					tmpPt->x = tmpPt->coordinates.at(0).toDouble();  //存储点坐标
 					tmpPt->y = tmpPt->coordinates.at(1).toDouble();
+					//存储GEOS点序列坐标
+					//cas->add(Coordinate(tmpPt->x, tmpPt->y));
 					//qDebug() << QString("%1").arg(tmpPt->x, 0, 'g', 14) << "," << QString("%1").arg(tmpPt->y, 0, 'g', 14) << endl;
 					//比较Range
 					if (min_x > tmpPt->x)min_x = tmpPt->x;
@@ -188,6 +192,9 @@ QRectF JsonUtil::parseGeometry(QJsonObject geomJObj, Feature* feature)
 					else if (max_y < tmpPt->y)max_y = tmpPt->y;
 				}
 			}
+			//存储非闭合线
+			//geos::geom::LineString *geosLString = MGeosUtil::geosGeomFactory.createLineString(cas);
+			//feature->geosGeom = geosLString;
 			QPointF bottomRight(max_x, min_y), topLeft(min_x, max_y);
 			geomRange = QRectF(topLeft, bottomRight);
 			//QPointF bottomLeft(max_x, max_y), topRight(min_x, min_y);
@@ -209,6 +216,8 @@ QRectF JsonUtil::parseGeometry(QJsonObject geomJObj, Feature* feature)
 			min_x = plyCoorArray.at(0).toArray().at(0).toArray().at(0).toDouble();
 			max_y = plyCoorArray.at(0).toArray().at(0).toArray().at(1).toDouble();
 			min_y = plyCoorArray.at(0).toArray().at(0).toArray().at(1).toDouble();
+			//构建点序列
+			//CoordinateArraySequence* cas = new CoordinateArraySequence;
 			for (int i = 0; i < plyCoorArray.count(); i++)
 			{
 				if (i != 0)continue;  //先只考虑简单多边形外环
@@ -220,6 +229,8 @@ QRectF JsonUtil::parseGeometry(QJsonObject geomJObj, Feature* feature)
 					tmpPt->coordinates = exLineCoorArray.at(j).toArray();
 					tmpPt->x = tmpPt->coordinates.at(0).toDouble();  //存储点坐标
 					tmpPt->y = tmpPt->coordinates.at(1).toDouble();
+					//存储GEOS点序列坐标
+					//cas->add(Coordinate(tmpPt->x, tmpPt->y));
 					//qDebug() <<  QString("%1").arg(tmpPt->x, 0, 'g', 14) << "," << QString("%1").arg(tmpPt->y, 0, 'g', 14) << endl;
 					//比较Range
 					if (min_x > tmpPt->x)min_x = tmpPt->x;
@@ -228,6 +239,10 @@ QRectF JsonUtil::parseGeometry(QJsonObject geomJObj, Feature* feature)
 					else if (max_y < tmpPt->y)max_y = tmpPt->y;
 				}
 			}
+			//外环构造多边形,并存储
+			//geos::geom::LinearRing *geosLRing = MGeosUtil::geosGeomFactory.createLinearRing(cas);
+			//geos::geom::Polygon *geosPly = MGeosUtil::geosGeomFactory.createPolygon(geosLRing,NULL);//内环为空
+			//feature->geosGeom = geosPly;
 			QPointF bottomRight(max_x, min_y), topLeft(min_x, max_y);
 			geomRange = QRectF(topLeft, bottomRight);
 			//QPointF bottomLeft(max_x, max_y), topRight(min_x, min_y);
@@ -248,12 +263,16 @@ QRectF JsonUtil::parseGeometry(QJsonObject geomJObj, Feature* feature)
 			min_x = mplyCoorArray.at(0).toArray().at(0).toArray().at(0).toArray().at(0).toDouble();
 			max_y = mplyCoorArray.at(0).toArray().at(0).toArray().at(0).toArray().at(1).toDouble();
 			min_y = mplyCoorArray.at(0).toArray().at(0).toArray().at(0).toArray().at(1).toDouble();
+			//构造存储面的向量
+			//vector<geos::geom::Geometry*> fromPoly;
 			for (int i = 0; i < mplyCoorArray.count(); i++)
 			{
 				plyCoorArray = mplyCoorArray.at(i).toArray();
 				GeoPolygon* ply = new GeoPolygon;
 				((GeoMultiPolygon*)geom)->polygons.push_back(ply);
 				ply->coordinates = plyCoorArray;
+				//构建点序列
+				//CoordinateArraySequence* cas = new CoordinateArraySequence;
 				for (int j = 0; j < plyCoorArray.count(); j++)
 				{
 					if (j != 0)continue;  //先只考虑简单多边形外环
@@ -265,7 +284,8 @@ QRectF JsonUtil::parseGeometry(QJsonObject geomJObj, Feature* feature)
 						tmpPt->coordinates = exLineCoorArray.at(k).toArray();
 						tmpPt->x = tmpPt->coordinates.at(0).toDouble();  //存储点坐标
 						tmpPt->y = tmpPt->coordinates.at(1).toDouble();
-
+						//存储GEOS点序列坐标
+						//cas->add(Coordinate(tmpPt->x, tmpPt->y));
 						//比较Range
 						if (min_x > tmpPt->x)min_x = tmpPt->x;
 						else if (max_x < tmpPt->x)max_x = tmpPt->x;
@@ -273,7 +293,14 @@ QRectF JsonUtil::parseGeometry(QJsonObject geomJObj, Feature* feature)
 						else if (max_y < tmpPt->y)max_y = tmpPt->y;
 					}
 				}
+				//外环构造多边形
+				//geos::geom::LinearRing *geosLRing = MGeosUtil::geosGeomFactory.createLinearRing(cas);
+				//geos::geom::Polygon *geosPly = MGeosUtil::geosGeomFactory.createPolygon(geosLRing, NULL);//内环为空
+				//fromPoly.push_back(geosPly);
 			}
+			//存储GEOS多面
+			//geos::geom::MultiPolygon *geosMultiPly= MGeosUtil::geosGeomFactory.createMultiPolygon(fromPoly);
+			//feature->geosGeom = geosMultiPly;
 			QPointF bottomRight(max_x, min_y), topLeft(min_x, max_y);
 			geomRange = QRectF(topLeft, bottomRight);
 		}

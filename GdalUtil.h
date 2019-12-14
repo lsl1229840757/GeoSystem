@@ -12,6 +12,7 @@
 #include "GeoMultiPolygon.h"
 #include "qmessagebox.h"
 #include "GeoMultiPolyline.h"
+#include "geos.h"
 class GdalUtil
 {
 public:
@@ -34,4 +35,5 @@ private:
 public:
 	// 为数据库的调用重载转换函数
 	static GeoMap* OGRDataSource2Map(OGRDataSource *poDS, QString tableName);
+
 };

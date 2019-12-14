@@ -250,6 +250,7 @@
     <ClCompile Include="MapPrjLambert.cpp" />
     <ClCompile Include="MapPrjMercator.cpp" />
     <ClCompile Include="MapPrjUtil.cpp" />
+    <ClCompile Include="MGeosUtil.cpp" />
     <ClCompile Include="MouseDragAction.cpp" />
     <ClCompile Include="MouseZoomAction.cpp" />
     <ClCompile Include="MyAction.cpp" />
@@ -310,12 +311,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_StyleWidget.h" />
+    <ClInclude Include="GeosUtil.h" />
     <ClInclude Include="gpc.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="GridIndex.h" />
     <ClInclude Include="MapPrjLambert.h" />
     <ClInclude Include="MapPrjMercator.h" />
     <ClInclude Include="MapPrjUtil.h" />
+    <ClInclude Include="MGeosUtil.h" />
     <ClInclude Include="MouseDragAction.h" />
     <CustomBuild Include="MyAction.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

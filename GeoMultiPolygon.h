@@ -5,7 +5,7 @@
 
 using namespace std;
 class GeoMultiPolygon :
-	public Geometry
+	public mgeo::Geometry
 {
 public:
 	GeoMultiPolygon();

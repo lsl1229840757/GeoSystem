@@ -18,7 +18,5 @@ public:
 	void setColRow(int col, int row);
 	// 添加索引目标ID
 	virtual void addAllObjID(Layer *layer);
-private:
-	virtual bool isIntersect(OGRGeometry *fea, OGRGeometry *gridBound);
 };
 

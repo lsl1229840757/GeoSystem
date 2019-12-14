@@ -16,6 +16,8 @@
 #include "GeoMap.h"
 #include "Layer.h"
 #include "GeoMultiPolygon.h"
+#include "geos.h"
+#include "MGeosUtil.h"
 class JsonUtil
 {
 public:

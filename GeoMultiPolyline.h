@@ -5,7 +5,7 @@
 using namespace std;
 
 class GeoMultiPolyline :
-	public Geometry
+	public mgeo::Geometry
 {
 public:
 	GeoMultiPolyline();

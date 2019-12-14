@@ -4,7 +4,7 @@
 #include <vector>
 #include "gpc.h"
 using namespace std;
-class GeoPolygon:public Geometry
+class GeoPolygon:public mgeo::Geometry
 {
 public:
 	GeoPolygon(void);
