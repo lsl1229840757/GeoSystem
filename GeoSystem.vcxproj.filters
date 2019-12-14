@@ -25,7 +25,7 @@
     <ClCompile Include="GeneratedFiles\Release\moc_trianglewindow.cpp" />
     <ClCompile Include="GeoDataSource.cpp" />
     <ClCompile Include="geojsonparese.cpp" />
-	<ClCompile Include="Geometry.cpp" />
+	<ClCompile Include="MGeometry.cpp" />
     <ClCompile Include="GeoMultiPolygon.cpp" />
     <ClCompile Include="GeoMultiPolyline.cpp" />
     <ClCompile Include="gpc.cpp" />
@@ -81,7 +81,7 @@
     <ClInclude Include="GeneratedFiles\ui_myopenglwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_qpainterwidget.h" />
     <ClInclude Include="GeoDataSource.h" />
-    <ClInclude Include="Geometry.h" />
+    <ClInclude Include="MGeometry.h" />
     <ClInclude Include="GeoMultiPolygon.h" />
     <ClInclude Include="GeoMultiPolyline.h" />
     <ClInclude Include="JsonUtil.h" />

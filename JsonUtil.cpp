@@ -13,6 +13,7 @@ QString JsonUtil::POLYGON = "Polygon";
 QString JsonUtil::COORDINATES = "coordinates";
 QString JsonUtil::MULTIPOLYGON = "MultiPolygon";
 QString JsonUtil::GEOMETRYS = "geometries";
+const GeometryFactory* JsonUtil::geosGeomFactory = MGeosUtil::getDefaultGeometryFactory();
 
 JsonUtil::JsonUtil(void)
 {
@@ -133,8 +134,7 @@ QRectF JsonUtil::parseGeometry(QJsonObject geomJObj, Feature* feature)
 	// TODO: 在此处添加实现代码.
 	QString type = geomJObj.take(TYPE).toString();
 	mgeo::Geometry* geom = NULL;
-	//获取GeometryFactory
-	GeometryFactory *geosGeomFactory = MGeosUtil::getPGeometryFactory();
+
 	//记录边界
 	QRectF geomRange;
 	
@@ -158,6 +158,8 @@ QRectF JsonUtil::parseGeometry(QJsonObject geomJObj, Feature* feature)
 			((GeoPoint*)geom)->x = ptCoorArray.at(0).toDouble();  //存储点坐标
 			((GeoPoint*)geom)->y = ptCoorArray.at(1).toDouble();
 			feature->geosGeom = geosGeomFactory->createPoint(Coordinate(((GeoPoint*)geom)->x, ((GeoPoint*)geom)->y));  //创建GEOS点
+			feature->geosGeom->setSRID(0);
+			
 		}
 		QPointF bottomRight(max_x, min_y), topLeft(min_x, max_y);
 		geomRange = QRectF(topLeft, bottomRight);
@@ -200,6 +202,7 @@ QRectF JsonUtil::parseGeometry(QJsonObject geomJObj, Feature* feature)
 			//存储非闭合线
 			geos::geom::LineString *geosLString = geosGeomFactory->createLineString(cas);
 			feature->geosGeom = geosLString;
+			feature->geosGeom->setSRID(0);
 			QPointF bottomRight(max_x, min_y), topLeft(min_x, max_y);
 			geomRange = QRectF(topLeft, bottomRight);
 			//QPointF bottomLeft(max_x, max_y), topRight(min_x, min_y);
@@ -248,6 +251,8 @@ QRectF JsonUtil::parseGeometry(QJsonObject geomJObj, Feature* feature)
 			geos::geom::LinearRing *geosLRing = geosGeomFactory->createLinearRing(cas);
 			geos::geom::Polygon *geosPly =geosGeomFactory->createPolygon(geosLRing,NULL);//内环为空
 			feature->geosGeom = geosPly;
+			feature->geosGeom->setSRID(0);
+			feature->geosGeom;
 			QPointF bottomRight(max_x, min_y), topLeft(min_x, max_y);
 			geomRange = QRectF(topLeft, bottomRight);
 			//QPointF bottomLeft(max_x, max_y), topRight(min_x, min_y);
@@ -306,6 +311,7 @@ QRectF JsonUtil::parseGeometry(QJsonObject geomJObj, Feature* feature)
 			//存储GEOS多面
 			geos::geom::MultiPolygon *geosMultiPly= geosGeomFactory->createMultiPolygon(fromPoly);
 			feature->geosGeom = geosMultiPly;
+			feature->geosGeom->setSRID(0);
 			QPointF bottomRight(max_x, min_y), topLeft(min_x, max_y);
 			geomRange = QRectF(topLeft, bottomRight);
 		}

@@ -1,5 +1,5 @@
 #pragma once
-#include "Geometry.h"
+#include "MGeometry.h"
 class GeoPoint:public mgeo::Geometry
 {
 public:

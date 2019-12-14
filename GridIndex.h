@@ -2,6 +2,7 @@
 #include "SpatialIndex.h"
 #include "GeoMap.h"
 #include "qpair.h"
+#include "qdebug.h"
 using namespace std;
 class GridIndex :
 	public SpatialIndex

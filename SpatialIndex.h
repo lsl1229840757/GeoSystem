@@ -3,6 +3,8 @@
 #include "Grid.h"
 #include "Layer.h"
 #include "geos.h"
+#include "geos_c.h"
+#include "qdebug.h"
 typedef enum {
 	GRID,QUADTREE
 }SpatialIndexType;

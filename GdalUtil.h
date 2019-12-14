@@ -36,4 +36,6 @@ public:
 	// 为数据库的调用重载转换函数
 	static GeoMap* OGRDataSource2Map(OGRDataSource *poDS, QString tableName);
 
+	// OGRLayer转换到Layer
+	static Layer* OGRLayer2Layer(OGRLayer *ogrLayer,int layerID);
 };

@@ -9,6 +9,6 @@ public:
 	~MGeosUtil();
 	static geos::geom::Geometry* OGR2GEOSGeom(OGRGeometry *ogrGeom);
 	GeometryFactory *geosGeomFactory;  //必须实例化，所有GEOS图形可由此对象创建。不能创建为静态
-	static GeometryFactory* getPGeometryFactory();
+	static const GeometryFactory* getDefaultGeometryFactory();
 };
 

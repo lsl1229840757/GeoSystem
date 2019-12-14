@@ -43,6 +43,15 @@ bool SpatialIndex::isIntersect(geos::geom::Geometry *geosGeom, geos::geom::Geome
 		return false;
 	}
 	//geos::geom::Geometry* intersection = geosGeom->intersection(geosGridBound); //判断是否相交
+	
+	//尝试GEOS C API
+	//GEOSContextHandle_t contexHandle = GEOS_init_r();
+	//qDebug() << GEOSversion();
+	//GEOS_finish_r(contexHandle);
+	//qDebug() <<"geosGeom:"<<geosGeom->getSRID();
+	//qDebug() << "geosBound:" << geosGridBound->getSRID();
+	//geos::geom::Geometry *intersection = geosGeom->intersection(geosGridBound);
+	//只判断是否有交，提高效率
 	if (geosGeom->disjoint(geosGridBound))
 	{  //判断不相交
 		return false;

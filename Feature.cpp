@@ -6,6 +6,7 @@ Feature::Feature(void)
 	ogrGeom = NULL;
 	geosGeom = NULL;
 	isSelected = false; //是否选中
+	isFirstProjeted = true;
 }
 
 

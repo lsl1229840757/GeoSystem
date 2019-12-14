@@ -91,17 +91,11 @@ void GeoJsonParese::readShp(){
 		OGRDataSource* poDS = GdalUtil::readFromGeoJson(filePath);
 		//TODO 报错机制
 		GeoMap *geoMap = GdalUtil::OGRDataSource2Map(poDS);
-		//设置地图投影
-		//判断是否为经纬度
+		//设置地图投影前判断是否为经纬度，否则不投影
 		double &onex = geoMap->maxRange.topRight().rx();
 		double &oney = geoMap->maxRange.topRight().ry();
 		if (fabs(onex) <= 360 && fabs(oney) <= 90)
-			geoMap->setMapPrj(MapPrjType::MERCATOR);
-		//添加layer style
-		//QString sldPath = filePath.replace(QRegExp(".shp"), ".sld");
-		//QDomDocument* doc = SldUtil::sldRead(sldPath);
-		//SldUtil::parseSldDom(doc, geoMap->layers.back());
-
+			geoMap->setMapPrj(MapPrjType::MERCATOR); //默认使用墨卡托
 		dataSource->geoMaps.push_back(geoMap);
 		//添加节点
 		addTreeTopLevel(geoMap, dataSource->geoMaps.size() - 1, QString::fromStdString(geoMap->name));
@@ -128,6 +122,11 @@ void GeoJsonParese::readFromPgsql() {
 		geoMap = GdalUtil::OGRDataSource2Map(poDS,tableName);
 	}
 	if (geoMap != NULL){
+		//设置地图投影前判断是否为经纬度，否则不投影
+		double &onex = geoMap->maxRange.topRight().rx();
+		double &oney = geoMap->maxRange.topRight().ry();
+		if (fabs(onex) <= 360 && fabs(oney) <= 90)
+			geoMap->setMapPrj(MapPrjType::MERCATOR); //默认使用墨卡托
 		dataSource->geoMaps.push_back(geoMap);
 		//添加地图节点
 		addTreeTopLevel(geoMap, dataSource->geoMaps.size() - 1, QString::fromStdString(geoMap->name));

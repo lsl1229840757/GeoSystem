@@ -25,9 +25,14 @@ geos::geom::Geometry* MGeosUtil::OGR2GEOSGeom(OGRGeometry *ogrGeom)
 	return geosGeometry;
 }
 
-GeometryFactory* MGeosUtil::getPGeometryFactory()
+const GeometryFactory* MGeosUtil::getDefaultGeometryFactory()
 {
 	// TODO: 在此处添加实现代码.
 	//获取factory指针
-	return GeometryFactory::create().get();
+	//return GeometryFactory::create().get();
+
+	const GeometryFactory *gf = geos::geom::GeometryFactory::getDefaultInstance();
+	//需要通过这个方法获取默认的实例，自己调用不带参数的create()会出现纷繁复杂的问题！！！
+	return gf;
+		//precisionModel  geometryFactory->getPrecisionModel()
 }
