@@ -1,11 +1,11 @@
 #pragma once
-#include "Geometry.h"
+#include "MGeometry.h"
 #include <vector>
 #include "GeoPolygon.h"
 
 using namespace std;
 class GeoMultiPolygon :
-	public Geometry
+	public mgeo::Geometry
 {
 public:
 	GeoMultiPolygon();

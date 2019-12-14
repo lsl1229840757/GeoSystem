@@ -6,27 +6,42 @@
     <ClCompile Include="GdalUtil.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_DatabaseWizard.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_geojsonparese.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_MyAction.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_MyColorButton.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_myopenglwidget.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_openglwindow.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_qpainterwidget.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_StyleWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_trianglewindow.cpp" />
     <ClCompile Include="GeneratedFiles\qrc_geojsonparese.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_DatabaseWizard.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_geojsonparese.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_MyAction.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_MyColorButton.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_myopenglwidget.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_openglwindow.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_qpainterwidget.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_StyleWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_trianglewindow.cpp" />
     <ClCompile Include="GeoDataSource.cpp" />
     <ClCompile Include="geojsonparese.cpp" />
-    <ClCompile Include="Geometry.cpp" />
+	<ClCompile Include="MGeometry.cpp" />
     <ClCompile Include="GeoMultiPolygon.cpp" />
     <ClCompile Include="GeoMultiPolyline.cpp" />
+    <ClCompile Include="gpc.cpp" />
+    <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="GridIndex.cpp" />
     <ClCompile Include="JsonUtil.cpp" />
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GeoMap.cpp" />
+    <ClCompile Include="MapPrjLambert.cpp" />
+    <ClCompile Include="MapPrjMercator.cpp" />
+    <ClCompile Include="MapPrjUtil.cpp" />
+    <ClCompile Include="MouseDragAction.cpp" />
     <ClCompile Include="MouseZoomAction.cpp" />
+    <ClCompile Include="MyAction.cpp" />
+    <ClCompile Include="MyColorButton.cpp" />
     <ClCompile Include="myopenglwidget.cpp" />
     <ClCompile Include="MyOpenGlWidgetFactory.cpp" />
     <ClCompile Include="openglwindow.cpp" />
@@ -35,61 +50,27 @@
     <ClCompile Include="GeoPolyline.cpp" />
     <ClCompile Include="qpainterwidget.cpp" />
     <ClCompile Include="SldUtil.cpp" />
+    <ClCompile Include="SpatialIndex.cpp" />
+    <ClCompile Include="StyleWidget.cpp" />
     <ClCompile Include="SymbolStyle.cpp" />
     <ClCompile Include="trianglewindow.cpp" />
     <ClCompile Include="triangulate.cpp" />
-    <ClCompile Include="MouseDragAction.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gpc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MapPrjUtil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MapPrjLambert.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MapPrjMercator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SpatialIndex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GridIndex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Grid.cpp">
-    <ClCompile Include="MyAction.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_MyAction.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_MyAction.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_StyleWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_StyleWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StyleWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_MyColorButton.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_MyColorButton.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MyColorButton.cpp">
+    <ClCompile Include="MGeosUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GeneratedFiles\ui_StyleWidget.h" />
+    <ClInclude Include="gpc.h" />
+    <ClInclude Include="Grid.h" />
+    <ClInclude Include="GridIndex.h" />
+    <ClInclude Include="MapPrjLambert.h" />
+    <ClInclude Include="MapPrjMercator.h" />
+    <ClInclude Include="MapPrjUtil.h" />
+    <ClInclude Include="MouseDragAction.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SldUtil.h" />
+    <ClInclude Include="SpatialIndex.h" />
     <ClInclude Include="SymbolStyle.h" />
     <ClInclude Include="MouseZoomAction.h" />
     <ClInclude Include="MyOpenGlWidgetFactory.h" />
@@ -100,7 +81,7 @@
     <ClInclude Include="GeneratedFiles\ui_myopenglwidget.h" />
     <ClInclude Include="GeneratedFiles\ui_qpainterwidget.h" />
     <ClInclude Include="GeoDataSource.h" />
-    <ClInclude Include="Geometry.h" />
+    <ClInclude Include="MGeometry.h" />
     <ClInclude Include="GeoMultiPolygon.h" />
     <ClInclude Include="GeoMultiPolyline.h" />
     <ClInclude Include="JsonUtil.h" />
@@ -109,39 +90,19 @@
     <ClInclude Include="GeoPoint.h" />
     <ClInclude Include="GeoPolygon.h" />
     <ClInclude Include="GeoPolyline.h" />
-    <ClInclude Include="MouseDragAction.h">
+    <ClInclude Include="GeosUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gpc.h">
+    <ClInclude Include="MGeosUtil.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MapPrjUtil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MapPrjLambert.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MapPrjMercator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SpatialIndex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GridIndex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Grid.h">
-      <Filter>Header Files</Filter>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_StyleWidget.h">
-      <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="geojsonparese.h" />
     <CustomBuild Include="geojsonparese.ui" />
+    <CustomBuild Include="MyAction.h" />
+    <CustomBuild Include="MyColorButton.h" />
+    <CustomBuild Include="StyleWidget.h" />
     <CustomBuild Include="qpainterwidget.h" />
     <CustomBuild Include="trianglewindow.h" />
     <CustomBuild Include="DatabaseWizard.h" />
@@ -150,18 +111,10 @@
     <CustomBuild Include="geojsonparese.qrc" />
     <CustomBuild Include="qpainterwidget.ui" />
     <CustomBuild Include="myopenglwidget.ui" />
-    <CustomBuild Include="MyAction.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="StyleWidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="StyleWidget.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="MyColorButton.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
+    <CustomBuild Include="StyleWidget.ui" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="GeoSystem.rc" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -174,18 +127,5 @@
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
       <ParseFiles>true</ParseFiles>
     </Filter>
-    <Filter Include="Generated Files">
-      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
-      <Extensions>moc;h;cpp</Extensions>
-      <ParseFiles>true</ParseFiles>
-    </Filter>
-    <Filter Include="Form Files">
-      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
-      <Extensions>ui</Extensions>
-      <ParseFiles>true</ParseFiles>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="GeoSystem.rc" />
   </ItemGroup>
 </Project>

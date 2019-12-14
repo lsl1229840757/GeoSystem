@@ -51,7 +51,7 @@ StyleWidget::StyleWidget(int mapIndex, int layerIndex, Layer *layer, QWidget *pa
 	int n = layer->features.size() > 50 ? 50 : layer->features.size();
 	for (int i = 0; i < n;i++) {
 		Feature *feature = layer->features[i];
-		Geometry *geometry = feature->geometry;
+		mgeo::Geometry *geometry = feature->geometry;
 		SymbolStyle symbolStyle = feature->symbolStyle;
 		if (GeometryType::GEOPOINT == geometry->getGeometryType()) {
 		

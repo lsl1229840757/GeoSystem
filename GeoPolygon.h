@@ -1,10 +1,10 @@
 #pragma once
-#include "Geometry.h"
+#include "MGeometry.h"
 #include "GeoPoint.h"
 #include <vector>
 #include "gpc.h"
 using namespace std;
-class GeoPolygon:public Geometry
+class GeoPolygon:public mgeo::Geometry
 {
 public:
 	GeoPolygon(void);

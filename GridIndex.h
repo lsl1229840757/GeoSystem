@@ -2,6 +2,7 @@
 #include "SpatialIndex.h"
 #include "GeoMap.h"
 #include "qpair.h"
+#include "qdebug.h"
 using namespace std;
 class GridIndex :
 	public SpatialIndex
@@ -18,7 +19,5 @@ public:
 	void setColRow(int col, int row);
 	// 添加索引目标ID
 	virtual void addAllObjID(Layer *layer);
-private:
-	bool isIntersect(OGRGeometry *fea, OGRGeometry *gridBound);
 };
 
