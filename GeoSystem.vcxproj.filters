@@ -25,7 +25,7 @@
     <ClCompile Include="GeneratedFiles\Release\moc_trianglewindow.cpp" />
     <ClCompile Include="GeoDataSource.cpp" />
     <ClCompile Include="geojsonparese.cpp" />
-    <ClCompile Include="Geometry.cpp" />
+	<ClCompile Include="Geometry.cpp" />
     <ClCompile Include="GeoMultiPolygon.cpp" />
     <ClCompile Include="GeoMultiPolyline.cpp" />
     <ClCompile Include="gpc.cpp" />

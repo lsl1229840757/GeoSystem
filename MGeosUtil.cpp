@@ -24,3 +24,10 @@ geos::geom::Geometry* MGeosUtil::OGR2GEOSGeom(OGRGeometry *ogrGeom)
 	geos::geom::Geometry *geosGeometry = wktReader.read(buffstr);
 	return geosGeometry;
 }
+
+GeometryFactory* MGeosUtil::getPGeometryFactory()
+{
+	// TODO: 在此处添加实现代码.
+	//获取factory指针
+	return GeometryFactory::create().get();
+}
