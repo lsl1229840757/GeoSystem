@@ -1,11 +1,11 @@
 #pragma once
-#include "Geometry.h"
+#include "MGeometry.h"
 #include <vector>
 #include "GeoPolyline.h"
 using namespace std;
 
 class GeoMultiPolyline :
-	public Geometry
+	public mgeo::Geometry
 {
 public:
 	GeoMultiPolyline();

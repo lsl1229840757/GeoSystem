@@ -8,7 +8,7 @@
 #include <QJsonArray>
 #include <exception>
 #include "Feature.h"
-#include "Geometry.h"
+#include "MGeometry.h"
 #include "GeoPoint.h"
 #include "GeoPolyline.h"
 #include "GeoPolygon.h"
@@ -16,6 +16,9 @@
 #include "GeoMap.h"
 #include "Layer.h"
 #include "GeoMultiPolygon.h"
+#include "geos.h"
+#include "MGeosUtil.h"
+#include "geos_c.h"
 class JsonUtil
 {
 public:
@@ -48,6 +51,7 @@ private:
 	static void parseFeatureCollection(QJsonObject geoJson, GeoMap* geoMap);
 	static void parseGeometryCollection(QJsonObject geoJson, GeoMap* geoMap);
 	static QRectF parseGeometry(QJsonObject geomJObj, Feature* feature);
+	static const GeometryFactory *geosGeomFactory;  //用于保存一个默认的GeometryFactory指针，方便构造GEOS对象
 public:
 	// 写入Json文件
 	static void jsonWrite(QString destPath, QJsonObject* jsonObj);

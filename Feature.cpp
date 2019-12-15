@@ -3,16 +3,23 @@
 
 Feature::Feature(void)
 {
-	ogrGrom = NULL;
-	isSelected = false; //Ä¬ÈÏÃ»ÓÐ±»Ñ¡ÖÐ
+	ogrGeom = NULL;
+	geosGeom = NULL;
+	isSelected = false; //是否选中
+	isFirstProjeted = true;
 }
 
 
 Feature::~Feature(void)
 {
-	if (ogrGrom != NULL)
+	if (ogrGeom != NULL)
 	{
-		delete ogrGrom;
-		ogrGrom = NULL;
+		delete ogrGeom;
+		ogrGeom = NULL;
+	}
+	if (geosGeom != NULL)
+	{
+		delete geosGeom;
+		geosGeom = NULL;
 	}
 }

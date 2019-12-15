@@ -1,6 +1,6 @@
 #pragma once
-#include "Geometry.h"
-class GeoPoint:public Geometry
+#include "MGeometry.h"
+class GeoPoint:public mgeo::Geometry
 {
 public:
 	GeoPoint(void);
@@ -9,4 +9,6 @@ public:
 	double x;
 	double y;
 	GeometryType getGeometryType();
+	double prjx, prjy;
+	double isFirstProjeted;
 };
