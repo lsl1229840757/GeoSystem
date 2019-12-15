@@ -158,9 +158,9 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			normalStrokeGreen = symbolStyle.strokeColor.green() / maxColorComponent;
 			normalStrokeBlue = symbolStyle.strokeColor.blue() / maxColorComponent;
 		}else {
-			normalStrokeRed = 1.0;
-			normalStrokeGreen = 0.0;
-			normalStrokeBlue = 0.0;
+			normalStrokeRed = 0.0;
+			normalStrokeGreen = 1.0;
+			normalStrokeBlue = 1.0;
 		}
 
 		if(GeometryType::GEOPOINT==geometry->getGeometryType()){
@@ -211,10 +211,10 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			//线绘制
 			glLineWidth(symbolStyle.strokeWidth);//线宽
 			//glLineStipple(1, 0xFFFF);  //点绘制实线
-			glBegin(GL_LINES);
+			glBegin(GL_LINE_STRIP);
 			GeoPolyline *polyline = (GeoPolyline *)geometry;
-			for(int i=0;i<polyline->points.size();i++){
-				GeoPoint *point = polyline->points[i];
+			for(int j=0;j<polyline->points.size();j++){
+				GeoPoint *point = polyline->points[j];
 				if (feature->isSelected) {
 					//查询后被选中线变为蓝色
 					glColor3f(0, 0, 1);
@@ -225,7 +225,7 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				if (geoMap->mapPrj != NULL) {
 					if (feature->isFirstProjeted) {
 						//最后一个元素时改变
-						if(i==polyline->points.size()-1)
+						if(j==polyline->points.size()-1)
 							feature->isFirstProjeted = false;
 						double prjx, prjy;
 						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
@@ -246,12 +246,24 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			//面绘制
 			GeoPolygon *polygon = (GeoPolygon *)geometry;
 			if (!polygon->isConvex()) {
+				//剖分前先记录原始点坐标的投影坐标
+				if (geoMap->mapPrj != NULL) {
+					if (feature->isFirstProjeted) {
+						for (int j = 0; j < polygon->points.size(); j++) {
+							GeoPoint *point = polygon->points[j];
+							double prjx, prjy;
+							geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+							point->prjx = prjx;
+							point->prjy = prjy;
+						}
+					}
+				}
 				//不是凸多边形,开始剖分
 				vector<GeoPolygon *> triangles = polygon->getTriangles();
 				glBegin(GL_TRIANGLE_STRIP);
 				for (int j = 0; j < triangles.size(); j++) {
-					for (int i = 0; i < triangles[j]->points.size(); i++) {
-						GeoPoint *point = triangles[j]->points[i];
+					for (int k = 0; k < triangles[j]->points.size(); k++) {
+						GeoPoint *point = triangles[j]->points[k];
 						if (feature->isSelected) {
 							glColor3f(0, 0, 1);
 						}else{
@@ -260,7 +272,7 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 						if (geoMap->mapPrj != NULL) {
 							if (feature->isFirstProjeted) {
 								//最后一个元素时改变
-								if ((i == triangles[j]->points.size() - 1)&& (j==triangles.size()-1))
+								if ((k == triangles[j]->points.size() - 1)&& (j==triangles.size()-1))
 									feature->isFirstProjeted = false;
 								double prjx, prjy;
 								geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
@@ -281,8 +293,8 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			}
 			else {
 				glBegin(GL_POLYGON);
-				for (int i = 0; i < polygon->points.size(); i++) {
-					GeoPoint *point = polygon->points[i];
+				for (int j = 0; j < polygon->points.size(); j++) {
+					GeoPoint *point = polygon->points[j];
 					if (feature->isSelected) {
 						glColor3f(0, 0, 1);
 					}
@@ -292,13 +304,13 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 					if (geoMap->mapPrj != NULL) {
 						if (feature->isFirstProjeted) {
 							//最后一个元素时改变
-							if (i == polygon->points.size() - 1)
+							if (j == polygon->points.size() - 1)
 								feature->isFirstProjeted = false;
 							double prjx, prjy;
 							geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
 							point->prjx = prjx;
 							point->prjy = prjy;
-							glVertex2f(prjx, prjy);
+							glVertex2f(prjx,prjy);
 						}
 						else {
 							glVertex2f(point->prjx, point->prjy);
@@ -314,73 +326,142 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			glLineWidth(symbolStyle.strokeWidth);
 			//glLineStipple(1, 0xFFFF);  //点绘制实线
 			glBegin(GL_LINE_STRIP);
-			for (int i = 0; i < polygon->points.size(); i++) {
-				GeoPoint *point = polygon->points[i];
+			for (int j = 0; j < polygon->points.size(); j++) {
+				GeoPoint *point = polygon->points[j];
 				if (feature->isSelected) {
 					//如果被查询后选中,边界变成蓝色
 					glColor3f(0, 0, 1);
-					if (geoMap->mapPrj != NULL) {
-						if (feature->isFirstProjeted) {
-							//最后一个元素时改变
-							if (i == polygon->points.size() - 1)
-								feature->isFirstProjeted = false;
-							double prjx, prjy;
-							geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-							point->prjx = prjx;
-							point->prjy = prjy;
-							glVertex2f(prjx, prjy);
-						}
-						else {
-							glVertex2f(point->prjx, point->prjy);
-						}
-					}
-					else {
-						glVertex2f(point->x, point->y);
-					}
 				}
 				else {
 					glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
-					if (geoMap->mapPrj != NULL) {
-						if (feature->isFirstProjeted) {
-							//最后一个元素时改变
-							if (i == polygon->points.size() - 1)
-								feature->isFirstProjeted = false;
-							double prjx, prjy;
-							geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-							point->prjx = prjx;
-							point->prjy = prjy;
-							glVertex2f(prjx, prjy);
-						}
-						else {
-							glVertex2f(point->prjx, point->prjy);
-						}
+				}
+				if (geoMap->mapPrj != NULL) {
+					if (feature->isFirstProjeted) {
+						//最后一个元素时改变
+						if (j == polygon->points.size() - 1)
+							feature->isFirstProjeted = false;
+						double prjx, prjy;
+						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+						point->prjx = prjx;
+						point->prjy = prjy;
+						glVertex2f(prjx, prjx);
 					}
 					else {
-						glVertex2f(point->x, point->y);
+						glVertex2f(point->prjx, point->prjy);
 					}
+				}
+				else {
+					glVertex2f(point->x, point->y);
 				}
 			}
 			glEnd();
 		}else if(GeometryType::GEOMULTIPOLYGON==geometry->getGeometryType()){
 			//多面绘制
 			GeoMultiPolygon* multiPly = (GeoMultiPolygon*)geometry;
-			for (int i = 0; i < multiPly->polygons.size(); i++)
+			for (int m = 0; m < multiPly->polygons.size(); m++)
 			{
-				glBegin(GL_POLYGON);
-				GeoPolygon *polygon = multiPly->polygons.at(i);
+				GeoPolygon *polygon = multiPly->polygons[m];
+				if (!polygon->isConvex()) {
+					//剖分前先记录原始点坐标的投影坐标
+					if (geoMap->mapPrj != NULL) {
+						if (feature->isFirstProjeted) {
+							for (int j = 0; j < polygon->points.size(); j++) {
+								GeoPoint *point = polygon->points[j];
+								double prjx, prjy;
+								geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+								point->prjx = prjx;
+								point->prjy = prjy;
+							}
+						}
+					}
+					//不是凸多边形,开始剖分
+					vector<GeoPolygon *> triangles = polygon->getTriangles();
+					glBegin(GL_TRIANGLE_STRIP);
+					for (int j = 0; j < triangles.size(); j++) {
+						for (int k = 0; k < triangles[j]->points.size(); k++) {
+							GeoPoint *point = triangles[j]->points[k];
+							if (feature->isSelected) {
+								glColor3f(0, 0, 1);
+							}
+							else {
+								glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
+							}
+							if (geoMap->mapPrj != NULL) {
+								if (feature->isFirstProjeted) {
+									//最后一个元素时改变
+									if ((k == triangles[j]->points.size() - 1)
+										&& (j == triangles.size() - 1)
+										&& (m==multiPly->polygons.size()-1))
+										feature->isFirstProjeted = false;
+									double prjx, prjy;
+									geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+									point->prjx = prjx;
+									point->prjy = prjy;
+									glVertex2f(prjx, prjy);
+								}
+								else {
+									glVertex2f(point->prjx, point->prjy);
+								}
+							}
+							else {
+								glVertex2f(point->x, point->y);
+							}
+						}
+					}
+					glEnd();
+				}
+				else {
+					glBegin(GL_POLYGON);
+					for (int k = 0; k < polygon->points.size(); k++) {
+						GeoPoint *point = polygon->points[k];
+						glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
+						if (geoMap->mapPrj != NULL) {
+							if (feature->isFirstProjeted) {
+								//最后一个元素时改变
+								if ((k == polygon->points.size() - 1) && (m == multiPly->polygons.size() - 1))
+									feature->isFirstProjeted = false;
+								double prjx, prjy;
+								geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+								point->prjx = prjx;
+								point->prjy = prjy;
+								glVertex2f(prjx, prjy);
+							}
+							else {
+								glVertex2f(point->prjx, point->prjy);
+							}
+						}
+						else {
+							glVertex2f(point->x, point->y);
+						}
+					}
+					glEnd();
+				}
+			}
+			//描绘多面边界
+			glLineWidth(symbolStyle.strokeWidth);
+			for (int m = 0; m < multiPly->polygons.size(); m++)
+			{
+				GeoPolygon *polygon = multiPly->polygons.at(m);
+				glBegin(GL_LINE_STRIP);
 				for (int j = 0; j < polygon->points.size(); j++) {
 					GeoPoint *point = polygon->points[j];
-					glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
+					if (feature->isSelected) {
+						//如果被查询后选中,边界变成蓝色
+						glColor3f(0, 0, 1);
+					}
+					else {
+						glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
+					}
 					if (geoMap->mapPrj != NULL) {
 						if (feature->isFirstProjeted) {
 							//最后一个元素时改变
-							if ((j == polygon->points.size() - 1)&&(i==multiPly->polygons.size()-1))
+							if (j == polygon->points.size() - 1)
 								feature->isFirstProjeted = false;
 							double prjx, prjy;
 							geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
 							point->prjx = prjx;
 							point->prjy = prjy;
-							glVertex2f(prjx, prjy);
+							glVertex2f(prjx, prjx);
 						}
 						else {
 							glVertex2f(point->prjx, point->prjy);
