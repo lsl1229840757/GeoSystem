@@ -45,7 +45,6 @@ bool GridIndex::createIndex()
 			this->grids.push_back(grid);
 		}
 	}
-
 	isIndexCreated = true;
 	return true;
 }

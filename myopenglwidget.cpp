@@ -86,14 +86,11 @@ void MyOpenGLWidget::paintGL(){
 				QRectF gridBound = grid->gridBoundary;
 				if (geoMap->mapPrj != NULL)
 					gridBound = geoMap->mapPrj->getPrjRange(gridBound);
-				glBegin(GL_LINES);
+				glBegin(GL_LINE_LOOP);
 					glColor3f(1, 1, 1);
 					glVertex2f(gridBound.left(), gridBound.top());
 					glVertex2f(gridBound.right(), gridBound.top());
-				glEnd();
-				glBegin(GL_LINES);
-					glColor3f(1, 1, 1);
-					glVertex2f(gridBound.left(), gridBound.top());
+					glVertex2f(gridBound.right(), gridBound.bottom());
 					glVertex2f(gridBound.left(), gridBound.bottom());
 				glEnd();
 				

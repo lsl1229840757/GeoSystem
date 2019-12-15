@@ -497,7 +497,6 @@ void GeoJsonParese::changeMapProjection()
 	}
 }
 
-
 void GeoJsonParese::setStyleFromSLD()
 {
 	//获取被选择item的id
@@ -538,6 +537,7 @@ void GeoJsonParese::setGridIndex()
 	log += "Create Grid Spatial Index successfully!\n";
 	ui.textBrowser->setText(log);
 }
+
 void GeoJsonParese::setStyle(int mapIndex, int layerIndex)
 {
 	Layer *layer = dataSource->geoMaps[mapIndex]->layers[layerIndex];
