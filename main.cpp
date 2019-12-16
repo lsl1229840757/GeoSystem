@@ -1,4 +1,4 @@
-#include "geojsonparese.h"
+﻿#include "geojsonparese.h"
 #include <QGUIApplication>
 #include "trianglewindow.h"
 #include "qpainterwidget.h"
@@ -7,12 +7,16 @@
 #include "qdom.h"
 #include "SldUtil.h"
 #include "StyleWidget.h"
+#include "AudioInputWidget.h"
+#include <QMediaPlayer>
+#include <QMediaPlaylist>
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
+	/*AudioInputWidget ad;
+	ad.show();*/
 	GeoJsonParese w;
 	w.show();
-
 	/*QVariant k(123);
 	QVariant::Type type = k.type();
 	if (QVariant::Type::Int == type)

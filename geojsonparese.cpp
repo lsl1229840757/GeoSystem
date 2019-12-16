@@ -32,6 +32,14 @@ GeoJsonParese::GeoJsonParese(QWidget *parent)
                                      QPushButton:hover{border-image:url(:/images/icon_search_hover)} \
                                      QPushButton:pressed{border-image:url(:/images/icon_search_press)}");
 
+	QPushButton *pSearchButton2 = new QPushButton();
+
+	pSearchButton2->setCursor(Qt::PointingHandCursor);
+	pSearchButton2->setFixedSize(22, 22);
+	pSearchButton2->setToolTip(QStringLiteral("语音搜索"));
+	pSearchButton2->setStyleSheet("QPushButton{border-image:url(:/images/icon_voiceSearch); background:transparent;} \
+                                     QPushButton:hover{border-image:url(:/images/icon_voiceSearch)} \
+                                     QPushButton:pressed{border-image:url(:/images/icon_voiceSearch)}");
 	//防止文本框输入内容位于按钮之下
 	QMargins margins = ui.lineEdit->textMargins();
 	ui.lineEdit->setTextMargins(margins.left(), margins.top(), pSearchButton->width(), margins.bottom());
@@ -40,11 +48,13 @@ GeoJsonParese::GeoJsonParese(QWidget *parent)
 	QHBoxLayout *pSearchLayout = new QHBoxLayout();
 	pSearchLayout->addStretch();
 	pSearchLayout->addWidget(pSearchButton);
-	pSearchLayout->setSpacing(0);
+	pSearchLayout->addWidget(pSearchButton2);
+	pSearchLayout->setSpacing(1);
 	pSearchLayout->setContentsMargins(0, 0, 0, 0);
 	ui.lineEdit->setLayout(pSearchLayout);
 	//添加搜索事件
 	connect(pSearchButton, SIGNAL(clicked(bool)), this, SLOT(searchRegion()));
+	connect(pSearchButton2, SIGNAL(clicked(bool)), this, SLOT(voiceSearchRegion()));
 
 	//添加是否可视控制
 	connect(ui.treeWidget,SIGNAL(itemChanged(QTreeWidgetItem*,int)),this,SLOT(treeItemChanged(QTreeWidgetItem*,int)));
@@ -287,10 +297,6 @@ void GeoJsonParese::closeTab(int tabIndex)
 void GeoJsonParese::searchRegion()
 {
 	//调色盘
-	//QColorDialog *m_pColorDialog = new QColorDialog();
-	//m_pColorDialog->exec();
-	//connect(m_pColorDialog, SIGNAL(colorSelected(QColor)), this, SLOT(slot_getColor(QColor)));
-
 	bool isOK;
 	QString text = ui.lineEdit->text();
 	if (!text.isNull()) {
@@ -301,13 +307,44 @@ void GeoJsonParese::searchRegion()
 		connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
 	}
 }
+
+//语音区域搜索
+void GeoJsonParese::voiceSearchRegion()
+{
+	//打开语音搜索窗口
+	AudioInputWidget* audioInputWidget = new AudioInputWidget;
+	audioInputWidget->show();
+	connect(audioInputWidget, SIGNAL(sendResult(QString)), this, SLOT(refreshSelectFeature(QString)));
+}
+
 //完成网络请求
 void GeoJsonParese::replyFinished(QNetworkReply *reply)
 {
 	QString result = reply->readAll();
+	refreshSelectFeature(result);
+	//释放
+	reply->deleteLater();
+}
+
+void GeoJsonParese::showCurrentPos(QPointF currentPos) {
+	QString xStr = QString::number(currentPos.rx(), 'f', 2);
+	QString yStr = QString::number(currentPos.ry(), 'f', 2);
+	ui.label_3->setText(QString::fromLocal8Bit("当前位置:")+xStr+","+yStr);
+}
+
+
+//网络请求完后刷新选中要素
+void GeoJsonParese::refreshSelectFeature(QString replyStr)
+{
+	GeoMap* testMap = dataSource->getGeoMapByName("test");
+	if (testMap == NULL)
+		return;
+	//准备要素数据
+	MyOpenGLWidget* myOpenGLWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(testMap);
+	Layer* layer = testMap->layers[0];//此数据只有第一层
 	//开始解析结果json
 	QJsonParseError parseError;
-	QJsonDocument jsonDocument = QJsonDocument::fromJson(result.toUtf8(), &parseError);
+	QJsonDocument jsonDocument = QJsonDocument::fromJson(replyStr.toUtf8(), &parseError);
 	if (parseError.error != QJsonParseError::NoError)
 	{
 		qDebug() << parseError.error << endl;
@@ -315,39 +352,43 @@ void GeoJsonParese::replyFinished(QNetworkReply *reply)
 	QJsonObject jsonObject = jsonDocument.object();
 	//分析内容
 	if (jsonObject["flag"].toInt() == 1) {
-		//查询到结果
-		QString name = jsonObject["name"].toString(); //要素名字
-		double area = jsonObject["area"].toString().toDouble(); //面积
-		int index = jsonObject["id"].toString().toInt(); //要素在地图中的位置
-		//通过工厂得到test.json唯一绑定的tabWidget
-		GeoMap* testMap = dataSource->getGeoMapByName("test");
-		if (testMap != NULL) {
-			MyOpenGLWidget* myOpenGLWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(testMap);
-			Layer* layer = testMap->layers[0];//此数据只有第一层
+		//记录改变的id,后面方便还原
+		vector<int> indexList;
+		//窗口显示结果
+		QString info;
+		//查询到了结果
+		for (int i = 0; i < jsonObject["resultList"].toArray().size(); i++) {//开始循环结果集
+			QJsonObject resultObj = jsonObject["resultList"].toArray()[i].toObject();
+			QString name = resultObj["name"].toString();//开始取名字
+			int index = resultObj["id"].toString().toInt();
+			double area = resultObj["area"].toString().toDouble();
+			indexList.push_back(index);
+			//要素选中
 			Feature* feature = layer->features[index];
-			feature->isSelected = true; //要素被选中
-			//更新渲染
-			myOpenGLWidget->update();
-			//将此widget激活
-			addNewWindow(testMap, QString::fromStdString(testMap->name));
-			//弹出信息框
-			QMessageBox msgBox;
-			msgBox.setText(QString::fromLocal8Bit("查询结果"));
-			msgBox.setInformativeText(QString::fromLocal8Bit("查询到的地区:")+name+"\n"+QString::fromLocal8Bit("区域面积:")+QString::number(area)+ QString::fromLocal8Bit("万平方千米"));
-			msgBox.setStandardButtons(QMessageBox::Ok);
-			msgBox.setDefaultButton(QMessageBox::Ok);
-			msgBox.setDetailedText(QString::fromLocal8Bit("目前没有详细介绍"));
-			int ret = msgBox.exec();
-			switch (ret) {
-			case QMessageBox::Ok:
-				feature->isSelected = false;
-				myOpenGLWidget->update();
-				break;
-			default:
-				break;
-			}
+			feature->isSelected = true;
+			//积累信息
+			info += QString::fromLocal8Bit("查询到的地区:") + name + QString::fromLocal8Bit(",面积为:") + QString::number(area) + QString::fromLocal8Bit("万平方千米\n");
 		}
-		//MyOpenGLWidget* testWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(testMap);
+		//弹出消息框
+		QMessageBox msgBox;
+		msgBox.setText(QString::fromLocal8Bit("查询结果"));
+		msgBox.setInformativeText(info);
+		msgBox.setStandardButtons(QMessageBox::Ok);
+		msgBox.setDefaultButton(QMessageBox::Ok);
+		msgBox.setDetailedText(QString::fromLocal8Bit("目前没有详细介绍"));
+		//更新渲染
+		myOpenGLWidget->update();
+		//将此widget激活
+		addNewWindow(testMap, QString::fromStdString(testMap->name));
+		int ret = msgBox.exec();
+		switch (ret) {
+		default:
+			for (int i = 0; i < indexList.size(); i++) {
+				layer->features[indexList[i]]->isSelected = false;
+			}
+			myOpenGLWidget->update();
+			break;
+		}
 	}
 	else {
 		QMessageBox msgBox;
@@ -357,14 +398,6 @@ void GeoJsonParese::replyFinished(QNetworkReply *reply)
 		msgBox.setDefaultButton(QMessageBox::Ok);
 		int ret = msgBox.exec();
 	}
-	//释放
-	reply->deleteLater();
-}
-
-void GeoJsonParese::showCurrentPos(QPointF currentPos) {
-	QString xStr = QString::number(currentPos.rx(), 'f', 2);
-	QString yStr = QString::number(currentPos.ry(), 'f', 2);
-	ui.label_3->setText(QString::fromLocal8Bit("当前位置:")+xStr+","+yStr);
 }
 
 /*
@@ -451,17 +484,6 @@ void GeoJsonParese::updateParentItem(QTreeWidgetItem *item)
 	}
 	updateParentItem(parent);
 }
-
-//
-//if(currentItem->parent()==Q_NULLPTR)
-//{
-//    delete ui.treeWidget->takeTopLevelItem(ui->tv_Source->currentIndex().row());
-//}
-//else
-//{
-//    //如果有父节点就要用父节点的takeChild删除节点
-//    delete currentItem->parent()->takeChild(ui->tv_Source->currentIndex().row());
-//}
 
 void GeoJsonParese::changeMapProjection()
 {
@@ -550,4 +572,3 @@ void GeoJsonParese::refreshStyle(int mapIndex, int layerIndex) {
 	MyOpenGLWidget* myOpenGLWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(geoMap);
 	myOpenGLWidget->update();
 }
-
