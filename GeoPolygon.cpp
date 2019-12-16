@@ -62,12 +62,14 @@ vector<GeoPolygon*> GeoPolygon::getTriangles()
 		gpc_polygon_to_tristrip(&polygon, &tristrip);
 		//转为自己的格式
 		for (int i = 0; i < tristrip.num_strips; i++) {
-			GeoPolygon* triangle = new GeoPolygon;
 			gpc_vertex_list triangleVertexList = tristrip.strip[i];
-			for (int j = 0; j < triangleVertexList.num_vertices; j++) {
+			for (int j = 0; j < triangleVertexList.num_vertices-2; j++) {
+				GeoPolygon* triangle = new GeoPolygon;
 				triangle->points.push_back(new GeoPoint(triangleVertexList.vertex[j].x, triangleVertexList.vertex[j].y));
+				triangle->points.push_back(new GeoPoint(triangleVertexList.vertex[j+1].x, triangleVertexList.vertex[j+1].y));
+				triangle->points.push_back(new GeoPoint(triangleVertexList.vertex[j+2].x, triangleVertexList.vertex[j+2].y));
+				triangles.push_back(triangle);
 			}
-			triangles.push_back(triangle);
 		}
 	}
 	return triangles;
