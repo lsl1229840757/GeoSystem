@@ -74,6 +74,22 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="MyTableWidget.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_AudioUtil.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_AudioUtil.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_AudioInputWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_AudioInputWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioInputWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -118,6 +134,7 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_MyTableWidget.h">
+    <ClInclude Include="GeneratedFiles\ui_AudioInputWidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -146,6 +163,13 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="MyTableWidget.ui">
+    <CustomBuild Include="AudioUtil.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AudioInputWidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AudioInputWidget.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>

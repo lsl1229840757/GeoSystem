@@ -15,6 +15,7 @@ MyColorButton::~MyColorButton()
 {
 
 }
+
 void MyColorButton::openColorDialog() {
 	QColorDialog *m_pColorDialog = new QColorDialog;//调色板显示类
 	connect(m_pColorDialog, SIGNAL(colorSelected(QColor)), this, SLOT(getColor(QColor)));

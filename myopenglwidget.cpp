@@ -79,14 +79,11 @@ void MyOpenGLWidget::paintGL(){
 				QRectF gridBound = grid->gridBoundary;
 				if (geoMap->mapPrj != NULL)
 					gridBound = geoMap->mapPrj->getPrjRange(gridBound);
-				glBegin(GL_LINES);
+				glBegin(GL_LINE_LOOP);
 					glColor3f(1, 1, 1);
 					glVertex2f(gridBound.left(), gridBound.top());
 					glVertex2f(gridBound.right(), gridBound.top());
-				glEnd();
-				glBegin(GL_LINES);
-					glColor3f(1, 1, 1);
-					glVertex2f(gridBound.left(), gridBound.top());
+					glVertex2f(gridBound.right(), gridBound.bottom());
 					glVertex2f(gridBound.left(), gridBound.bottom());
 				glEnd();
 				
@@ -204,7 +201,8 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				}
 				//不是凸多边形,开始剖分
 				vector<GeoPolygon *> triangles = polygon->getTriangles();
-				glBegin(GL_TRIANGLE_STRIP);
+				// 设置正面为填充模式
+				glBegin(GL_TRIANGLES);
 				for (int j = 0; j < triangles.size(); j++) {
 					for (int k = 0; k < triangles[j]->points.size(); k++) {
 						GeoPoint *point = triangles[j]->points[k];

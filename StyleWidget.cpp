@@ -77,6 +77,7 @@ StyleWidget::StyleWidget(int mapIndex, int layerIndex, Layer *layer, QWidget *pa
 StyleWidget::~StyleWidget()
 {
 }
+
 //顶级节点代表feature
 QTreeWidgetItem * StyleWidget::addTreeTopLevel(int id, QString name)
 {

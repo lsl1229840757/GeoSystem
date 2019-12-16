@@ -28,6 +28,7 @@
 #include "MGridInfoWidget.h"
 #include "qmessagebox.h"
 #include "MyTableWidget.h"
+#include "AudioInputWidget.h"
 class GeoJsonParese : public QMainWindow
 {
 	Q_OBJECT
@@ -41,6 +42,7 @@ public:
 	void updateParentItem(QTreeWidgetItem *item);
 	QString log;
 	MyOpenGlWidgetFactory myOpenGLWidgetFactory;
+
 public slots:
 	void showCurrentPos(QPointF currentPos);
 	void parseGeoJson();
@@ -60,6 +62,8 @@ public slots:
 	void refreshStyle(int mapIndex, int layerIndex);
 	void gridInfo();
 	void showAttrTable(int mapIndex, int layerIndex);
+	void voiceSearchRegion();
+	void refreshSelectFeature(QString replyStr);//工具函数，刷新渲染类
 private:
 	Ui::GeoJsonPareseClass ui;
 
