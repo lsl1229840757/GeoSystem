@@ -4,5 +4,6 @@
         <file alias="icon_search_hover">icon_search_hover.png</file>
         <file alias="icon_search_normal">icon_search_normal.png</file>
         <file alias="icon_search_press">icon_search_press.png</file>
+        <file alias="icon_voiceSearch">voiceSearch.png</file>
     </qresource>
 </RCC>

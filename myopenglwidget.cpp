@@ -257,6 +257,7 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				}
 				//不是凸多边形,开始剖分
 				vector<GeoPolygon *> triangles = polygon->getTriangles();
+				// 设置正面为填充模式
 				glBegin(GL_TRIANGLE_STRIP);
 				for (int j = 0; j < triangles.size(); j++) {
 					for (int k = 0; k < triangles[j]->points.size(); k++) {
