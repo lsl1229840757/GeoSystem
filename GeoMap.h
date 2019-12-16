@@ -26,4 +26,10 @@ public:
 	MapPrjUtil* mapPrj;  //地图投影
 	void setMapPrj(MapPrjType type);
 	SpatialIndex *index;
+	// //判断是否投影，获取地图Range
+	QRectF getMapRange();
+	// //重置所有Features的投影状态
+	void resetFeaturePrjStatus();
+	// //判断是否存在投影
+	bool mapPrjEmpty();
 };

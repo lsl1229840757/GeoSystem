@@ -58,6 +58,22 @@
     <ClCompile Include="MGeosUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MGridInfoWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MGridInfoWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MGridInfoWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MyTableWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MyTableWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MyTableWidget.cpp">
     <ClCompile Include="GeneratedFiles\Debug\moc_AudioUtil.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -114,6 +130,10 @@
     <ClInclude Include="MGeosUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_MGridInfoWidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_MyTableWidget.h">
     <ClInclude Include="GeneratedFiles\ui_AudioInputWidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
@@ -133,6 +153,16 @@
     <CustomBuild Include="qpainterwidget.ui" />
     <CustomBuild Include="myopenglwidget.ui" />
     <CustomBuild Include="StyleWidget.ui" />
+    <CustomBuild Include="MGridInfoWidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MGridInfoWidget.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MyTableWidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MyTableWidget.ui">
     <CustomBuild Include="AudioUtil.h">
       <Filter>Header Files</Filter>
     </CustomBuild>

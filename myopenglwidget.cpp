@@ -6,15 +6,9 @@ MyOpenGLWidget::MyOpenGLWidget(GeoMap *geoMap, QWidget *parent):QOpenGLWidget(pa
 	this->geoMap = geoMap;
 	//跟踪鼠标轨迹
 	setMouseTracking(true);
-
-	QRectF normalRange;
+	//获取地图Range
+	QRectF normalRange = geoMap->getMapRange();
 	//计算缩放比例
-	if (geoMap->mapPrj != NULL){
-		QRectF prjRange = geoMap->mapPrj->getPrjRange(geoMap->maxRange.normalized());
-		normalRange = prjRange.normalized();  //将地图范围规范化
-	}else {
-		normalRange = geoMap->maxRange.normalized();  //先将地图范围规范化
-	}
 	this->viewRange = normalRange;
 	//QPointF topRight = normalRange.topRight();
 	//初始化mouseZoom
@@ -40,21 +34,11 @@ void MyOpenGLWidget::initializeGL(){
 
 void MyOpenGLWidget::paintGL(){
 	//改变地图投影之后绘制前，重置范围
-	if (geoMap->mapPrj!=NULL && geoMap->mapPrj->mapPrjChanged == true)
+	if (!geoMap->mapPrjEmpty() && geoMap->mapPrj->mapPrjChanged == true)
 	{
 		geoMap->mapPrj->mapPrjChanged = false;
-		for (int i = 0 ; i < geoMap->layers.size(); i++)
-		{
-			Layer *layer = geoMap->layers.at(i);
-			for (int j = 0; j < layer->features.size(); j++)
-			{
-				//重置isFirstProjeted,回复第一次投影状态
-				layer->features.at(j)->isFirstProjeted = true;
-			}
-		}
-		QRectF prjRange = geoMap->mapPrj->getPrjRange(geoMap->maxRange.normalized());
-		QRectF normalRange= prjRange.normalized();  //将地图范围规范化
-		this->viewRange = normalRange;
+		geoMap->resetFeaturePrjStatus(); //重置feature投影状态
+		this->viewRange = geoMap->getMapRange();
 	}
 	//
 	this->viewRange = this->viewRange.normalized();
@@ -135,6 +119,8 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 	for(int i=0;i<layer->features.size();i++){
 		Feature *feature = layer->features[i];
 		mgeo::Geometry *geometry = feature->geometry;
+		bool isLastPt = false;  //判断feature最后一个点
+		pair<double, double> tmpPt; //临时存储点坐标
 		SymbolStyle symbolStyle = feature->symbolStyle;
 		float maxColorComponent = 255.0;
 		GLfloat normalFillRed, normalFillGreen, normalFillBlue, normalStrokeRed, normalStrokeGreen, normalStrokeBlue;
@@ -167,42 +153,14 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 			if (feature->isSelected) {
 				//查询和后被选中点变成蓝色
 				glColor3f(0.0, 0.0, 1.0);
-				if (geoMap->mapPrj != NULL) {
-					//判断是否为第一次投影，并储存投影坐标
-					if(feature->isFirstProjeted){
-						feature->isFirstProjeted = false;
-						double prjx, prjy;
-						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-						point->prjx = prjx;
-						point->prjy = prjy;
-						glVertex2f(prjx, prjy);
-					}else{
-						glVertex2f(point->prjx, point->prjy);
-					}
-				}
-				else {
-					glVertex2f(point->x, point->y);
-				}
 			}
 			else {
 				glColor3f(1.0, 0.0, 0.0);
-				if (geoMap->mapPrj != NULL) {
-					if (feature->isFirstProjeted) {
-						feature->isFirstProjeted = false;
-						double prjx, prjy;
-						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-						point->prjx = prjx;
-						point->prjy = prjy;
-						glVertex2f(prjx, prjy);
-					}
-					else {
-						glVertex2f(point->prjx, point->prjy);
-					}
-				}
-				else {
-					glVertex2f(point->x, point->y);
-				}
 			}
+			isLastPt = true;
+			//获取点坐标
+			tmpPt = point->getPtCoor(geoMap->mapPrj, isLastPt, feature->isFirstProjeted);
+			glVertex2f(tmpPt.first, tmpPt.second);
 			glEnd();
 		}else if(GeometryType::GEOPOLYLINE==geometry->getGeometryType()){
 			//线绘制
@@ -219,24 +177,10 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				else {
 					glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
 				}
-				if (geoMap->mapPrj != NULL) {
-					if (feature->isFirstProjeted) {
-						//最后一个元素时改变
-						if(j==polyline->points.size()-1)
-							feature->isFirstProjeted = false;
-						double prjx, prjy;
-						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-						point->prjx = prjx;
-						point->prjy = prjy;
-						glVertex2f(prjx, prjy);
-					}
-					else {
-						glVertex2f(point->prjx, point->prjy);
-					}
-				}
-				else {
-						glVertex2f(point->x, point->y);
-				}
+				//最后一个元素时改变isLastPt
+				if (j == polyline->points.size() - 1) { isLastPt = true; }
+				tmpPt = point->getPtCoor(geoMap->mapPrj, isLastPt, feature->isFirstProjeted);
+				glVertex2f(tmpPt.first, tmpPt.second);
 			}
 			glEnd();
 		}else if(GeometryType::GEOPOLYGON==geometry->getGeometryType()){
@@ -267,24 +211,13 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 						}else{
 							glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
 						}
-						if (geoMap->mapPrj != NULL) {
-							if (feature->isFirstProjeted) {
-								//最后一个元素时改变
-								if ((k == triangles[j]->points.size() - 1)&& (j==triangles.size()-1))
-									feature->isFirstProjeted = false;
-								double prjx, prjy;
-								geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-								point->prjx = prjx;
-								point->prjy = prjy;
-								glVertex2f(prjx, prjy);
-							}
-							else {
-								glVertex2f(point->prjx, point->prjy);
-							}
+						//最后一个pt改变isLastPt
+						if ((k == triangles[j]->points.size() - 1) && (j == triangles.size() - 1)) {
+							isLastPt = true; 
 						}
-						else {
-							glVertex2f(point->x, point->y);
-						}
+						//获取点坐标
+						tmpPt = point->getPtCoor(geoMap->mapPrj, isLastPt, feature->isFirstProjeted);
+						glVertex2f(tmpPt.first, tmpPt.second);
 					}
 				}
 				glEnd();
@@ -299,27 +232,16 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 					else {
 						glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
 					}
-					if (geoMap->mapPrj != NULL) {
-						if (feature->isFirstProjeted) {
-							//最后一个元素时改变
-							if (j == polygon->points.size() - 1)
-								feature->isFirstProjeted = false;
-							double prjx, prjy;
-							geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-							point->prjx = prjx;
-							point->prjy = prjy;
-							glVertex2f(prjx,prjy);
-						}
-						else {
-							glVertex2f(point->prjx, point->prjy);
-						}
+					//最后一个pt改变isLastPt
+					if (j == polygon->points.size() - 1){
+						isLastPt = true;
 					}
-					else {
-						glVertex2f(point->x, point->y);
-					}
+					tmpPt = point->getPtCoor(geoMap->mapPrj, isLastPt, feature->isFirstProjeted);
+					glVertex2f(tmpPt.first, tmpPt.second);
 				}
 				glEnd();
 			}
+			isLastPt = false;
 			//描绘多边形边界
 			glLineWidth(symbolStyle.strokeWidth);
 			//glLineStipple(1, 0xFFFF);  //点绘制实线
@@ -333,24 +255,9 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 				else {
 					glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
 				}
-				if (geoMap->mapPrj != NULL) {
-					if (feature->isFirstProjeted) {
-						//最后一个元素时改变
-						if (j == polygon->points.size() - 1)
-							feature->isFirstProjeted = false;
-						double prjx, prjy;
-						geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-						point->prjx = prjx;
-						point->prjy = prjy;
-						glVertex2f(prjx, prjx);
-					}
-					else {
-						glVertex2f(point->prjx, point->prjy);
-					}
-				}
-				else {
-					glVertex2f(point->x, point->y);
-				}
+				if (j == polygon->points.size() - 1)isLastPt = true;
+				tmpPt = point->getPtCoor(geoMap->mapPrj, isLastPt, feature->isFirstProjeted);
+				glVertex2f(tmpPt.first, tmpPt.second);
 			}
 			glEnd();
 		}else if(GeometryType::GEOMULTIPOLYGON==geometry->getGeometryType()){
@@ -384,26 +291,14 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 							else {
 								glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
 							}
-							if (geoMap->mapPrj != NULL) {
-								if (feature->isFirstProjeted) {
-									//最后一个元素时改变
-									if ((k == triangles[j]->points.size() - 1)
-										&& (j == triangles.size() - 1)
-										&& (m==multiPly->polygons.size()-1))
-										feature->isFirstProjeted = false;
-									double prjx, prjy;
-									geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-									point->prjx = prjx;
-									point->prjy = prjy;
-									glVertex2f(prjx, prjy);
-								}
-								else {
-									glVertex2f(point->prjx, point->prjy);
-								}
+							//最后一个pt改变isLastPt
+							if ((k == triangles[j]->points.size() - 1)&& (j == triangles.size() - 1)
+								&& (m == multiPly->polygons.size() - 1)) 
+							{
+								isLastPt = true;
 							}
-							else {
-								glVertex2f(point->x, point->y);
-							}
+							tmpPt = point->getPtCoor(geoMap->mapPrj, isLastPt, feature->isFirstProjeted);
+							glVertex2f(tmpPt.first, tmpPt.second);
 						}
 					}
 					glEnd();
@@ -412,25 +307,19 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 					glBegin(GL_POLYGON);
 					for (int k = 0; k < polygon->points.size(); k++) {
 						GeoPoint *point = polygon->points[k];
-						glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
-						if (geoMap->mapPrj != NULL) {
-							if (feature->isFirstProjeted) {
-								//最后一个元素时改变
-								if ((k == polygon->points.size() - 1) && (m == multiPly->polygons.size() - 1))
-									feature->isFirstProjeted = false;
-								double prjx, prjy;
-								geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-								point->prjx = prjx;
-								point->prjy = prjy;
-								glVertex2f(prjx, prjy);
-							}
-							else {
-								glVertex2f(point->prjx, point->prjy);
-							}
+						if (feature->isSelected) {
+							glColor3f(0, 0, 1);
 						}
 						else {
-							glVertex2f(point->x, point->y);
+							glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
 						}
+						//最后一个pt改变isLastPt
+						if ((k == polygon->points.size() - 1) && (m == multiPly->polygons.size() - 1))
+						{
+							isLastPt = true;
+						}
+						tmpPt = point->getPtCoor(geoMap->mapPrj, isLastPt, feature->isFirstProjeted);
+						glVertex2f(tmpPt.first, tmpPt.second);
 					}
 					glEnd();
 				}
@@ -450,24 +339,13 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 					else {
 						glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
 					}
-					if (geoMap->mapPrj != NULL) {
-						if (feature->isFirstProjeted) {
-							//最后一个元素时改变
-							if (j == polygon->points.size() - 1)
-								feature->isFirstProjeted = false;
-							double prjx, prjy;
-							geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-							point->prjx = prjx;
-							point->prjy = prjy;
-							glVertex2f(prjx, prjx);
-						}
-						else {
-							glVertex2f(point->prjx, point->prjy);
-						}
+					//最后一个pt改变isLastPt
+					if(j == polygon->points.size() - 1)
+					{
+						isLastPt = true;
 					}
-					else {
-						glVertex2f(point->x, point->y);
-					}
+					tmpPt = point->getPtCoor(geoMap->mapPrj, isLastPt, feature->isFirstProjeted);
+					glVertex2f(tmpPt.first, tmpPt.second);
 				}
 				glEnd();
 			}

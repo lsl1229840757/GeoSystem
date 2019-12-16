@@ -25,6 +25,9 @@
 #include "QColorDialog"
 #include "MyAction.h"
 #include "StyleWidget.h"
+#include "MGridInfoWidget.h"
+#include "qmessagebox.h"
+#include "MyTableWidget.h"
 #include "AudioInputWidget.h"
 class GeoJsonParese : public QMainWindow
 {
@@ -54,16 +57,18 @@ public slots:
 	void replyFinished(QNetworkReply*);
 	void changeMapProjection();
 	void setStyleFromSLD();
-	void setGridIndex();	// ÉèÖÃ¸ñÍøË÷Òý
+	void setGridIndex(int colCount,int rowCount);	// ÉèÖÃ¸ñÍøË÷Òý
 	void setStyle(int mapIndex, int layerIndex); //Í¨¹ý´°¿ÚÉèÖÃÑùÊ½
 	void refreshStyle(int mapIndex, int layerIndex);
+	void gridInfo();
+	void showAttrTable(int mapIndex, int layerIndex);
 	void voiceSearchRegion();
 	void refreshSelectFeature(QString replyStr);//工具函数，刷新渲染类
-
 private:
 	Ui::GeoJsonPareseClass ui;
 
 public:
+	
 	
 	
 };

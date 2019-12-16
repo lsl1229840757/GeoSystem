@@ -186,7 +186,7 @@ void GeoJsonParese::onPressed(QPoint pos)
 		connect(drawTask, SIGNAL(triggered()), this, SLOT(drawMap()));
 		connect(changeMapPrj, SIGNAL(triggered()), this, SLOT(changeMapProjection()));
 		connect(setStyleSLD, SIGNAL(triggered()), this, SLOT(setStyleFromSLD()));
-		connect(gridIndex, SIGNAL(triggered()), this, SLOT(setGridIndex()));
+		connect(gridIndex, SIGNAL(triggered()), this, SLOT(gridInfo()));
 		pMenu->addAction(drawTask);
 		pMenu->addAction(changeMapPrj);
 		pMenu->addAction(setStyleSLD);
@@ -200,9 +200,13 @@ void GeoJsonParese::onPressed(QPoint pos)
 		Layer* layer = dataSource->geoMaps[mapIndex]->layers[layerIndex];
 		QMenu *pMenu = new QMenu(this);
 		MyAction* setStyleAction = new MyAction(mapIndex, layerIndex, tr("Set Style"), this);
+		MyAction *showAttrTableAction = new MyAction(mapIndex, layerIndex, tr("Attribute Table"), this);
 		connect(setStyleAction, SIGNAL(triggered()), setStyleAction, SLOT(mtriggle()));
 		connect(setStyleAction, SIGNAL(sendIndex(int, int)), this, SLOT(setStyle(int,int)));
+		connect(showAttrTableAction, SIGNAL(triggered()), showAttrTableAction, SLOT(mtriggle()));
+		connect(showAttrTableAction, SIGNAL(sendIndex(int, int)), this, SLOT(showAttrTable(int,int)));
 		pMenu->addAction(setStyleAction);
+		pMenu->addAction(showAttrTableAction);
 		pMenu->exec(QCursor::pos());
 		qDebug()<<layer->features.size()<<endl;
 	}
@@ -536,7 +540,7 @@ void GeoJsonParese::setStyleFromSLD()
 }
 
 // 设置格网索引
-void GeoJsonParese::setGridIndex()
+void GeoJsonParese::setGridIndex(int colCount,int rowCount)
 {
 	//获取被选择item的id
 	QTreeWidgetItem *currentItem = ui.treeWidget->currentItem();
@@ -546,12 +550,11 @@ void GeoJsonParese::setGridIndex()
 	if (map->index == NULL)
 	{
 		map->index = new GridIndex(map->maxRange);
-		((GridIndex*)map->index)->setColRow(10, 10);  //设置行数和列数
+		((GridIndex*)map->index)->setColRow(colCount, rowCount);  //设置行数和列数
 		map->index->createIndex();
 		for (int i = 0; i < map->layers.size(); i++) {
 			map->index->addAllObjID(map->layers.at(i));   //添加索引目标
 		}
-			
 	}
 	MyOpenGLWidget* myOpenGlWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(map);
 	myOpenGlWidget->update();
@@ -572,3 +575,29 @@ void GeoJsonParese::refreshStyle(int mapIndex, int layerIndex) {
 	MyOpenGLWidget* myOpenGLWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(geoMap);
 	myOpenGLWidget->update();
 }
+
+void GeoJsonParese::gridInfo()
+{
+	// TODO: 在此处添加实现代码.
+	int defaultCol = 10;
+	int defaultRow = 10;
+	MGridInfoWidget *gridInfoWidget = new MGridInfoWidget(defaultCol, defaultRow);
+	gridInfoWidget->show();
+	connect(gridInfoWidget, SIGNAL(send(int, int)), this, SLOT(setGridIndex(int, int)));
+}
+
+
+void GeoJsonParese::showAttrTable(int mapIndex, int layerIndex)
+{
+	// TODO: 在此处添加实现代码.
+	Layer *layer = dataSource->geoMaps[mapIndex]->layers[layerIndex];
+	int rows = layer->features.size();
+	int cols = layer->features.back()->attributes.size();
+	if (0 == cols){
+		QMessageBox::warning(NULL, "Not found attributes", "Not found attibutes");
+		return;
+	}
+	MyTableWidget *attrTable = new MyTableWidget(rows,cols,layer);
+	attrTable->show();
+}
+
