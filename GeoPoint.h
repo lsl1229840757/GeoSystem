@@ -1,5 +1,8 @@
 #pragma once
 #include "MGeometry.h"
+#include <utility>
+#include "MapPrjUtil.h"
+using namespace std;
 class GeoPoint:public mgeo::Geometry
 {
 public:
@@ -11,4 +14,6 @@ public:
 	GeometryType getGeometryType();
 	double prjx, prjy;
 	double isFirstProjeted;
+	// //获取点坐标
+	pair<double,double> getPtCoor(MapPrjUtil* mapPrj, bool isLastPt, bool &isFeaFirstPrj);
 };

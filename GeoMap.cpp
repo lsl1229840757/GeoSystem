@@ -73,3 +73,54 @@ void GeoMap::setMapPrj(MapPrjType type)
 		this->mapPrj = new MapPrjMercator;
 	}
 }
+
+
+// //判断是否投影，获取地图Range
+QRectF GeoMap::getMapRange()
+{
+	// TODO: 在此处添加实现代码.
+	QRectF normalRange;
+	if (this->mapPrj != NULL) {
+		QRectF prjRange = this->mapPrj->getPrjRange(this->maxRange.normalized());
+		normalRange = prjRange.normalized();  //将地图范围规范化
+	}
+	else {
+		normalRange = this->maxRange.normalized();  //先将地图范围规范化
+	}
+	return normalRange;
+}
+
+
+// //重置所有Features的投影状态
+void GeoMap::resetFeaturePrjStatus()
+{
+	// TODO: 在此处添加实现代码.
+	if (this->mapPrj != NULL)
+	{
+		for (int i = 0; i < this->layers.size(); i++)
+		{
+			Layer *layer = this->layers.at(i);
+			for (int j = 0; j < layer->features.size(); j++)
+			{
+				//重置isFirstProjeted,回复第一次投影状态
+				layer->features.at(j)->isFirstProjeted = true;
+			}
+		}
+	}
+}
+
+
+// //判断是否存在投影
+bool GeoMap::mapPrjEmpty()
+{
+	// TODO: 在此处添加实现代码.
+	if (this->mapPrj != NULL)
+	{
+		return false;
+	}
+	else 
+	{
+		return true;
+	}
+	
+}
