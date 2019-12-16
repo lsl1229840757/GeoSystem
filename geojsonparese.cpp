@@ -190,9 +190,13 @@ void GeoJsonParese::onPressed(QPoint pos)
 		Layer* layer = dataSource->geoMaps[mapIndex]->layers[layerIndex];
 		QMenu *pMenu = new QMenu(this);
 		MyAction* setStyleAction = new MyAction(mapIndex, layerIndex, tr("Set Style"), this);
+		MyAction *showAttrTableAction = new MyAction(mapIndex, layerIndex, tr("Attribute Table"), this);
 		connect(setStyleAction, SIGNAL(triggered()), setStyleAction, SLOT(mtriggle()));
 		connect(setStyleAction, SIGNAL(sendIndex(int, int)), this, SLOT(setStyle(int,int)));
+		connect(showAttrTableAction, SIGNAL(triggered()), showAttrTableAction, SLOT(mtriggle()));
+		connect(showAttrTableAction, SIGNAL(sendIndex(int, int)), this, SLOT(showAttrTable(int,int)));
 		pMenu->addAction(setStyleAction);
+		pMenu->addAction(showAttrTableAction);
 		pMenu->exec(QCursor::pos());
 		qDebug()<<layer->features.size()<<endl;
 	}
@@ -560,4 +564,19 @@ void GeoJsonParese::gridInfo()
 	MGridInfoWidget *gridInfoWidget = new MGridInfoWidget(defaultCol, defaultRow);
 	gridInfoWidget->show();
 	connect(gridInfoWidget, SIGNAL(send(int, int)), this, SLOT(setGridIndex(int, int)));
+}
+
+
+void GeoJsonParese::showAttrTable(int mapIndex, int layerIndex)
+{
+	// TODO: 在此处添加实现代码.
+	Layer *layer = dataSource->geoMaps[mapIndex]->layers[layerIndex];
+	int rows = layer->features.size();
+	int cols = layer->features.back()->attributes.size();
+	if (0 == cols){
+		QMessageBox::warning(NULL, "Not found attributes", "Not found attibutes");
+		return;
+	}
+	MyTableWidget *attrTable = new MyTableWidget(rows,cols,layer);
+	attrTable->show();
 }

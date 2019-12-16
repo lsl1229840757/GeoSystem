@@ -26,6 +26,8 @@
 #include "MyAction.h"
 #include "StyleWidget.h"
 #include "MGridInfoWidget.h"
+#include "qmessagebox.h"
+#include "MyTableWidget.h"
 class GeoJsonParese : public QMainWindow
 {
 	Q_OBJECT
@@ -57,10 +59,12 @@ public slots:
 	void setStyle(int mapIndex, int layerIndex); //Í¨¹ý´°¿ÚÉèÖÃÑùÊ½
 	void refreshStyle(int mapIndex, int layerIndex);
 	void gridInfo();
+	void showAttrTable(int mapIndex, int layerIndex);
 private:
 	Ui::GeoJsonPareseClass ui;
 
 public:
+	
 	
 	
 };
