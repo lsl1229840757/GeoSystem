@@ -153,6 +153,9 @@
     <ClCompile Include="AudioInputWidget.cpp" />
     <ClCompile Include="AudioUtil.cpp" />
     <ClCompile Include="DatabaseWizard.cpp" />
+    <ClCompile Include="DistanceUtil.cpp" />
+    <ClCompile Include="EsriKernelUtil.cpp" />
+    <ClCompile Include="EuclideanDistanceUtil.cpp" />
     <ClCompile Include="Feature.cpp" />
     <ClCompile Include="GdalUtil.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_AudioInputWidget.cpp">
@@ -271,6 +274,7 @@
     </ClCompile>
     <ClCompile Include="GeoDataSource.cpp" />
     <ClCompile Include="geojsonparese.cpp" />
+    <ClCompile Include="KernelUtil.cpp" />
     <ClCompile Include="MGeometry.cpp" />
     <ClCompile Include="GeoMultiPolygon.cpp" />
     <ClCompile Include="GeoMultiPolyline.cpp" />
@@ -346,6 +350,9 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DistanceUtil.h" />
+    <ClInclude Include="EsriKernelUtil.h" />
+    <ClInclude Include="EuclideanDistanceUtil.h" />
     <ClInclude Include="GeneratedFiles\ui_MGridInfoWidget.h" />
     <ClInclude Include="GeneratedFiles\ui_MyTableWidget.h" />
     <CustomBuild Include="AudioUtil.h">
@@ -390,6 +397,7 @@
     <ClInclude Include="gpc.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="GridIndex.h" />
+    <ClInclude Include="KernelUtil.h" />
     <ClInclude Include="MapPrjLambert.h" />
     <ClInclude Include="MapPrjMercator.h" />
     <ClInclude Include="MapPrjUtil.h" />
