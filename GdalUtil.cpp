@@ -332,3 +332,43 @@ Layer* GdalUtil::OGRLayer2Layer(OGRLayer *ogrLayer,int layerID)
 	}
 	return layer;
 }
+
+
+// //写入tiff
+void GdalUtil::writeGeoTiff(QString outputPath,QRectF extent,vector<vector<double>>* outputMtx)
+{
+	// TODO: 在此处添加实现代码.
+	//注册驱动
+	GDALAllRegister();
+	//创建输出数据集
+	GDALDataset *poDatasetCreate;
+	//根据驱动名创建驱动
+	GDALDriver *poDriver;
+	char *pszFormat = "GTiff";
+	poDriver = GetGDALDriverManager()->GetDriverByName(pszFormat);
+	//获取数据集
+	int xsizes = outputMtx->size(); //列数
+	int ysizes = outputMtx->back().size();  //行数
+	char **papszMetadata = poDriver->GetMetadata();
+	string da = outputPath.toStdString();
+	const char *dd = da.data();
+	poDatasetCreate = poDriver->Create(outputPath.toStdString().data(), xsizes, ysizes, 1, GDT_Float64, papszMetadata);
+	//设置仿射变换系数:左上角坐标x , sizeX , 指北为0 , 左上角坐标y ,指北为0， -sizeY 
+	double geoTransForm[6] = { extent.left(),xsizes,0,extent.top(),0,-ysizes };
+	poDatasetCreate->SetGeoTransform(geoTransForm);
+	//设置tiff空间参考
+	OGRSpatialReference oSRS;
+	oSRS.SetWellKnownGeogCS("WGS84");
+	char *pszWKT = NULL;
+	oSRS.exportToWkt(&pszWKT);
+	poDatasetCreate->SetProjection(pszWKT);
+	//转换为gdal要求
+	double *buffer = new double[xsizes*ysizes];
+	for (int i = 0; i < xsizes*ysizes; i++)
+	{
+		buffer[i] = outputMtx->at(i%xsizes).at(i/xsizes); //
+	}
+	//输出栅格
+	poDatasetCreate->RasterIO(GF_Write, 0, 0, xsizes, ysizes, buffer, xsizes, ysizes, GDT_Float64, 1, 0, 0, 0, 0);
+	GDALClose(GDALDatasetH(poDatasetCreate));
+}

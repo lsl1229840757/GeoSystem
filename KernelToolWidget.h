@@ -6,6 +6,9 @@
 #include "qfiledialog.h"
 #include "qmessagebox.h"
 #include "GeoPoint.h"
+#include "EsriKernelUtil.h"
+#include "EuclideanDistanceUtil.h"
+#include "GdalUtil.h"
 
 class KernelToolWidget : public ToolWidget
 {
@@ -22,7 +25,8 @@ public:
 	vector<GeoPoint*> points;
 	double cellSize;
 	double searchRadius;
-	QString distType;
+	DistanceType distType;
+	DistanceUtil *method;
 private:
 	Ui::KernelToolWidget ui;
 public:
@@ -41,4 +45,6 @@ public slots:
 	void setParam();
 public:
 	
+private:
+	void kernelDistCalculate();
 };

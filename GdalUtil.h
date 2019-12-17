@@ -38,4 +38,6 @@ public:
 
 	// OGRLayer×ª»»µ½Layer
 	static Layer* OGRLayer2Layer(OGRLayer *ogrLayer,int layerID);
+	// //Ð´Èëtiff
+	static void writeGeoTiff(QString outputPath, QRectF extent, vector<vector<double>>* outputMtx);
 };
