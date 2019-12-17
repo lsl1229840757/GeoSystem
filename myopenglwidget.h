@@ -49,6 +49,18 @@ protected:
 	void wheelEvent(QWheelEvent*event);
 	//鼠标移动操作
 	void mouseMoveEvent(QMouseEvent *event);
+	//画feature, 如果有特殊情况就可以传入symbol为准画图
+	void drawFeature(Feature *feature, SymbolStyle* symbolStyle=0);
+	//画Polygon
+	void drawPolygon(mgeo::Geometry *geometry, SymbolStyle symbolStyle);
+	//画点
+	void drawPoint(mgeo::Geometry *geometry, SymbolStyle symbolStyle);
+	//画线
+	void drawPolyline(mgeo::Geometry *geometry, SymbolStyle symbolStyle);
+	//画多面
+	void drawMultiPolygon(mgeo::Geometry *geometry, SymbolStyle symbolStyle);
+
+	vector<double> normalizeSymbol(SymbolStyle symbolStyle);
 signals:
 	//向父类发送当前鼠标的世界坐标
 	void sendCurrentPos(QPointF pos);

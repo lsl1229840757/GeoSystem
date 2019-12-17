@@ -489,6 +489,45 @@ void GeoJsonParese::updateParentItem(QTreeWidgetItem *item)
 	updateParentItem(parent);
 }
 
+void GeoJsonParese::initProject(GeoMap* map)
+{
+	for (int i = 0; i < map->layers.size(); i++) {
+		Layer* layer = map->layers[i];
+		for (int j = 0; j<layer->features.size(); j++) {
+			//修改所有的投影flag
+			mgeo::Geometry* geometry = layer->features[j]->geometry;
+			geometry->isProjeted = false;
+			if (GeometryType::GEOPOINT == geometry->getGeometryType()) {
+			
+			}
+			else if (GeometryType::GEOPOLYLINE == geometry->getGeometryType()) {
+				GeoPolyline * polyline = (GeoPolyline *)geometry;
+				for (int k = 0; k < polyline->points.size(); k++) {
+					polyline->points[k]->isProjeted = false;
+				}
+			}
+			else if (GeometryType::GEOPOLYGON == geometry->getGeometryType()) {
+				GeoPolygon * polygon = (GeoPolygon *)geometry;
+				polygon->triangles.clear();//删除三角剖分
+				for (int k = 0; k < polygon->points.size(); k++) {
+					polygon->points[k]->isProjeted = false;
+				}
+			}
+			else if (GeometryType::GEOMULTIPOLYGON == geometry->getGeometryType()) {
+				GeoMultiPolygon * multiPolygon = (GeoMultiPolygon *)geometry;
+				for (int m = 0; m < multiPolygon->polygons.size(); m++) {
+					GeoPolygon *polygon = multiPolygon->polygons[m];
+					polygon->isProjeted = false;
+					polygon->triangles.clear();//删除三角剖分
+					for (int k = 0; k < polygon->points.size(); k++) {
+						polygon->points[k]->isProjeted = false;
+					}
+				}
+			}
+		}
+	}
+}
+
 void GeoJsonParese::changeMapProjection()
 {
 	// TODO: 在此处添加实现代码.
@@ -501,6 +540,8 @@ void GeoJsonParese::changeMapProjection()
 	if (dataSource->geoMaps[vId.toInt()]->mapPrj != NULL &&
 		dataSource->geoMaps[vId.toInt()]->mapPrj->mapPrjChanged == false)
 	{
+		//重置map投影
+		initProject(dataSource->geoMaps[vId.toInt()]);
 		switch (dataSource->geoMaps[vId.toInt()]->mapPrj->getMapPrjType())
 		{
 		case MapPrjType::MERCATOR:
@@ -521,6 +562,8 @@ void GeoJsonParese::changeMapProjection()
 	
 	}
 }
+
+
 
 void GeoJsonParese::setStyleFromSLD()
 {

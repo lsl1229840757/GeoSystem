@@ -14,7 +14,6 @@ GeometryType GeoPolygon::getGeometryType(){
 	return GeometryType::GEOPOLYGON;
 }
 
-
 //
 // 参数 ： polygon : 输入的多边形顶点
 //
@@ -49,7 +48,7 @@ vector<GeoPolygon*> GeoPolygon::getTriangles()
 		//先把points转为库的格式
 		gpc_vertex* vertexes = new gpc_vertex[points.size()];
 		for (int i = 0; i < points.size(); i++) {
-			vertexes[i] = {points[i]->x, points[i]->y};
+			vertexes[i] = {points[i]->getX(), points[i]->getY()};
 		}
 		// 只是考虑单边界
 		gpc_vertex_list vertexList = { points.size(), vertexes };

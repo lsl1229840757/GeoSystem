@@ -50,10 +50,20 @@ pair<double,double> GeoPoint::getPtCoor(MapPrjUtil* mapPrj, bool isLastPt, bool 
 
 double GeoPoint::getX()
 {
-	return x;
+	if (!isProjeted) {
+		return x;
+	}
+	else {
+		return prjx;
+	}
 }
 
 double GeoPoint::getY()
 {
-	return y;
+	if (!isProjeted) {
+		return y;
+	}
+	else {
+		return prjy;
+	}
 }

@@ -17,8 +17,8 @@ vector<vector<double>> EsriKernelUtil::computeKernelUsingPoint(QRectF extent, ve
 	//准备好结果
 	vector<vector<double>> kernelResult;
 	//首先计算出extent能够划分出几个方格
-	int hTotalNum = (int)(extent.height / cellSize + 0.5); //高度上有几个方格
-	int wTotalNum = (int)(extent.width / cellSize + 0.5);//宽度上有几个方格
+	int hTotalNum = (int)(extent.height() / cellSize + 0.5); //高度上有几个方格
+	int wTotalNum = (int)(extent.width() / cellSize + 0.5);//宽度上有几个方格
 	//计算population的总量
 	double populationSum = 0;
 	for (int i = 0; i < population.size(); i++) {
@@ -40,5 +40,6 @@ vector<vector<double>> EsriKernelUtil::computeKernelUsingPoint(QRectF extent, ve
 			kernelResult[i].push_back(kernelSum / pow(searchRadius, 2) * populationSum);
 		}
 	}
+	return kernelResult;
 }
 
