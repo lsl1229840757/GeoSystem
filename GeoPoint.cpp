@@ -47,3 +47,13 @@ pair<double,double> GeoPoint::getPtCoor(MapPrjUtil* mapPrj, bool isLastPt, bool 
 	}
 	
 }
+
+double GeoPoint::getX()
+{
+	return x;
+}
+
+double GeoPoint::getY()
+{
+	return y;
+}
