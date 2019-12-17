@@ -182,15 +182,20 @@ void GeoJsonParese::onPressed(QPoint pos)
 		QAction *setStyleSLD = new QAction(tr("Set Style From SLD"), this);
 		QMenu *chooseIndex = new QMenu(tr("Choose Spatial Index"), this);
 		QAction *gridIndex = new QAction(tr("Grid Index"), this);
+		QMenu *chooseTool = new QMenu(tr("Choose Tool"), this);
+		QAction *kernelDens = new QAction(tr("Kernel Density"), this);
 		chooseIndex->addAction(gridIndex);
+		chooseTool->addAction(kernelDens);
 		connect(drawTask, SIGNAL(triggered()), this, SLOT(drawMap()));
 		connect(changeMapPrj, SIGNAL(triggered()), this, SLOT(changeMapProjection()));
 		connect(setStyleSLD, SIGNAL(triggered()), this, SLOT(setStyleFromSLD()));
 		connect(gridIndex, SIGNAL(triggered()), this, SLOT(gridInfo()));
+		connect(kernelDens, SIGNAL(triggered()), this, SLOT(openKernelTool()));
 		pMenu->addAction(drawTask);
 		pMenu->addAction(changeMapPrj);
 		pMenu->addAction(setStyleSLD);
 		pMenu->addMenu(chooseIndex);
+		pMenu->addMenu(chooseTool);
 		pMenu->exec(QCursor::pos());//弹出右键菜单，菜单位置为光标位置
 	}
 	else {
@@ -644,3 +649,17 @@ void GeoJsonParese::showAttrTable(int mapIndex, int layerIndex)
 	attrTable->show();
 }
 
+
+
+void GeoJsonParese::openKernelTool()
+{
+	// TODO: 在此处添加实现代码.
+	//获取被选择item的id
+	QTreeWidgetItem *currentItem = ui.treeWidget->currentItem();
+	QVariant vId = currentItem->data(ID_COLUMN, Qt::UserRole);
+	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
+	GeoMap* map = dataSource->geoMaps[vId.toInt()];
+	KernelToolWidget *kernelToolWidget = new KernelToolWidget(map);
+
+	kernelToolWidget->show();
+}

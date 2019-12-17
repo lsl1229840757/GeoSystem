@@ -68,6 +68,22 @@
     <ClCompile Include="SymbolStyle.cpp" />
     <ClCompile Include="trianglewindow.cpp" />
     <ClCompile Include="triangulate.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_ToolWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ToolWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_KernelToolWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_KernelToolWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KernelToolWidget.cpp">
     <ClCompile Include="KernelUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -117,6 +133,11 @@
     <ClInclude Include="GeoPoint.h" />
     <ClInclude Include="GeoPolygon.h" />
     <ClInclude Include="GeoPolyline.h" />
+    <ClInclude Include="GeneratedFiles\ui_ToolWidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_KernelToolWidget.h">
+      <Filter>Generated Files</Filter>
     <ClInclude Include="KernelUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -152,6 +173,18 @@
     <CustomBuild Include="MGridInfoWidget.ui" />
     <CustomBuild Include="MyTableWidget.ui" />
     <CustomBuild Include="AudioInputWidget.ui" />
+    <CustomBuild Include="ToolWidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ToolWidget.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="KernelToolWidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="KernelToolWidget.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GeoSystem.rc" />

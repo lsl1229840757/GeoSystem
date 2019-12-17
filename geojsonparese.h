@@ -29,6 +29,7 @@
 #include "qmessagebox.h"
 #include "MyTableWidget.h"
 #include "AudioInputWidget.h"
+#include "KernelToolWidget.h"
 class GeoJsonParese : public QMainWindow
 {
 	Q_OBJECT
@@ -64,6 +65,7 @@ public slots:
 	void showAttrTable(int mapIndex, int layerIndex);
 	void voiceSearchRegion();
 	void refreshSelectFeature(QString replyStr);//工具函数，刷新渲染类
+	void openKernelTool(); //打开核密度工具面板
 private:
 	Ui::GeoJsonPareseClass ui;
 
@@ -71,6 +73,7 @@ public:
 	
 	
 	
+
 };
 
 #endif // GEOJSONPARESE_H

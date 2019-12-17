@@ -79,7 +79,8 @@ void SldUtil::parseSldDom(QDomDocument* sldDoc, Layer* layer)
 void SldUtil::parseElement(QDomElement docElem, Layer* layer,bool ruleFlag)
 {
 	// TODO: 在此处添加实现代码.
-	
+
+	//利用递归，可读取各种内容的SLD
 	if (!docElem.hasChildNodes())
 	{
 		qDebug() << "no child" << endl;
