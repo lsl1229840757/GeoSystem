@@ -1,24 +1,34 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="AudioInputWidget.cpp" />
+    <ClCompile Include="AudioUtil.cpp" />
     <ClCompile Include="DatabaseWizard.cpp" />
     <ClCompile Include="Feature.cpp" />
     <ClCompile Include="GdalUtil.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_AudioInputWidget.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_AudioUtil.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_DatabaseWizard.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_geojsonparese.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_MGridInfoWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_MyAction.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_MyColorButton.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_myopenglwidget.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_MyTableWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_openglwindow.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_qpainterwidget.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_StyleWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_trianglewindow.cpp" />
     <ClCompile Include="GeneratedFiles\qrc_geojsonparese.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_AudioInputWidget.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_AudioUtil.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_DatabaseWizard.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_geojsonparese.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_MGridInfoWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_MyAction.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_MyColorButton.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_myopenglwidget.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_MyTableWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_openglwindow.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_qpainterwidget.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_StyleWidget.cpp" />
@@ -38,12 +48,15 @@
     <ClCompile Include="MapPrjLambert.cpp" />
     <ClCompile Include="MapPrjMercator.cpp" />
     <ClCompile Include="MapPrjUtil.cpp" />
+    <ClCompile Include="MGeosUtil.cpp" />
+    <ClCompile Include="MGridInfoWidget.cpp" />
     <ClCompile Include="MouseDragAction.cpp" />
     <ClCompile Include="MouseZoomAction.cpp" />
     <ClCompile Include="MyAction.cpp" />
     <ClCompile Include="MyColorButton.cpp" />
     <ClCompile Include="myopenglwidget.cpp" />
     <ClCompile Include="MyOpenGlWidgetFactory.cpp" />
+    <ClCompile Include="MyTableWidget.cpp" />
     <ClCompile Include="openglwindow.cpp" />
     <ClCompile Include="GeoPoint.cpp" />
     <ClCompile Include="GeoPolygon.cpp" />
@@ -55,52 +68,38 @@
     <ClCompile Include="SymbolStyle.cpp" />
     <ClCompile Include="trianglewindow.cpp" />
     <ClCompile Include="triangulate.cpp" />
-    <ClCompile Include="MGeosUtil.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_ToolWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ToolWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_MGridInfoWidget.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_KernelToolWidget.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_MGridInfoWidget.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_KernelToolWidget.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="MGridInfoWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_MyTableWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_MyTableWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MyTableWidget.cpp">
-    <ClCompile Include="GeneratedFiles\Debug\moc_AudioUtil.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_AudioUtil.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AudioUtil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_AudioInputWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_AudioInputWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AudioInputWidget.cpp">
+    <ClCompile Include="KernelToolWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GeneratedFiles\ui_MGridInfoWidget.h" />
+    <ClInclude Include="GeneratedFiles\ui_MyTableWidget.h" />
+    <ClInclude Include="GeneratedFiles\ui_AudioInputWidget.h" />
     <ClInclude Include="GeneratedFiles\ui_StyleWidget.h" />
+    <ClInclude Include="GeosUtil.h" />
     <ClInclude Include="gpc.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="GridIndex.h" />
     <ClInclude Include="MapPrjLambert.h" />
     <ClInclude Include="MapPrjMercator.h" />
     <ClInclude Include="MapPrjUtil.h" />
+    <ClInclude Include="MGeosUtil.h" />
     <ClInclude Include="MouseDragAction.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SldUtil.h" />
@@ -124,25 +123,22 @@
     <ClInclude Include="GeoPoint.h" />
     <ClInclude Include="GeoPolygon.h" />
     <ClInclude Include="GeoPolyline.h" />
-    <ClInclude Include="GeosUtil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MGeosUtil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_MGridInfoWidget.h">
+    <ClInclude Include="GeneratedFiles\ui_ToolWidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_MyTableWidget.h">
-    <ClInclude Include="GeneratedFiles\ui_AudioInputWidget.h">
+    <ClInclude Include="GeneratedFiles\ui_KernelToolWidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="geojsonparese.h" />
     <CustomBuild Include="geojsonparese.ui" />
+    <CustomBuild Include="AudioUtil.h" />
+    <CustomBuild Include="AudioInputWidget.h" />
+    <CustomBuild Include="MGridInfoWidget.h" />
     <CustomBuild Include="MyAction.h" />
     <CustomBuild Include="MyColorButton.h" />
+    <CustomBuild Include="MyTableWidget.h" />
     <CustomBuild Include="StyleWidget.h" />
     <CustomBuild Include="qpainterwidget.h" />
     <CustomBuild Include="trianglewindow.h" />
@@ -153,23 +149,19 @@
     <CustomBuild Include="qpainterwidget.ui" />
     <CustomBuild Include="myopenglwidget.ui" />
     <CustomBuild Include="StyleWidget.ui" />
-    <CustomBuild Include="MGridInfoWidget.h">
+    <CustomBuild Include="MGridInfoWidget.ui" />
+    <CustomBuild Include="MyTableWidget.ui" />
+    <CustomBuild Include="AudioInputWidget.ui" />
+    <CustomBuild Include="ToolWidget.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="MGridInfoWidget.ui">
+    <CustomBuild Include="ToolWidget.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="MyTableWidget.h">
+    <CustomBuild Include="KernelToolWidget.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="MyTableWidget.ui">
-    <CustomBuild Include="AudioUtil.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="AudioInputWidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="AudioInputWidget.ui">
+    <CustomBuild Include="KernelToolWidget.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>
