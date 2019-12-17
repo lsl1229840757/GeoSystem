@@ -10,7 +10,6 @@ GridIndex::GridIndex()
 GridIndex::GridIndex(QRectF mapRange)
 {
 	this->mapRange = mapRange;
-	
 }
 
 GridIndex::~GridIndex()
@@ -45,7 +44,6 @@ bool GridIndex::createIndex()
 			this->grids.push_back(grid);
 		}
 	}
-
 	this->isIndexCreated = true;
 	return true;
 }

@@ -11,4 +11,3 @@ public:
 	GeometryFactory *geosGeomFactory;  //必须实例化，所有GEOS图形可由此对象创建。不能创建为静态
 	static const GeometryFactory* getDefaultGeometryFactory();
 };
-

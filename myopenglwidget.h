@@ -13,6 +13,7 @@
 #include "MouseZoomAction.h"
 #include "MouseDragAction.h"
 #include "GridIndex.h"
+#include "geos.h"
 class MyOpenGLWidget : public QOpenGLWidget,protected QOpenGLFunctions
 {
 	Q_OBJECT

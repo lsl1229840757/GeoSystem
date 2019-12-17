@@ -70,9 +70,6 @@ private:
 	Ui::GeoJsonPareseClass ui;
 
 public:
-	
-	
-	
 
 };
 

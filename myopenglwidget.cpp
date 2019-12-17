@@ -118,13 +118,15 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 
 	for(int i=0;i<layer->features.size();i++){
 		Feature *feature = layer->features[i];
-		drawFeature(feature);
 		if (feature->isSelected) {
 			//构造一个全蓝色的symbol
 			SymbolStyle *selectSymbol = new SymbolStyle;
 			selectSymbol->fillColor = QColor(0, 0, 255);
 			selectSymbol->strokeColor = QColor(0, 0, 255);
 			drawFeature(feature, selectSymbol);
+		}
+		else {
+			drawFeature(feature);
 		}
 	}
 }
@@ -142,6 +144,32 @@ void MyOpenGLWidget::mouseReleaseEvent(QMouseEvent * event)
 {
 	if (event->button() == Qt::LeftButton) {
 		mouseDrag.finish();
+		//使用空间索引搜索要素
+		if (geoMap->index!=NULL && geoMap->index->isIndexCreated) {
+			if (geoMap->index->getIndexType() == SpatialIndexType::GRID) {
+				GridIndex* gridIndex = (GridIndex*)geoMap->index;
+				geos::io::WKTReader wktReader;
+				QPointF worldPoint = screenCd2worldCd(event->pos());
+				double b, l;
+				geoMap->mapPrj->getBL(worldPoint.x(), worldPoint.y(), &l, &b);
+				Geometry* mousePoint = wktReader.read("Point (" + QString::number(l).toStdString() + " " + QString::number(b).toStdString() + ")");
+				for (int i = 0; i < gridIndex->grids.size(); i++) {
+					Grid* grid = gridIndex->grids[i];
+					if (!grid->geosBound->disjoint(mousePoint)) {
+						//判断grid中是否有要素和其相交
+						for (int j = 0; j < grid->pfeatures.size(); j++) {
+							Feature * feature = grid->pfeatures[j];
+							if (!feature->geosGeom->disjoint(mousePoint)) {
+								//不分类即相交
+								feature->isSelected = true;
+								return;
+							}
+						}
+					}
+				}
+				update();
+			}
+		}
 	}
 }
 
@@ -176,7 +204,10 @@ void MyOpenGLWidget::mouseMoveEvent(QMouseEvent * event)
 		this->viewRange.moveCenter(center);
 		update();
 	}
-	emit sendCurrentPos(currentPos);
+	double b, l;
+	geoMap->mapPrj->getBL(currentPos.x(), currentPos.y(), &l, &b);
+	emit sendCurrentPos(QPointF(l, b));
+	//emit sendCurrentPos(currentPos); 投影后坐标点
 }
 
 void MyOpenGLWidget::drawFeature(Feature * feature, SymbolStyle* symbolStyle)
@@ -204,10 +235,6 @@ void MyOpenGLWidget::drawFeature(Feature * feature, SymbolStyle* symbolStyle)
 	}
 	else {
 		//其他情况，暂不实现
-	}
-	if (feature->isSelected) {
-		//当feature被选中后重新画一个
-
 	}
 }
 

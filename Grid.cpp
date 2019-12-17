@@ -23,7 +23,6 @@ Grid::~Grid()
 	}
 }
 
-
 void Grid::setGridBoundary(QRectF bound)
 {
 	// TODO: 在此处添加实现代码.
