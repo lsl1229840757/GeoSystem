@@ -660,6 +660,5 @@ void GeoJsonParese::openKernelTool()
 	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
 	GeoMap* map = dataSource->geoMaps[vId.toInt()];
 	KernelToolWidget *kernelToolWidget = new KernelToolWidget(map);
-
 	kernelToolWidget->show();
 }

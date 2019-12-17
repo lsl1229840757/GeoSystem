@@ -3,6 +3,7 @@
 KernelToolWidget::KernelToolWidget(GeoMap *map,QWidget *parent)
 	: ToolWidget(parent)
 {
+	method = NULL;
 	this->geoMap = map;
 	ui.setupUi(this);
 	connect(this, SIGNAL(layerSelected(int,QString)), this, SLOT(addFieldComboItem(int)));
@@ -68,7 +69,7 @@ void KernelToolWidget::sendLayer(int itemID, QString lyName)
 void KernelToolWidget::okSetParam()
 {
 	// TODO: 在此处添加实现代码.
-	
+	kernelDistCalculate();
 	this->close();
 }
 
@@ -82,7 +83,9 @@ void KernelToolWidget::openFileDialog()
 
 void KernelToolWidget::setParam()
 {
+	//记录所有参数
 	if (ui.lineEdit_cell->text().isEmpty() || ui.lineEdit_out->text().isEmpty() || ui.lineEdit_radius->text().isEmpty()){
+		//若有参数edit为空
 		QMessageBox::warning(NULL, "Error", "Parameters could not be empty");
 		return;
 	}
@@ -97,12 +100,36 @@ void KernelToolWidget::setParam()
 		}
 		this->population.push_back(layer->features.at(i)->attributes[populationName].toDouble());
 	}
-	this->distType = ui.comboBox_dist->currentText();
+	QString distTypeStr = ui.comboBox_dist->currentText();
+	//判断距离类型
+	if ("Euclidean distance" == distTypeStr){
+		this->distType = DistanceType::EuclideanDistance;
+		this->method = new EuclideanDistanceUtil;
+	}else if("Geodetic distance" ==distTypeStr) {
+		//暂无实现
+		QMessageBox::information(NULL, "Infomation", "Not supported yet");
+	}
+	this->outputPath = ui.lineEdit_out->text();
 	this->cellSize = ui.lineEdit_cell->text().toDouble();
 	this->searchRadius = ui.lineEdit_radius->text().toDouble();
 	if (cellSize < 0 || searchRadius < 0) {
+		//参数不能为负值
 		QMessageBox::warning(NULL, "Error", "Cell size or search radius could not be negative");
 		return;
 	}
 	emit finishSetParam();
+}
+
+
+void KernelToolWidget::kernelDistCalculate()
+{
+	// TODO: 在此处添加实现代码.
+	if (this->method != NULL) {
+		KernelUtil *kernel = new EsriKernelUtil;
+		//计算核密度
+		vector<vector<double>> outputMtx = kernel->computeKernelUsingPoint(this->extent, this->points, this->population, this->cellSize, this->searchRadius, this->method);
+		//输出栅格GTiff
+		GdalUtil::writeGeoTiff(outputPath, extent, &outputMtx);
+	}
+
 }

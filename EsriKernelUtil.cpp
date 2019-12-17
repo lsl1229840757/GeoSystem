@@ -25,7 +25,9 @@ vector<vector<double>> EsriKernelUtil::computeKernelUsingPoint(QRectF extent, ve
 		populationSum += population[i];
 	}
 	//开始计算每个划分方格的核值
+	vector<double> hReasult; //临时记录高度上的结果，防止内存溢出
 	for (int i = 0; i < wTotalNum; i++) {
+		hReasult.clear();
 		for (int j = 0; j < hTotalNum; j++) {
 			pair<double, double> coord = getCdByNum(extent.left(), extent.top(), cellSize, i, j);
 			double kernelSum = 0;
@@ -37,8 +39,9 @@ vector<vector<double>> EsriKernelUtil::computeKernelUsingPoint(QRectF extent, ve
 				double tempt = 3 / M_PI * pop * pow(1 - pow(distance / searchRadius, 2), 2);
 				kernelSum += tempt;
 			}
-			kernelResult[i].push_back(kernelSum / pow(searchRadius, 2) * populationSum);
+			hReasult.push_back(kernelSum / pow(searchRadius, 2) * populationSum);
 		}
+		kernelResult.push_back(hReasult);
 	}
 	return kernelResult;
 }
