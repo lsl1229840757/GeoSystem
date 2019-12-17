@@ -47,3 +47,23 @@ pair<double,double> GeoPoint::getPtCoor(MapPrjUtil* mapPrj, bool isLastPt, bool 
 	}
 	
 }
+
+double GeoPoint::getX()
+{
+	if (!isProjeted) {
+		return x;
+	}
+	else {
+		return prjx;
+	}
+}
+
+double GeoPoint::getY()
+{
+	if (!isProjeted) {
+		return y;
+	}
+	else {
+		return prjy;
+	}
+}

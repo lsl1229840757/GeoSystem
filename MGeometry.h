@@ -11,9 +11,9 @@ namespace mgeo
 	public:
 		Geometry(void);
 		~Geometry(void);
-
 		//定义一些判断类型的常量
 		QJsonArray coordinates;
+		bool isProjeted;  //feature 是否第一次投影
 		GeometryType virtual getGeometryType() = 0;
 	};
 }

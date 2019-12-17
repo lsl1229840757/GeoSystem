@@ -16,4 +16,6 @@ public:
 	double isFirstProjeted;
 	// //获取点坐标
 	pair<double,double> getPtCoor(MapPrjUtil* mapPrj, bool isLastPt, bool &isFeaFirstPrj);
+	double getX();
+	double getY();
 };

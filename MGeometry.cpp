@@ -3,6 +3,7 @@
 
 mgeo::Geometry::Geometry(void)
 {
+	isProjeted = false;
 }
 
 

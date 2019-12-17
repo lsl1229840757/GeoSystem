@@ -118,239 +118,13 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 
 	for(int i=0;i<layer->features.size();i++){
 		Feature *feature = layer->features[i];
-		mgeo::Geometry *geometry = feature->geometry;
-		bool isLastPt = false;  //判断feature最后一个点
-		pair<double, double> tmpPt; //临时存储点坐标
-		SymbolStyle symbolStyle = feature->symbolStyle;
-		float maxColorComponent = 255.0;
-		GLfloat normalFillRed, normalFillGreen, normalFillBlue, normalStrokeRed, normalStrokeGreen, normalStrokeBlue;
-		//规范化fill颜色
-		if (symbolStyle.fillColor.isValid()) {//判断fill颜色是否储存
-			normalFillRed = symbolStyle.fillColor.red() / maxColorComponent;
-			normalFillGreen = symbolStyle.fillColor.green() / maxColorComponent;
-			normalFillBlue = symbolStyle.fillColor.blue() / maxColorComponent;
-		}else {
-			normalFillRed = 1.0;
-			normalFillGreen = 0.0;
-			normalFillBlue = 0.0;
-		}
-
-		//规范化stroke颜色
-		if (symbolStyle.strokeColor.isValid()) {
-			normalStrokeRed = symbolStyle.strokeColor.red() / maxColorComponent;
-			normalStrokeGreen = symbolStyle.strokeColor.green() / maxColorComponent;
-			normalStrokeBlue = symbolStyle.strokeColor.blue() / maxColorComponent;
-		}else {
-			normalStrokeRed = 0.0;
-			normalStrokeGreen = 1.0;
-			normalStrokeBlue = 1.0;
-		}
-
-		if(GeometryType::GEOPOINT==geometry->getGeometryType()){
-			//点绘制
-			GeoPoint *point = (GeoPoint*) geometry;
-			glBegin(GL_POINTS);
-			if (feature->isSelected) {
-				//查询和后被选中点变成蓝色
-				glColor3f(0.0, 0.0, 1.0);
-			}
-			else {
-				glColor3f(1.0, 0.0, 0.0);
-			}
-			isLastPt = true;
-			//获取点坐标
-			tmpPt = point->getPtCoor(geoMap->mapPrj, isLastPt, feature->isFirstProjeted);
-			glVertex2f(tmpPt.first, tmpPt.second);
-			glEnd();
-		}else if(GeometryType::GEOPOLYLINE==geometry->getGeometryType()){
-			//线绘制
-			glLineWidth(symbolStyle.strokeWidth);//线宽
-			//glLineStipple(1, 0xFFFF);  //点绘制实线
-			glBegin(GL_LINE_STRIP);
-			GeoPolyline *polyline = (GeoPolyline *)geometry;
-			for(int j=0;j<polyline->points.size();j++){
-				GeoPoint *point = polyline->points[j];
-				if (feature->isSelected) {
-					//查询后被选中线变为蓝色
-					glColor3f(0, 0, 1);
-				}
-				else {
-					glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
-				}
-				//最后一个元素时改变isLastPt
-				if (j == polyline->points.size() - 1) { isLastPt = true; }
-				tmpPt = point->getPtCoor(geoMap->mapPrj, isLastPt, feature->isFirstProjeted);
-				glVertex2f(tmpPt.first, tmpPt.second);
-			}
-			glEnd();
-		}else if(GeometryType::GEOPOLYGON==geometry->getGeometryType()){
-			//面绘制
-			GeoPolygon *polygon = (GeoPolygon *)geometry;
-			if (!polygon->isConvex()) {
-				//剖分前先记录原始点坐标的投影坐标
-				if (geoMap->mapPrj != NULL) {
-					if (feature->isFirstProjeted) {
-						for (int j = 0; j < polygon->points.size(); j++) {
-							GeoPoint *point = polygon->points[j];
-							double prjx, prjy;
-							geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-							point->prjx = prjx;
-							point->prjy = prjy;
-						}
-					}
-				}
-				//不是凸多边形,开始剖分
-				vector<GeoPolygon *> triangles = polygon->getTriangles();
-				// 设置正面为填充模式
-				glBegin(GL_TRIANGLES);
-				for (int j = 0; j < triangles.size(); j++) {
-					for (int k = 0; k < triangles[j]->points.size(); k++) {
-						GeoPoint *point = triangles[j]->points[k];
-						if (feature->isSelected) {
-							glColor3f(0, 0, 1);
-						}else{
-							glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
-						}
-						//最后一个pt改变isLastPt
-						if ((k == triangles[j]->points.size() - 1) && (j == triangles.size() - 1)) {
-							isLastPt = true; 
-						}
-						//获取点坐标
-						tmpPt = point->getPtCoor(geoMap->mapPrj, isLastPt, feature->isFirstProjeted);
-						glVertex2f(tmpPt.first, tmpPt.second);
-					}
-				}
-				glEnd();
-			}
-			else {
-				glBegin(GL_POLYGON);
-				for (int j = 0; j < polygon->points.size(); j++) {
-					GeoPoint *point = polygon->points[j];
-					if (feature->isSelected) {
-						glColor3f(0, 0, 1);
-					}
-					else {
-						glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
-					}
-					//最后一个pt改变isLastPt
-					if (j == polygon->points.size() - 1){
-						isLastPt = true;
-					}
-					tmpPt = point->getPtCoor(geoMap->mapPrj, isLastPt, feature->isFirstProjeted);
-					glVertex2f(tmpPt.first, tmpPt.second);
-				}
-				glEnd();
-			}
-			isLastPt = false;
-			//描绘多边形边界
-			glLineWidth(symbolStyle.strokeWidth);
-			//glLineStipple(1, 0xFFFF);  //点绘制实线
-			glBegin(GL_LINE_STRIP);
-			for (int j = 0; j < polygon->points.size(); j++) {
-				GeoPoint *point = polygon->points[j];
-				if (feature->isSelected) {
-					//如果被查询后选中,边界变成蓝色
-					glColor3f(0, 0, 1);
-				}
-				else {
-					glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
-				}
-				if (j == polygon->points.size() - 1)isLastPt = true;
-				tmpPt = point->getPtCoor(geoMap->mapPrj, isLastPt, feature->isFirstProjeted);
-				glVertex2f(tmpPt.first, tmpPt.second);
-			}
-			glEnd();
-		}else if(GeometryType::GEOMULTIPOLYGON==geometry->getGeometryType()){
-			//多面绘制
-			GeoMultiPolygon* multiPly = (GeoMultiPolygon*)geometry;
-			for (int m = 0; m < multiPly->polygons.size(); m++)
-			{
-				GeoPolygon *polygon = multiPly->polygons[m];
-				if (!polygon->isConvex()) {
-					//剖分前先记录原始点坐标的投影坐标
-					if (geoMap->mapPrj != NULL) {
-						if (feature->isFirstProjeted) {
-							for (int j = 0; j < polygon->points.size(); j++) {
-								GeoPoint *point = polygon->points[j];
-								double prjx, prjy;
-								geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
-								point->prjx = prjx;
-								point->prjy = prjy;
-							}
-						}
-					}
-					//不是凸多边形,开始剖分
-					vector<GeoPolygon *> triangles = polygon->getTriangles();
-					glBegin(GL_TRIANGLE_STRIP);
-					for (int j = 0; j < triangles.size(); j++) {
-						for (int k = 0; k < triangles[j]->points.size(); k++) {
-							GeoPoint *point = triangles[j]->points[k];
-							if (feature->isSelected) {
-								glColor3f(0, 0, 1);
-							}
-							else {
-								glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
-							}
-							//最后一个pt改变isLastPt
-							if ((k == triangles[j]->points.size() - 1)&& (j == triangles.size() - 1)
-								&& (m == multiPly->polygons.size() - 1)) 
-							{
-								isLastPt = true;
-							}
-							tmpPt = point->getPtCoor(geoMap->mapPrj, isLastPt, feature->isFirstProjeted);
-							glVertex2f(tmpPt.first, tmpPt.second);
-						}
-					}
-					glEnd();
-				}
-				else {
-					glBegin(GL_POLYGON);
-					for (int k = 0; k < polygon->points.size(); k++) {
-						GeoPoint *point = polygon->points[k];
-						if (feature->isSelected) {
-							glColor3f(0, 0, 1);
-						}
-						else {
-							glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
-						}
-						//最后一个pt改变isLastPt
-						if ((k == polygon->points.size() - 1) && (m == multiPly->polygons.size() - 1))
-						{
-							isLastPt = true;
-						}
-						tmpPt = point->getPtCoor(geoMap->mapPrj, isLastPt, feature->isFirstProjeted);
-						glVertex2f(tmpPt.first, tmpPt.second);
-					}
-					glEnd();
-				}
-			}
-			//描绘多面边界
-			glLineWidth(symbolStyle.strokeWidth);
-			for (int m = 0; m < multiPly->polygons.size(); m++)
-			{
-				GeoPolygon *polygon = multiPly->polygons.at(m);
-				glBegin(GL_LINE_STRIP);
-				for (int j = 0; j < polygon->points.size(); j++) {
-					GeoPoint *point = polygon->points[j];
-					if (feature->isSelected) {
-						//如果被查询后选中,边界变成蓝色
-						glColor3f(0, 0, 1);
-					}
-					else {
-						glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
-					}
-					//最后一个pt改变isLastPt
-					if(j == polygon->points.size() - 1)
-					{
-						isLastPt = true;
-					}
-					tmpPt = point->getPtCoor(geoMap->mapPrj, isLastPt, feature->isFirstProjeted);
-					glVertex2f(tmpPt.first, tmpPt.second);
-				}
-				glEnd();
-			}
-		}else {
-			//其他情况，暂不实现
+		drawFeature(feature);
+		if (feature->isSelected) {
+			//构造一个全蓝色的symbol
+			SymbolStyle *selectSymbol = new SymbolStyle;
+			selectSymbol->fillColor = QColor(0, 0, 255);
+			selectSymbol->strokeColor = QColor(0, 0, 255);
+			drawFeature(feature, selectSymbol);
 		}
 	}
 }
@@ -374,22 +148,9 @@ void MyOpenGLWidget::mouseReleaseEvent(QMouseEvent * event)
 
 void MyOpenGLWidget::wheelEvent(QWheelEvent * event)
 {
-	/*
-	QPointF blCenterPos = this->centerPos;
-	double bb, ll;  //经纬度
-	if (geoMap->mapPrj != NULL)
-	{
-		//有投影时先反算经纬度
-		geoMap->mapPrj->getBL(this->centerPos.rx(),this->centerPos.ry(),&ll,&bb);
-		blCenterPos = QPointF(ll,bb);
-	}*/
-
 	if (event->delta() > 0) {//如果滚轮往上滚，就放大
 		
 		QRectF vRange = mouseZoom.zoomIn(this->centerPos); 
-		//if (geoMap->mapPrj != NULL){
-		//	this->viewRange = geoMap->mapPrj->getPrjRange(vRange);
-		//}
 		this->viewRange = vRange;
 		update();
 	}
@@ -417,6 +178,229 @@ void MyOpenGLWidget::mouseMoveEvent(QMouseEvent * event)
 	}
 	emit sendCurrentPos(currentPos);
 }
+
+void MyOpenGLWidget::drawFeature(Feature * feature, SymbolStyle* symbolStyle)
+{
+	mgeo::Geometry *geometry = feature->geometry;
+	SymbolStyle drawSymbol;
+	if (symbolStyle != nullptr) {
+		drawSymbol = *symbolStyle;
+	}
+	else {
+		drawSymbol = feature->symbolStyle;
+	}
+	//开始画画
+	if (GeometryType::GEOPOINT == geometry->getGeometryType()) {
+		drawPoint(geometry, drawSymbol);
+	}
+	else if (GeometryType::GEOPOLYLINE == geometry->getGeometryType()) {
+		drawPolyline(geometry, drawSymbol);
+	}
+	else if (GeometryType::GEOPOLYGON == geometry->getGeometryType()) {
+		drawPolygon(geometry, drawSymbol);
+	}
+	else if (GeometryType::GEOMULTIPOLYGON == geometry->getGeometryType()) {
+		drawMultiPolygon(geometry, drawSymbol);
+	}
+	else {
+		//其他情况，暂不实现
+	}
+	if (feature->isSelected) {
+		//当feature被选中后重新画一个
+
+	}
+}
+
+void MyOpenGLWidget::drawPoint(mgeo::Geometry *geometry, SymbolStyle symbolStyle)
+{
+	//规范化symbol
+	vector<double> normalResult = normalizeSymbol(symbolStyle);
+	GLfloat normalFillRed, normalFillGreen, normalFillBlue, normalStrokeRed, normalStrokeGreen, normalStrokeBlue;
+	normalFillRed = normalResult[0];
+	normalFillGreen = normalResult[1];
+	normalFillBlue = normalResult[2];
+	normalStrokeRed = normalResult[3];
+	normalStrokeGreen = normalResult[4];
+	normalStrokeBlue = normalResult[5];
+
+	//点投影
+	GeoPoint * point = (GeoPoint *)geometry;
+	if (geoMap->mapPrj != NULL) {
+		//如果是第一次投影就运算一次
+		if (!point->isProjeted) {
+			double prjx, prjy;
+			geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+			point->prjx = prjx;
+			point->prjy = prjy;
+			//投影完成
+			point->isProjeted = true;
+		}
+	}
+	glBegin(GL_POINTS);
+	glColor3f(1.0, 0.0, 0.0);
+	//获取点坐标
+	glVertex2f(point->getX(), point->getY());
+	glEnd();
+}
+
+void MyOpenGLWidget::drawPolyline(mgeo::Geometry *geometry, SymbolStyle symbolStyle)
+{
+	//规范化symbol
+	vector<double> normalResult = normalizeSymbol(symbolStyle);
+	GLfloat normalFillRed, normalFillGreen, normalFillBlue, normalStrokeRed, normalStrokeGreen, normalStrokeBlue;
+	normalFillRed = normalResult[0];
+	normalFillGreen = normalResult[1];
+	normalFillBlue = normalResult[2];
+	normalStrokeRed = normalResult[3];
+	normalStrokeGreen = normalResult[4];
+	normalStrokeBlue = normalResult[5];
+	//线投影
+	GeoPolyline * polyLine = (GeoPolyline *)geometry;
+	if (geoMap->mapPrj != NULL) {
+		//如果是第一次投影就运算一次
+		if (!geometry->isProjeted) {
+			for (int j = 0; j < polyLine->points.size(); j++) {
+				GeoPoint *point = polyLine->points[j];
+				double prjx, prjy;
+				geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+				point->prjx = prjx;
+				point->prjy = prjy;
+				point->isProjeted = true;
+			}
+			//投影完成
+			geometry->isProjeted = true;
+		}
+	}
+
+	//线绘制
+	glLineWidth(symbolStyle.strokeWidth);//线宽
+	//glLineStipple(1, 0xFFFF);  //点绘制实线
+	glBegin(GL_LINE_STRIP);
+	GeoPolyline *polyline = (GeoPolyline *)geometry;
+	for (int j = 0; j < polyline->points.size(); j++) {
+		GeoPoint *point = polyline->points[j];
+		glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
+		//最后一个元素时改变isLastPt
+		glVertex2f(point->getX(), point->getY());
+	}
+	glEnd();
+}
+
+void MyOpenGLWidget::drawPolygon(mgeo::Geometry *geometry, SymbolStyle symbolStyle)
+{
+	//规范化symbol
+	vector<double> normalResult = normalizeSymbol(symbolStyle);
+	GLfloat normalFillRed, normalFillGreen, normalFillBlue, normalStrokeRed, normalStrokeGreen, normalStrokeBlue;
+	normalFillRed = normalResult[0];
+	normalFillGreen = normalResult[1];
+	normalFillBlue = normalResult[2];
+	normalStrokeRed = normalResult[3];
+	normalStrokeGreen = normalResult[4];
+	normalStrokeBlue = normalResult[5];
+
+	//面绘制
+	GeoPolygon *polygon = (GeoPolygon *)geometry;
+	//开始投影
+	if (geoMap->mapPrj != NULL) {
+		//如果是第一次投影就运算一次
+		if (!geometry->isProjeted) {
+			for (int j = 0; j < polygon->points.size(); j++) {
+				GeoPoint *point = polygon->points[j];
+				double prjx, prjy;
+				geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+				point->prjx = prjx;
+				point->prjy = prjy;
+				point->isProjeted = true;
+			}
+			//投影完成
+			geometry->isProjeted = true;
+		}
+	}
+	//开始三角剖分
+	if (!polygon->isConvex()) {
+		//不是凸多边形,开始剖分
+		vector<GeoPolygon *> triangles = polygon->getTriangles();
+		// 设置正面为填充模式
+		glBegin(GL_TRIANGLES);
+		for (int j = 0; j < triangles.size(); j++) {
+			for (int k = 0; k < triangles[j]->points.size(); k++) {
+				GeoPoint *point = triangles[j]->points[k];
+				glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
+				glVertex2f(point->getX(), point->getY());
+			}
+		}
+		glEnd();
+	}
+	else {
+		glBegin(GL_POLYGON);
+		for (int j = 0; j < polygon->points.size(); j++) {
+			GeoPoint *point = polygon->points[j];
+			glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
+			glVertex2f(point->getX(), point->getY());
+		}
+		glEnd();
+	}
+	//描绘多边形边界
+	glLineWidth(symbolStyle.strokeWidth);
+	//glLineStipple(1, 0xFFFF);  //点绘制实线
+	glBegin(GL_LINE_STRIP);
+	for (int j = 0; j < polygon->points.size(); j++) {
+		GeoPoint *point = polygon->points[j];
+		glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
+		glVertex2f(point->getX(), point->getY());
+	}
+	glEnd();
+
+}
+
+void MyOpenGLWidget::drawMultiPolygon(mgeo::Geometry *geometry, SymbolStyle symbolStyle)
+{
+	//多面绘制
+	GeoMultiPolygon* multiPly = (GeoMultiPolygon*)geometry;
+	for (int m = 0; m < multiPly->polygons.size(); m++)
+	{
+		drawPolygon(multiPly->polygons[m], symbolStyle);
+	}
+}
+
+vector<double> MyOpenGLWidget::normalizeSymbol(SymbolStyle symbolStyle)
+{
+	float maxColorComponent = 255.0;
+	GLfloat normalFillRed, normalFillGreen, normalFillBlue, normalStrokeRed, normalStrokeGreen, normalStrokeBlue;
+	//规范化fill颜色
+	if (symbolStyle.fillColor.isValid()) {//判断fill颜色是否储存
+		normalFillRed = symbolStyle.fillColor.red() / maxColorComponent;
+		normalFillGreen = symbolStyle.fillColor.green() / maxColorComponent;
+		normalFillBlue = symbolStyle.fillColor.blue() / maxColorComponent;
+	}
+	else {
+		normalFillRed = 1.0;
+		normalFillGreen = 0.0;
+		normalFillBlue = 0.0;
+	}
+
+	//规范化stroke颜色
+	if (symbolStyle.strokeColor.isValid()) {
+		normalStrokeRed = symbolStyle.strokeColor.red() / maxColorComponent;
+		normalStrokeGreen = symbolStyle.strokeColor.green() / maxColorComponent;
+		normalStrokeBlue = symbolStyle.strokeColor.blue() / maxColorComponent;
+	}
+	else {
+		normalStrokeRed = 0.0;
+		normalStrokeGreen = 1.0;
+		normalStrokeBlue = 1.0;
+	}
+	//结果
+	vector<double> normalResult;
+	normalResult.push_back(normalFillRed);
+	normalResult.push_back(normalFillGreen);
+	normalResult.push_back(normalFillBlue);
+	normalResult.push_back(normalStrokeRed);
+	normalResult.push_back(normalStrokeGreen);
+	normalResult.push_back(normalStrokeBlue);
+	return normalResult;
+}
+
 
 QPointF MyOpenGLWidget::normalCd2worldCd(double x, double y)
 {
@@ -451,12 +435,3 @@ QPointF MyOpenGLWidget::screenCd2worldCd(QPointF screenPoint)
 	// ??这里的标准化坐标是上面-1，下面+1
 	return normalCd2worldCd(x, -y);
 }
-
-  //   glBegin(GL_TRIANGLES);
-  //      glColor3f(1.0, 0.0, 0.0);
-  //      glVertex3f(550000, 550000, 0);
-  //      glColor3f(0.0, 1.0, 0.0);
-  //      glVertex3f( 250000, 150000, 0);
-  //      glColor3f(0.0, 0.0, 1.0);
-  //      glVertex3f( 200000,  250000, 0);
-  //glEnd();

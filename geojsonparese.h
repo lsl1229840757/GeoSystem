@@ -43,7 +43,7 @@ public:
 	void updateParentItem(QTreeWidgetItem *item);
 	QString log;
 	MyOpenGlWidgetFactory myOpenGLWidgetFactory;
-
+	void initProject(GeoMap* map); //重置投影
 public slots:
 	void showCurrentPos(QPointF currentPos);
 	void parseGeoJson();
