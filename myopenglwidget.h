@@ -48,6 +48,7 @@ public:
 	QPointF screenCd2worldCd(QPointF screenPoint);
 	vector<Feature *> selectedFeature;
 	bool searchByClick(QPoint screenPoint);
+	void searchByQuad(Geometry* worldPoint, QuadNode* node);
 	//分层设色
 	void setStyleByProperties(Layer *layer, QString propertyName);
 protected:

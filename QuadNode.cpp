@@ -1,5 +1,5 @@
 #include "QuadNode.h"
-const int QuadNode::MAX_ELEM_NUM = 5;
+const int QuadNode::MAX_ELEM_NUM = 30;
 
 QuadNode::QuadNode(int depth,QRectF bound)
 {

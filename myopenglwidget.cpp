@@ -442,8 +442,49 @@ bool MyOpenGLWidget::searchByClick(QPoint screenPoint)
 				}
 			}
 		}
+		else if (geoMap->index->getIndexType() == SpatialIndexType::QUADTREE) {
+			QuadTreeIndex* quadIndex = (QuadTreeIndex*)geoMap->index;
+			geos::io::WKTReader wktReader;
+			QPointF worldPoint = screenCd2worldCd(screenPoint);
+			double b, l;
+			if (geoMap->mapPrj != NULL) {
+				geoMap->mapPrj->getBL(worldPoint.x(), worldPoint.y(), &l, &b);
+			}
+			else {
+				b = worldPoint.x();
+				l = worldPoint.y();
+			}
+			Geometry* mousePoint = wktReader.read("Point (" + QString::number(l).toStdString() + " " + QString::number(b).toStdString() + ")");
+			searchByQuad(mousePoint, quadIndex->quadTree->root);
+		}
 	}
 	return false;
+}
+
+void MyOpenGLWidget::searchByQuad(Geometry* worldPoint, QuadNode* node)
+{
+	if (!node->geosBound->disjoint(worldPoint)) {
+		//相交后
+		if (!node->isLeaf()) {
+			//不是叶节点
+			for (int i = 0; i < 4; i++) {
+				searchByQuad(worldPoint, node->childNodes[i]);
+			}
+		}
+		else {
+			//是叶节点
+			for (int j = 0; j < node->pfeatures.size(); j++) {
+				Feature * feature = node->pfeatures[j];
+				if (!feature->geosGeom->disjoint(worldPoint)) {
+					//不分离即相交
+					feature->isSelected = true;
+					selectedFeature.push_back(feature);
+					update();
+					return;
+				}
+			}
+		}
+	}
 }
 
 void MyOpenGLWidget::setStyleByProperties(Layer * layer, QString propertyName)
