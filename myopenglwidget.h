@@ -13,6 +13,8 @@
 #include "MouseZoomAction.h"
 #include "MouseDragAction.h"
 #include "GridIndex.h"
+#include "QuadNode.h"
+#include "QuadTreeIndex.h"
 #include "geos.h"
 class MyOpenGLWidget : public QOpenGLWidget,protected QOpenGLFunctions
 {
@@ -77,5 +79,8 @@ signals:
 	void sendCurrentPos(QPointF pos);
 private:
 	Ui::MyOpenGLWidget ui;
+public:
+	void drawIndex();
+	void drawQuadTreeIndexNode(QuadNode* node);
 };
 #endif // MYOPENGLWIDGET_H

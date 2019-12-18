@@ -182,14 +182,17 @@ void GeoJsonParese::onPressed(QPoint pos)
 		QAction *setStyleSLD = new QAction(tr("Set Style From SLD"), this);
 		QMenu *chooseIndex = new QMenu(tr("Choose Spatial Index"), this);
 		QAction *gridIndex = new QAction(tr("Grid Index"), this);
+		QAction *quadIndex = new QAction(tr("Quadtree Index"), this);
 		QMenu *chooseTool = new QMenu(tr("Choose Tool"), this);
 		QAction *kernelDens = new QAction(tr("Kernel Density"), this);
 		chooseIndex->addAction(gridIndex);
+		chooseIndex->addAction(quadIndex);
 		chooseTool->addAction(kernelDens);
 		connect(drawTask, SIGNAL(triggered()), this, SLOT(drawMap()));
 		connect(changeMapPrj, SIGNAL(triggered()), this, SLOT(changeMapProjection()));
 		connect(setStyleSLD, SIGNAL(triggered()), this, SLOT(setStyleFromSLD()));
 		connect(gridIndex, SIGNAL(triggered()), this, SLOT(gridInfo()));
+		connect(quadIndex, SIGNAL(triggered()), this, SLOT(setQuadTreeIndex()));
 		connect(kernelDens, SIGNAL(triggered()), this, SLOT(openKernelTool()));
 		pMenu->addAction(drawTask);
 		pMenu->addAction(changeMapPrj);
@@ -588,14 +591,16 @@ void GeoJsonParese::setGridIndex(int colCount,int rowCount)
 	QVariant vId = currentItem->data(ID_COLUMN, Qt::UserRole);
 	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
 	GeoMap* map = dataSource->geoMaps[vId.toInt()];
-	if (map->index == NULL)
-	{
-		map->index = new GridIndex(map->maxRange);
-		((GridIndex*)map->index)->setColRow(colCount, rowCount);  //设置行数和列数
-		map->index->createIndex();
-		for (int i = 0; i < map->layers.size(); i++) {
-			map->index->addAllObjID(map->layers.at(i));   //添加索引目标
-		}
+	if (map->index != NULL){
+		//有索引时重建索引
+		delete map->index;
+		map->index = NULL;
+	}
+	map->index = new GridIndex(map->maxRange);
+	((GridIndex*)map->index)->setColRow(colCount, rowCount);  //设置行数和列数
+	map->index->createIndex();
+	for (int i = 0; i < map->layers.size(); i++) {
+		map->index->addAllObjID(map->layers.at(i));   //添加索引目标
 	}
 	MyOpenGLWidget* myOpenGlWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(map);
 	myOpenGlWidget->update();
@@ -654,4 +659,29 @@ void GeoJsonParese::openKernelTool()
 	GeoMap* map = dataSource->geoMaps[vId.toInt()];
 	KernelToolWidget *kernelToolWidget = new KernelToolWidget(map);
 	kernelToolWidget->show();
+}
+
+
+void GeoJsonParese::setQuadTreeIndex()
+{
+	// TODO: 在此处添加实现代码.
+	//获取被选择item的id
+	QTreeWidgetItem *currentItem = ui.treeWidget->currentItem();
+	QVariant vId = currentItem->data(ID_COLUMN, Qt::UserRole);
+	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
+	GeoMap* map = dataSource->geoMaps[vId.toInt()];
+	if (map->index != NULL) {
+		//有索引时重建索引
+		delete map->index;
+		map->index = NULL;
+	}
+	map->index = new QuadTreeIndex(0,map->maxRange);
+	map->index->createIndex();
+	for (int i = 0; i < map->layers.size(); i++) {
+		map->index->addAllObjID(map->layers.at(i));   //添加索引目标
+	}
+	MyOpenGLWidget* myOpenGlWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(map);
+	myOpenGlWidget->update();
+	log += "Create Quadtree Spatial Index successfully!\n";
+	ui.textBrowser->setText(log);
 }
