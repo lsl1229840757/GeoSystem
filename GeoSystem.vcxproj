@@ -319,6 +319,9 @@
     <ClCompile Include="GeoPolygon.cpp" />
     <ClCompile Include="GeoPolyline.cpp" />
     <ClCompile Include="qpainterwidget.cpp" />
+    <ClCompile Include="QuadNode.cpp" />
+    <ClCompile Include="QuadTree.cpp" />
+    <ClCompile Include="QuadTreeIndex.cpp" />
     <ClCompile Include="SldUtil.cpp" />
     <ClCompile Include="SpatialIndex.cpp" />
     <ClCompile Include="StyleWidget.cpp" />
@@ -513,6 +516,9 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_XML_LIB -DQT_WIDGETS_LIB -DQT_XMLPATTERNS_LIB -DQT_NETWORK_LIB -D%(PreprocessorDefinitions) "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtXmlPatterns" "-I$(QTDIR)\include\QtNetwork"</Command>
     </CustomBuild>
+    <ClInclude Include="QuadNode.h" />
+    <ClInclude Include="QuadTree.h" />
+    <ClInclude Include="QuadTreeIndex.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SldUtil.h" />
     <ClInclude Include="SpatialIndex.h" />

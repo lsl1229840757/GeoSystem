@@ -4,12 +4,16 @@
     <ClCompile Include="AudioInputWidget.cpp" />
     <ClCompile Include="AudioUtil.cpp" />
     <ClCompile Include="DatabaseWizard.cpp" />
+    <ClCompile Include="DistanceUtil.cpp" />
+    <ClCompile Include="EsriKernelUtil.cpp" />
+    <ClCompile Include="EuclideanDistanceUtil.cpp" />
     <ClCompile Include="Feature.cpp" />
     <ClCompile Include="GdalUtil.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_AudioInputWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_AudioUtil.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_DatabaseWizard.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_geojsonparese.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_KernelToolWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_MGridInfoWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_MyAction.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_MyColorButton.cpp" />
@@ -18,12 +22,14 @@
     <ClCompile Include="GeneratedFiles\Debug\moc_openglwindow.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_qpainterwidget.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_StyleWidget.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_ToolWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_trianglewindow.cpp" />
     <ClCompile Include="GeneratedFiles\qrc_geojsonparese.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_AudioInputWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_AudioUtil.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_DatabaseWizard.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_geojsonparese.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_KernelToolWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_MGridInfoWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_MyAction.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_MyColorButton.cpp" />
@@ -32,9 +38,12 @@
     <ClCompile Include="GeneratedFiles\Release\moc_openglwindow.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_qpainterwidget.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_StyleWidget.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_ToolWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_trianglewindow.cpp" />
     <ClCompile Include="GeoDataSource.cpp" />
     <ClCompile Include="geojsonparese.cpp" />
+    <ClCompile Include="KernelToolWidget.cpp" />
+    <ClCompile Include="KernelUtil.cpp" />
     <ClCompile Include="MGeometry.cpp" />
     <ClCompile Include="GeoMultiPolygon.cpp" />
     <ClCompile Include="GeoMultiPolyline.cpp" />
@@ -66,46 +75,34 @@
     <ClCompile Include="SpatialIndex.cpp" />
     <ClCompile Include="StyleWidget.cpp" />
     <ClCompile Include="SymbolStyle.cpp" />
+    <ClCompile Include="ToolWidget.cpp" />
     <ClCompile Include="trianglewindow.cpp" />
     <ClCompile Include="triangulate.cpp" />
-    <ClCompile Include="GeneratedFiles\Debug\moc_ToolWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ToolWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ToolWidget.cpp">
+    <ClCompile Include="QuadTreeIndex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_KernelToolWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_KernelToolWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="KernelToolWidget.cpp">
-    <ClCompile Include="KernelUtil.cpp">
+    <ClCompile Include="QuadNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DistanceUtil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EuclideanDistanceUtil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EsriKernelUtil.cpp">
+    <ClCompile Include="QuadTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GeneratedFiles\ui_KernelToolWidget.h" />
+    <ClInclude Include="DistanceUtil.h" />
+    <ClInclude Include="EsriKernelUtil.h" />
+    <ClInclude Include="EuclideanDistanceUtil.h" />
     <ClInclude Include="GeneratedFiles\ui_MGridInfoWidget.h" />
     <ClInclude Include="GeneratedFiles\ui_MyTableWidget.h" />
     <ClInclude Include="GeneratedFiles\ui_AudioInputWidget.h" />
     <ClInclude Include="GeneratedFiles\ui_StyleWidget.h" />
+    <ClInclude Include="GeneratedFiles\ui_ToolWidget.h" />
     <ClInclude Include="GeosUtil.h" />
     <ClInclude Include="gpc.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="GridIndex.h" />
+    <ClInclude Include="KernelUtil.h" />
     <ClInclude Include="MapPrjLambert.h" />
     <ClInclude Include="MapPrjMercator.h" />
     <ClInclude Include="MapPrjUtil.h" />
@@ -133,21 +130,13 @@
     <ClInclude Include="GeoPoint.h" />
     <ClInclude Include="GeoPolygon.h" />
     <ClInclude Include="GeoPolyline.h" />
-    <ClInclude Include="GeneratedFiles\ui_ToolWidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_KernelToolWidget.h">
-      <Filter>Generated Files</Filter>
-    <ClInclude Include="KernelUtil.h">
+    <ClInclude Include="QuadTreeIndex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DistanceUtil.h">
+    <ClInclude Include="QuadNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EuclideanDistanceUtil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EsriKernelUtil.h">
+    <ClInclude Include="QuadTree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -156,11 +145,13 @@
     <CustomBuild Include="geojsonparese.ui" />
     <CustomBuild Include="AudioUtil.h" />
     <CustomBuild Include="AudioInputWidget.h" />
+    <CustomBuild Include="KernelToolWidget.h" />
     <CustomBuild Include="MGridInfoWidget.h" />
     <CustomBuild Include="MyAction.h" />
     <CustomBuild Include="MyColorButton.h" />
     <CustomBuild Include="MyTableWidget.h" />
     <CustomBuild Include="StyleWidget.h" />
+    <CustomBuild Include="ToolWidget.h" />
     <CustomBuild Include="qpainterwidget.h" />
     <CustomBuild Include="trianglewindow.h" />
     <CustomBuild Include="DatabaseWizard.h" />
@@ -173,18 +164,8 @@
     <CustomBuild Include="MGridInfoWidget.ui" />
     <CustomBuild Include="MyTableWidget.ui" />
     <CustomBuild Include="AudioInputWidget.ui" />
-    <CustomBuild Include="ToolWidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="ToolWidget.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="KernelToolWidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="KernelToolWidget.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
+    <CustomBuild Include="ToolWidget.ui" />
+    <CustomBuild Include="KernelToolWidget.ui" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GeoSystem.rc" />
