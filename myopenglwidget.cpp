@@ -1,5 +1,5 @@
 #include "myopenglwidget.h"
-
+static vector<QColor> colorList = {QColor(144,238,144), QColor(32,124,202), QColor(49,255,0), QColor(248,255,0),QColor(255,5,0)};
 MyOpenGLWidget::MyOpenGLWidget(GeoMap *geoMap, QWidget *parent):QOpenGLWidget(parent)
 {
 	ui.setupUi(this);
@@ -14,6 +14,7 @@ MyOpenGLWidget::MyOpenGLWidget(GeoMap *geoMap, QWidget *parent):QOpenGLWidget(pa
 	//初始化mouseZoom
 	mouseZoom = MouseZoomAction(this->viewRange);  //改成传入实际显示的range,避免投影坐标反算
 	this->centerPos = geoMap->maxRange.center();
+	isMouseMovement = false;
 }
 
 MyOpenGLWidget::~MyOpenGLWidget()
@@ -85,6 +86,7 @@ void MyOpenGLWidget::resizeGL(int width, int height){
 	this->height = height;
 	//计算比例
 	this->whRatio = (float)width / this->height;
+	glViewport(0, 0, this->width, this->height);
 	//glOrtho(min_x, max_x, max_y, min_y, -1, 1);
 }
 
@@ -99,13 +101,16 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 
 	for(int i=0;i<layer->features.size();i++){
 		Feature *feature = layer->features[i];
-		drawFeature(feature);
 		if (feature->isSelected) {
 			//构造一个全蓝色的symbol
 			SymbolStyle *selectSymbol = new SymbolStyle;
-			selectSymbol->fillColor = QColor(0, 0, 255);
-			selectSymbol->strokeColor = QColor(0, 0, 255);
+			selectSymbol->fillColor = QColor(1, 254, 254);
+			selectSymbol->strokeWidth = feature->symbolStyle.strokeWidth;
+			selectSymbol->strokeColor = feature->symbolStyle.strokeColor;
 			drawFeature(feature, selectSymbol);
+		}
+		else {
+			drawFeature(feature);
 		}
 	}
 }
@@ -113,6 +118,7 @@ void MyOpenGLWidget::drawLayer(Layer *layer){
 void MyOpenGLWidget::mousePressEvent(QMouseEvent* event)
 {
 	if (event->button() == Qt::LeftButton) {
+		isMouseMovement = false;
 		QPoint p = event->pos();
 		//记录下来坐标点
 		mouseDrag.begin(screenCd2worldCd(p));
@@ -123,7 +129,12 @@ void MyOpenGLWidget::mouseReleaseEvent(QMouseEvent * event)
 {
 	if (event->button() == Qt::LeftButton) {
 		mouseDrag.finish();
+		if (!isMouseMovement) {
+			QPoint p = event->pos();
+			searchByClick(p);
+		}
 	}
+	isMouseMovement = false;
 }
 
 
@@ -144,6 +155,7 @@ void MyOpenGLWidget::wheelEvent(QWheelEvent * event)
 
 void MyOpenGLWidget::mouseMoveEvent(QMouseEvent * event)
 {
+	isMouseMovement = true;
 	QPoint p = event->pos();
 	//记录下来坐标点, 控制放大缩小
 	QPointF currentPos = screenCd2worldCd(p);
@@ -157,7 +169,10 @@ void MyOpenGLWidget::mouseMoveEvent(QMouseEvent * event)
 		this->viewRange.moveCenter(center);
 		update();
 	}
-	emit sendCurrentPos(currentPos);
+	/*double b, l;
+	geoMap->mapPrj->getBL(currentPos.x(), currentPos.y(), &l, &b);
+	emit sendCurrentPos(QPointF(l, b));*/
+	emit sendCurrentPos(currentPos); //投影后坐标点
 }
 
 void MyOpenGLWidget::drawFeature(Feature * feature, SymbolStyle* symbolStyle)
@@ -185,10 +200,6 @@ void MyOpenGLWidget::drawFeature(Feature * feature, SymbolStyle* symbolStyle)
 	}
 	else {
 		//其他情况，暂不实现
-	}
-	if (feature->isSelected) {
-		//当feature被选中后重新画一个
-
 	}
 }
 
@@ -382,13 +393,98 @@ vector<double> MyOpenGLWidget::normalizeSymbol(SymbolStyle symbolStyle)
 	return normalResult;
 }
 
+void MyOpenGLWidget::mouseDoubleClickEvent(QMouseEvent *event)
+{
+	if (event->button() == Qt::LeftButton) {
+		bool isFind = searchByClick(event->pos());
+		if (!isFind) {
+			//把所有要素的选中状态全部清空
+			for (int i = 0; i < selectedFeature.size(); i++) {
+				selectedFeature[i]->isSelected = false;
+			}
+			selectedFeature.clear();
+			update();
+		}
+	}
+}
+
+bool MyOpenGLWidget::searchByClick(QPoint screenPoint)
+{
+	//使用空间索引搜索要素
+	if (geoMap->index != NULL && geoMap->index->isIndexCreated) {
+		if (geoMap->index->getIndexType() == SpatialIndexType::GRID) {
+			GridIndex* gridIndex = (GridIndex*)geoMap->index;
+			geos::io::WKTReader wktReader;
+			QPointF worldPoint = screenCd2worldCd(screenPoint);
+			double b, l;
+			if (geoMap->mapPrj != NULL) {
+				geoMap->mapPrj->getBL(worldPoint.x(), worldPoint.y(), &l, &b);
+			}
+			else {
+				b = worldPoint.x();
+				l = worldPoint.y();
+			}
+			Geometry* mousePoint = wktReader.read("Point (" + QString::number(l).toStdString() + " " + QString::number(b).toStdString() + ")");
+			for (int i = 0; i < gridIndex->grids.size(); i++) {
+				Grid* grid = gridIndex->grids[i];
+				if (!grid->geosBound->disjoint(mousePoint)) {
+					//判断grid中是否有要素和其相交
+					for (int j = 0; j < grid->pfeatures.size(); j++) {
+						Feature * feature = grid->pfeatures[j];
+						if (!feature->geosGeom->disjoint(mousePoint)) {
+							//不分离即相交
+							feature->isSelected = true;
+							selectedFeature.push_back(feature);
+							update();
+							return true;
+						}
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
+
+void MyOpenGLWidget::setStyleByProperties(Layer * layer, QString propertyName)
+{
+	vector<double> propertyList;
+	double min = std::numeric_limits<float>::max();
+	double max = std::numeric_limits<float>::lowest();
+	//分层设色
+	for (int i = 0; i < layer->features.size(); i++) {
+		double num = layer->features[i]->properties[propertyName].toDouble();
+		propertyList.push_back(num);
+		//存入最大和最小值
+		if (num > max) {
+			max = num;
+		}
+		if (num < min) {
+			min = num;
+		}
+	}
+	//归一化0到1
+	for (int i = 0; i < propertyList.size(); i++) {
+		propertyList[i] = (propertyList[i] - min) / (max - min);
+		double ratio = 1.0 / colorList.size();
+		int colorIndex = propertyList[i] / ratio;
+		if (colorIndex == colorList.size()) {
+			colorIndex--;
+		}
+		layer->features[i]->symbolStyle.fillColor = colorList[colorIndex];
+		layer->features[i]->symbolStyle.strokeColor = colorList[colorIndex];
+	}
+	update();
+}
+
+
+QPointF MyOpenGLWidget::screenCd2normalCd(double x, double y)
+{
+	return QPointF((2*x-this->width)/this->width, (this->height-2*y)/this->height);
+}
 
 QPointF MyOpenGLWidget::normalCd2worldCd(double x, double y)
 {
-	double max_x = viewRange.right();
-	double min_x = viewRange.left();
-	double min_y = viewRange.top();  //top是min_y
-	double max_y = viewRange.bottom();
 	double dx = viewRange.width();
 	double dy = viewRange.height();
 	QPointF p = viewRange.center();
@@ -400,21 +496,12 @@ QPointF MyOpenGLWidget::normalCd2worldCd(double x, double y)
 
 QPointF MyOpenGLWidget::screenCd2worldCd(QPointF screenPoint)
 {
-	double modelview[16], projection[16];
-	int viewport[4];
-	glGetIntegerv(GL_VIEWPORT, viewport);
-	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
-	glGetDoublev(GL_PROJECTION_MATRIX, projection);
-	double x;
-	double y;
-	double z;
-	double winX = screenPoint.rx();
-	double winY = screenPoint.ry();
-	double winZ = 0;
 	//反解标准坐标
-	gluUnProject(winX, winY, winZ, modelview, projection, viewport, &x, &y, &z);
-	// ??这里的标准化坐标是上面-1，下面+1
-	return normalCd2worldCd(x, -y);
+	QPointF p = screenCd2normalCd(screenPoint.x(), screenPoint.y());
+	double x = p.x();
+	double y = p.y();
+	// 这里的标准化坐标是上面-1，下面+1
+	return normalCd2worldCd(x, y);
 }
 
 //绘制索引

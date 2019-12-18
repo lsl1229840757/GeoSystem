@@ -14,7 +14,6 @@ EsriKernelUtil::~EsriKernelUtil()
 
 vector<vector<double>> EsriKernelUtil::computeKernelUsingPoint(QRectF extent, vector<GeoPoint*> points, vector<double> population, double cellSize, double searchRadius, DistanceUtil* method)
 {
-	//准备好结果
 	vector<vector<double>> kernelResult;
 	//首先计算出extent能够划分出几个方格
 	int hTotalNum = (int)(extent.height() / cellSize + 0.5); //高度上有几个方格
@@ -29,15 +28,19 @@ vector<vector<double>> EsriKernelUtil::computeKernelUsingPoint(QRectF extent, ve
 	for (int i = 0; i < wTotalNum; i++) {
 		hReasult.clear();
 		for (int j = 0; j < hTotalNum; j++) {
+			double bot = extent.bottom();
+			double top = extent.top();
 			pair<double, double> coord = getCdByNum(extent.left(), extent.top(), cellSize, i, j);
 			double kernelSum = 0;
 			for (int k = 0; k < points.size(); k++) {
 				GeoPoint *point = points[k];
 				//开始计算核
-				double distance = method->computeDistance(coord.first, coord.second, point->getX(), point->getY());//计算距离
-				double pop = population[k];
-				double tempt = 3 / M_PI * pop * pow(1 - pow(distance / searchRadius, 2), 2);
-				kernelSum += tempt;
+				double distance = method->computeDistance(coord.first, coord.second, point->x, point->y);//计算距离
+				if (distance < searchRadius) {
+					double pop = population[k];
+					double tempt = 3 / M_PI * pop * pow(1 - pow(distance / searchRadius, 2), 2);
+					kernelSum += tempt;
+				}
 			}
 			hReasult.push_back(kernelSum / pow(searchRadius, 2) * populationSum);
 		}

@@ -9,7 +9,8 @@
 #include "EsriKernelUtil.h"
 #include "EuclideanDistanceUtil.h"
 #include "GdalUtil.h"
-
+#include "GeoPolygon.h"
+#include "myopenglwidget.h"
 class KernelToolWidget : public ToolWidget
 {
 	Q_OBJECT
@@ -32,6 +33,7 @@ private:
 public:
 	void addLayerComboItem();
 	void addDistType();
+	void showKernelResult(QRectF extent, vector<vector<double>>* result, double cellSize);
 signals:
 	void layerSelected(int itemID, QString lyName);  //选中的图层index和名称
 	void finishSetParam();

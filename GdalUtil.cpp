@@ -1,6 +1,6 @@
 #include "GdalUtil.h"
-
-
+#include <iostream>
+#include <fstream>  //文件流库函数
 GdalUtil::GdalUtil(void)
 {
 }
@@ -352,23 +352,27 @@ void GdalUtil::writeGeoTiff(QString outputPath,QRectF extent,vector<vector<doubl
 	char **papszMetadata = poDriver->GetMetadata();
 	string da = outputPath.toStdString();
 	const char *dd = da.data();
-	poDatasetCreate = poDriver->Create(outputPath.toStdString().data(), xsizes, ysizes, 1, GDT_Float64, papszMetadata);
+	poDatasetCreate = poDriver->Create(outputPath.toStdString().data(), ysizes, xsizes, 1, GDT_Float32, papszMetadata);
 	//设置仿射变换系数:左上角坐标x , sizeX , 指北为0 , 左上角坐标y ,指北为0， -sizeY 
-	double geoTransForm[6] = { extent.left(),xsizes,0,extent.top(),0,-ysizes };
+	double geoTransForm[6] = { extent.left(),ysizes,0,extent.top(),0,-xsizes };
 	poDatasetCreate->SetGeoTransform(geoTransForm);
-	//设置tiff空间参考
-	OGRSpatialReference oSRS;
-	oSRS.SetWellKnownGeogCS("WGS84");
-	char *pszWKT = NULL;
-	oSRS.exportToWkt(&pszWKT);
-	poDatasetCreate->SetProjection(pszWKT);
 	//转换为gdal要求
 	double *buffer = new double[xsizes*ysizes];
 	for (int i = 0; i < xsizes*ysizes; i++)
 	{
-		buffer[i] = outputMtx->at(i%xsizes).at(i/xsizes); //
+		buffer[i] = outputMtx->at(i % xsizes).at(i / xsizes);
 	}
+	ofstream outfile;   //输出流
+	outfile.open("C:\\Users\\Administrator\\Desktop\\b.csv", ios::app);
+	for (int i = ysizes-1; i > -1; i--) {
+		for (int j = 0; j < xsizes; j++) {
+			double num = buffer[i*xsizes+j];
+			outfile << num << "\t";
+		}
+		outfile << "\n";
+	}
+	outfile.close();
 	//输出栅格
-	poDatasetCreate->RasterIO(GF_Write, 0, 0, xsizes, ysizes, buffer, xsizes, ysizes, GDT_Float64, 1, 0, 0, 0, 0);
+	poDatasetCreate->RasterIO(GF_Write, 0, 0, ysizes, xsizes, buffer, ysizes, xsizes, GDT_Float32, 1, 0, 0, 0, 0);
 	GDALClose(GDALDatasetH(poDatasetCreate));
 }

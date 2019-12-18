@@ -15,6 +15,7 @@
 #include "GridIndex.h"
 #include "QuadNode.h"
 #include "QuadTreeIndex.h"
+#include "geos.h"
 class MyOpenGLWidget : public QOpenGLWidget,protected QOpenGLFunctions
 {
 	Q_OBJECT
@@ -39,10 +40,16 @@ public:
 	QPointF centerPos;
 	//移动操作
 	MouseDragAction mouseDrag;
+	//屏幕点转标准坐标系
+	QPointF screenCd2normalCd(double x, double y);
 	//标准化坐标转世界坐标
-	QPointF MyOpenGLWidget::normalCd2worldCd(double x, double y);
+	QPointF normalCd2worldCd(double x, double y);
 	//屏幕坐标转世界坐标
-	QPointF MyOpenGLWidget::screenCd2worldCd(QPointF screenPoint);
+	QPointF screenCd2worldCd(QPointF screenPoint);
+	vector<Feature *> selectedFeature;
+	bool searchByClick(QPoint screenPoint);
+	//分层设色
+	void setStyleByProperties(Layer *layer, QString propertyName);
 protected:
 	//鼠标点击释放事件
 	void mousePressEvent(QMouseEvent * event);
@@ -63,6 +70,10 @@ protected:
 	void drawMultiPolygon(mgeo::Geometry *geometry, SymbolStyle symbolStyle);
 
 	vector<double> normalizeSymbol(SymbolStyle symbolStyle);
+
+	void mouseDoubleClickEvent(QMouseEvent *event);//鼠标双击事件
+
+	bool isMouseMovement;
 signals:
 	//向父类发送当前鼠标的世界坐标
 	void sendCurrentPos(QPointF pos);

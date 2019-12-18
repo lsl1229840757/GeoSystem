@@ -10,13 +10,23 @@
 #include "AudioInputWidget.h"
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
+#include "MapPrjMercator.h"
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-	/*AudioInputWidget ad;
-	ad.show();*/
 	GeoJsonParese w;
 	w.show();
+	return a.exec();
+
+	//MapPrjMercator * m = new MapPrjMercator;
+	//double x, y;
+	//m->getXY(122.10626710683903, 37.48735577057014, &x, &y);
+	//qDebug() << "x:" << x << "y:" << y << endl;
+	//double b, l;
+	//m->getBL(x, y, &l, &b);
+	//qDebug() << "l:" << l << "b:" << b << endl;
+	//system("pause");
+
 	/*QVariant k(123);
 	QVariant::Type type = k.type();
 	if (QVariant::Type::Int == type)
@@ -54,5 +64,4 @@ int main(int argc, char *argv[])
 	//GeoMap *geoMap = GdalUtil::OGRDataSource2Map(poDS);
 	//MyOpenGLWidget my(geoMap);
 	//my.show();
-	return a.exec();
 }
