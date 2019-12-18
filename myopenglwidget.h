@@ -46,6 +46,8 @@ public:
 	QPointF screenCd2worldCd(QPointF screenPoint);
 	vector<Feature *> selectedFeature;
 	bool searchByClick(QPoint screenPoint);
+	//分层设色
+	void setStyleByProperties(Layer *layer, QString propertyName);
 protected:
 	//鼠标点击释放事件
 	void mousePressEvent(QMouseEvent * event);

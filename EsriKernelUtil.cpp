@@ -28,15 +28,19 @@ vector<vector<double>> EsriKernelUtil::computeKernelUsingPoint(QRectF extent, ve
 	for (int i = 0; i < wTotalNum; i++) {
 		hReasult.clear();
 		for (int j = 0; j < hTotalNum; j++) {
+			double bot = extent.bottom();
+			double top = extent.top();
 			pair<double, double> coord = getCdByNum(extent.left(), extent.top(), cellSize, i, j);
 			double kernelSum = 0;
 			for (int k = 0; k < points.size(); k++) {
 				GeoPoint *point = points[k];
 				//ø™ ºº∆À„∫À
-				double distance = method->computeDistance(coord.first, coord.second, point->getX(), point->getY());//º∆À„æ‡¿Î
-				double pop = population[k];
-				double tempt = 3 / M_PI * pop * pow(1 - pow(distance / searchRadius, 2), 2);
-				kernelSum += tempt;
+				double distance = method->computeDistance(coord.first, coord.second, point->x, point->y);//º∆À„æ‡¿Î
+				if (distance < searchRadius) {
+					double pop = population[k];
+					double tempt = 3 / M_PI * pop * pow(1 - pow(distance / searchRadius, 2), 2);
+					kernelSum += tempt;
+				}
 			}
 			hReasult.push_back(kernelSum / pow(searchRadius, 2) * populationSum);
 		}

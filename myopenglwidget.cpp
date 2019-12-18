@@ -1,5 +1,5 @@
 #include "myopenglwidget.h"
-
+static vector<QColor> colorList = {QColor(144,238,144), QColor(32,124,202), QColor(49,255,0), QColor(248,255,0),QColor(255,5,0)};
 MyOpenGLWidget::MyOpenGLWidget(GeoMap *geoMap, QWidget *parent):QOpenGLWidget(parent)
 {
 	ui.setupUi(this);
@@ -463,6 +463,37 @@ bool MyOpenGLWidget::searchByClick(QPoint screenPoint)
 		}
 	}
 	return false;
+}
+
+void MyOpenGLWidget::setStyleByProperties(Layer * layer, QString propertyName)
+{
+	vector<double> propertyList;
+	double min = std::numeric_limits<float>::max();
+	double max = std::numeric_limits<float>::lowest();
+	//分层设色
+	for (int i = 0; i < layer->features.size(); i++) {
+		double num = layer->features[i]->properties[propertyName].toDouble();
+		propertyList.push_back(num);
+		//存入最大和最小值
+		if (num > max) {
+			max = num;
+		}
+		if (num < min) {
+			min = num;
+		}
+	}
+	//归一化0到1
+	for (int i = 0; i < propertyList.size(); i++) {
+		propertyList[i] = (propertyList[i] - min) / (max - min);
+		double ratio = 1.0 / colorList.size();
+		int colorIndex = propertyList[i] / ratio;
+		if (colorIndex == colorList.size()) {
+			colorIndex--;
+		}
+		layer->features[i]->symbolStyle.fillColor = colorList[colorIndex];
+		layer->features[i]->symbolStyle.strokeColor = colorList[colorIndex];
+	}
+	update();
 }
 
 

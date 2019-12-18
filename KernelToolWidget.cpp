@@ -44,6 +44,44 @@ void KernelToolWidget::addDistType()
 	ui.comboBox_dist->addItem(QString("Geodetic distance"));
 }
 
+void KernelToolWidget::showKernelResult(QRectF extent, vector<vector<double>> *result, double cellSize)
+{
+	GeoMap *kernelMap = new GeoMap;
+	Layer *layer = new Layer;
+	int xsizes = result->size(); //列数
+	int ysizes = result->back().size();  //行数
+	double *buffer = new double[xsizes*ysizes];
+	for (int i = 0; i < xsizes*ysizes; i++)
+	{
+		buffer[i] = result->at(i % xsizes).at(i / xsizes);
+	}
+	//构造要素
+	for (int i = 0; i < ysizes; i++) {
+		for (int j = 0; j < xsizes; j++) {
+			//构造一个矩形
+			Feature* feature = new Feature;
+			GeoPolygon * polygon = new GeoPolygon;
+			pair<double, double> cd = KernelUtil::getCdByNum(extent.left(), extent.top(), cellSize, j, i);//中心点
+			GeoPoint* point1 = new GeoPoint(cd.first-cellSize/2, cd.second+cellSize/2);//左上角
+			GeoPoint* point2 = new GeoPoint(cd.first + cellSize / 2, cd.second + cellSize / 2); //右上角度
+			GeoPoint* point3 = new GeoPoint(cd.first + cellSize/2, cd.second - cellSize/2);//右下角
+			GeoPoint* point4 = new GeoPoint(cd.first - cellSize / 2, cd.second - cellSize / 2);//左下角
+			polygon->points.push_back(point1);
+			polygon->points.push_back(point2);
+			polygon->points.push_back(point3);
+			polygon->points.push_back(point4);
+			feature->geometry = polygon;
+			layer->features.push_back(feature);
+			layer->range = QRectF(point4->getX(), point4->getY(), cellSize, cellSize);
+			feature->properties.insert("kernelResult", buffer[i*xsizes + j]);
+		}
+	}
+	geoMap->addLayer(layer);
+	MyOpenGLWidget *myGlWidgt = new MyOpenGLWidget(geoMap);
+	myGlWidgt->show();
+	myGlWidgt->setStyleByProperties(layer, "kernelResult");
+}
+
 
 void KernelToolWidget::addFieldComboItem(int itemID)
 {
@@ -84,7 +122,7 @@ void KernelToolWidget::openFileDialog()
 void KernelToolWidget::setParam()
 {
 	//记录所有参数
-	if (ui.lineEdit_cell->text().isEmpty() || ui.lineEdit_out->text().isEmpty() || ui.lineEdit_radius->text().isEmpty()){
+	if (ui.lineEdit_cell->text().isEmpty() || ui.lineEdit_radius->text().isEmpty()){
 		//若有参数edit为空
 		QMessageBox::warning(NULL, "Error", "Parameters could not be empty");
 		return;
@@ -132,8 +170,9 @@ void KernelToolWidget::kernelDistCalculate()
 		}
 		//计算核密度
 		vector<vector<double>> outputMtx = kernel->computeKernelUsingPoint(this->extent, this->points, pop, this->cellSize, this->searchRadius, this->method);
+		showKernelResult(this->extent, &outputMtx, this->cellSize);
 		//输出栅格GTiff
-		GdalUtil::writeGeoTiff(outputPath, extent, &outputMtx);
+		//GdalUtil::writeGeoTiff(outputPath, extent, &outputMtx);
 	}
-
 }
+
