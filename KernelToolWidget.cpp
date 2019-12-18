@@ -126,8 +126,12 @@ void KernelToolWidget::kernelDistCalculate()
 	// TODO: 在此处添加实现代码.
 	if (this->method != NULL) {
 		KernelUtil *kernel = new EsriKernelUtil;
+		vector<double> pop;
+		for (int i = 0; i < this->points.size(); i++) {
+			pop.push_back(1);
+		}
 		//计算核密度
-		vector<vector<double>> outputMtx = kernel->computeKernelUsingPoint(this->extent, this->points, this->population, this->cellSize, this->searchRadius, this->method);
+		vector<vector<double>> outputMtx = kernel->computeKernelUsingPoint(this->extent, this->points, pop, this->cellSize, this->searchRadius, this->method);
 		//输出栅格GTiff
 		GdalUtil::writeGeoTiff(outputPath, extent, &outputMtx);
 	}

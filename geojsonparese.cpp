@@ -375,6 +375,7 @@ void GeoJsonParese::refreshSelectFeature(QString replyStr)
 			//要素选中
 			Feature* feature = layer->features[index];
 			feature->isSelected = true;
+			myOpenGLWidget->selectedFeature.push_back(feature);
 			//积累信息
 			info += QString::fromLocal8Bit("查询到的地区:") + name + QString::fromLocal8Bit(",面积为:") + QString::number(area) + QString::fromLocal8Bit("万平方千米\n");
 		}
@@ -389,15 +390,7 @@ void GeoJsonParese::refreshSelectFeature(QString replyStr)
 		myOpenGLWidget->update();
 		//将此widget激活
 		addNewWindow(testMap, QString::fromStdString(testMap->name));
-		int ret = msgBox.exec();
-		switch (ret) {
-		default:
-			for (int i = 0; i < indexList.size(); i++) {
-				layer->features[indexList[i]]->isSelected = false;
-			}
-			myOpenGLWidget->update();
-			break;
-		}
+		msgBox.exec();
 	}
 	else {
 		QMessageBox msgBox;

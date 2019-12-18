@@ -14,7 +14,6 @@ EsriKernelUtil::~EsriKernelUtil()
 
 vector<vector<double>> EsriKernelUtil::computeKernelUsingPoint(QRectF extent, vector<GeoPoint*> points, vector<double> population, double cellSize, double searchRadius, DistanceUtil* method)
 {
-	//准备好结果
 	vector<vector<double>> kernelResult;
 	//首先计算出extent能够划分出几个方格
 	int hTotalNum = (int)(extent.height() / cellSize + 0.5); //高度上有几个方格

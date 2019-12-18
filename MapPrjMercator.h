@@ -1,5 +1,7 @@
 #pragma once
 #include "MapPrjUtil.h"
+#define _USE_MATH_DEFINES 
+#include <math.h>
 class MapPrjMercator :
 	public MapPrjUtil
 {
