@@ -34,6 +34,7 @@ public:
 	void addLayerComboItem();
 	void addDistType();
 	void showKernelResult(QRectF extent, vector<vector<double>>* result, double cellSize);
+	bool isInit;
 signals:
 	void layerSelected(int itemID, QString lyName);  //选中的图层index和名称
 	void finishSetParam();
@@ -45,8 +46,9 @@ public slots:
 	void addFieldComboItem(int itemID);
 	void openFileDialog();
 	void setParam();
-public:
-	
+	void calculDefaultRadius();
+	void calculDefaultCellSize();
+	void clearParam();
 private:
 	void kernelDistCalculate();
 };

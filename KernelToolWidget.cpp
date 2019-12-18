@@ -1,15 +1,18 @@
 #include "KernelToolWidget.h"
 
-KernelToolWidget::KernelToolWidget(GeoMap *map,QWidget *parent)
+KernelToolWidget::KernelToolWidget(GeoMap *map, QWidget *parent)
 	: ToolWidget(parent)
 {
+	isInit = true;
 	method = NULL;
 	this->geoMap = map;
 	ui.setupUi(this);
 	connect(this, SIGNAL(layerSelected(int,QString)), this, SLOT(addFieldComboItem(int)));
 	connect(ui.comboBox_layer, SIGNAL(currentIndexChanged(int)), this, SLOT(addFieldComboItem(int)));
+	connect(ui.comboBox_field, SIGNAL(currentIndexChanged(int)), this, SLOT(clearParam()));
 	connect(ui.pushButton_cancel, SIGNAL(clicked()), this, SLOT(close()));
-	connect(ui.pushButton_out, SIGNAL(clicked()), this, SLOT(openFileDialog()));
+	//connect(ui.pushButton_out, SIGNAL(clicked()), this, SLOT(openFileDialog()));
+	//connect(ui.pushButton_default, SIGNAL(clicked()), this, SLOT(calculDefault()));//计算默认值
 	connect(ui.pushButton_ok, SIGNAL(clicked()), this, SLOT(setParam()));
 	connect(this, SIGNAL(finishSetParam()), this, SLOT(okSetParam()));
 	addLayerComboItem();  //后发信号
@@ -72,24 +75,30 @@ void KernelToolWidget::showKernelResult(QRectF extent, vector<vector<double>> *r
 			polygon->points.push_back(point4);
 			feature->geometry = polygon;
 			layer->features.push_back(feature);
-			layer->range = QRectF(point4->getX(), point4->getY(), cellSize, cellSize);
 			feature->properties.insert("kernelResult", buffer[i*xsizes + j]);
 		}
 	}
-	geoMap->addLayer(layer);
-	MyOpenGLWidget *myGlWidgt = new MyOpenGLWidget(geoMap);
-	myGlWidgt->show();
+	kernelMap->layers.push_back(layer);
+	kernelMap->maxRange = this->geoMap->maxRange;
+	MyOpenGLWidget *myGlWidgt = new MyOpenGLWidget(kernelMap);
 	myGlWidgt->setStyleByProperties(layer, "kernelResult");
+	myGlWidgt->show();
 }
 
 
 void KernelToolWidget::addFieldComboItem(int itemID)
 {
+	if (isInit) {
+		isInit = false;//初始化的时候也当做一次改变
+		return;
+	}
 	// TODO: 在此处添加实现代码.
 	//获取图层
 	Layer *layer = geoMap->layers[itemID];
 	//获取字段名
 	QStringList listHeader;
+	//添加默认
+	listHeader << "None";
 	QVariantMap::iterator iter;
 	for (iter = layer->features.back()->attributes.begin(); iter != layer->features.back()->attributes.end(); iter++) {
 		//迭代记录字段名
@@ -108,25 +117,21 @@ void KernelToolWidget::okSetParam()
 {
 	// TODO: 在此处添加实现代码.
 	kernelDistCalculate();
-	this->close();
+	this->population.clear();
+	this->points.clear();
+	//this->close();
 }
 
 
 void KernelToolWidget::openFileDialog()
 {
 	// TODO: 在此处添加实现代码.
-	QString savePath = QFileDialog::getSaveFileName(NULL, "Output Path", "",tr("*.tif"));
-	ui.lineEdit_out->setText(savePath);
+	//QString savePath = QFileDialog::getSaveFileName(NULL, "Output Path", "",tr("*.tif"));
 }
 
 void KernelToolWidget::setParam()
 {
 	//记录所有参数
-	if (ui.lineEdit_cell->text().isEmpty() || ui.lineEdit_radius->text().isEmpty()){
-		//若有参数edit为空
-		QMessageBox::warning(NULL, "Error", "Parameters could not be empty");
-		return;
-	}
 	int lyID = ui.comboBox_layer->currentIndex();
 	Layer* layer = geoMap->layers[lyID];
 	this->extent = layer->range;
@@ -136,7 +141,21 @@ void KernelToolWidget::setParam()
 		if (GeometryType::GEOPOINT == layer->features.at(i)->geometry->getGeometryType()) {
 			this->points.push_back((GeoPoint*)layer->features.at(i)->geometry);
 		}
-		this->population.push_back(layer->features.at(i)->attributes[populationName].toDouble());
+		//添加population
+		if (ui.comboBox_field->currentText() == "None") {
+			this->population.push_back(1);
+		}
+		else {
+			this->population.push_back(layer->features.at(i)->attributes[populationName].toDouble());
+		}
+	}
+	if (ui.lineEdit_radius->text().isEmpty()) {
+		//若半径为空
+		calculDefaultRadius();
+	}
+	if (ui.lineEdit_cell->text().isEmpty()) {
+		//若有参数edit为空
+		calculDefaultCellSize();
 	}
 	QString distTypeStr = ui.comboBox_dist->currentText();
 	//判断距离类型
@@ -147,7 +166,7 @@ void KernelToolWidget::setParam()
 		//暂无实现
 		QMessageBox::information(NULL, "Infomation", "Not supported yet");
 	}
-	this->outputPath = ui.lineEdit_out->text();
+	//this->outputPath = ui.lineEdit_out->text();
 	this->cellSize = ui.lineEdit_cell->text().toDouble();
 	this->searchRadius = ui.lineEdit_radius->text().toDouble();
 	if (cellSize < 0 || searchRadius < 0) {
@@ -158,18 +177,69 @@ void KernelToolWidget::setParam()
 	emit finishSetParam();
 }
 
+void KernelToolWidget::calculDefaultRadius()
+{
+	//计算population相关
+	double popSum = 0;
+	for (int i = 0; i < this->population.size(); i++) {
+		popSum += this->population[i];
+	}
+	//计算x,y平均中心
+	double x_ = 0;
+	double y_ = 0;
+	for (int i = 0; i < this->points.size(); i++) {
+		x_ += this->points[i]->getX();
+		y_ += this->points[i]->getY();
+	}
+	x_ /= this->points.size();
+	y_ /= this->points.size();
+	//计算sd
+	double dxSum = 0;
+	double dySum = 0;
+	for (int i = 0; i < this->points.size(); i++) {
+		dxSum += this->population[i] * pow(this->points[i]->getX() - x_, 2);
+		dySum += this->population[i] * pow(this->points[i]->getY() - y_, 2);
+	}
+	dxSum /= popSum;
+	dySum /= popSum;
+	double sd = sqrt(dxSum + dySum);
+	//计算Dm
+	vector<double> distances;
+	for (int i = 0; i < this->points.size(); i++) {
+		double x = this->points[i]->getX();
+		double y = this->points[i]->getY();
+		double distance = sqrt(pow(x - x_, 2) + pow(y - y_, 2));
+		distance *= this->population[i];
+		distances.push_back(distance);
+	}
+	sort(distances.begin(), distances.end());
+	//取中值
+	double dm = distances[distances.size()/2];
+	double searchRadius = 0.9 * min(sd, sqrt(1 / log(2))*dm)*powf(popSum, 0.2);
+	this->ui.lineEdit_radius->setText(QString::number(searchRadius));
+}
+
+void KernelToolWidget::calculDefaultCellSize()
+{
+	double cellSize = this->extent.width() < this->extent.height() ? this->extent.width() / 250 : this->extent.height() / 250;
+	ui.lineEdit_cell->setText(QString::number(cellSize));
+}
+
+void KernelToolWidget::clearParam()
+{
+	ui.lineEdit_cell->setText("");
+	ui.lineEdit_radius->setText("");
+
+}
+
 
 void KernelToolWidget::kernelDistCalculate()
 {
 	// TODO: 在此处添加实现代码.
 	if (this->method != NULL) {
 		KernelUtil *kernel = new EsriKernelUtil;
-		vector<double> pop;
-		for (int i = 0; i < this->points.size(); i++) {
-			pop.push_back(1);
-		}
 		//计算核密度
-		vector<vector<double>> outputMtx = kernel->computeKernelUsingPoint(this->extent, this->points, pop, this->cellSize, this->searchRadius, this->method);
+		vector<vector<double>> outputMtx = kernel->computeKernelUsingPoint(this->extent, this->points, this->population, this->cellSize, this->searchRadius, this->method);
 		showKernelResult(this->extent, &outputMtx, this->cellSize);
 		//输出栅格GTiff
 		//GdalUtil::writeGeoTiff(outputPath, extent, &outputMtx);

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>378</width>
-    <height>339</height>
+    <width>455</width>
+    <height>439</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -93,69 +93,6 @@
        </property>
        <item>
         <widget class="QPushButton" name="pushButton_field">
-         <property name="font">
-          <font>
-           <family>Adobe Arabic</family>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Select</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_out" stretch="10,3">
-     <property name="spacing">
-      <number>10</number>
-     </property>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_out">
-       <item>
-        <widget class="QLabel" name="label_out">
-         <property name="font">
-          <font>
-           <family>Adobe Arabic</family>
-           <pointsize>14</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Output Raster Path</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="lineEdit_out">
-         <property name="font">
-          <font>
-           <family>Adobe Arabic</family>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="inputMask">
-          <string/>
-         </property>
-         <property name="placeholderText">
-          <string>Output path</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_outbtn" stretch="0">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>23</number>
-       </property>
-       <item>
-        <widget class="QPushButton" name="pushButton_out">
          <property name="font">
           <font>
            <family>Adobe Arabic</family>
@@ -302,7 +239,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_help">
+      <widget class="QPushButton" name="pushButton_default">
        <property name="font">
         <font>
          <family>Adobe Arabic</family>
@@ -328,22 +265,5 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>pushButton_ok</sender>
-   <signal>clicked()</signal>
-   <receiver>KernelToolWidget</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>60</x>
-     <y>312</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>188</x>
-     <y>169</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
