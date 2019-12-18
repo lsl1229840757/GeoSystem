@@ -67,29 +67,8 @@ void MyOpenGLWidget::paintGL(){
 	//设置视口
 	glViewport(0, 0, this->width, this->height);
 	//开始绘制
-	//判断索引情况
-	if (geoMap->index != NULL && geoMap->index->isIndexCreated)
-	{
-		if (SpatialIndexType::GRID == geoMap->index->getIndexType())
-		{ 
-			//绘制线框
-			for (int i = 0; i < ((GridIndex*)geoMap->index)->grids.size(); i++)
-			{
-				Grid* grid = ((GridIndex*)geoMap->index)->grids.at(i);
-				QRectF gridBound = grid->gridBoundary;
-				if (geoMap->mapPrj != NULL)
-					gridBound = geoMap->mapPrj->getPrjRange(gridBound);
-				glBegin(GL_LINE_LOOP);
-					glColor3f(1, 1, 1);
-					glVertex2f(gridBound.left(), gridBound.top());
-					glVertex2f(gridBound.right(), gridBound.top());
-					glVertex2f(gridBound.right(), gridBound.bottom());
-					glVertex2f(gridBound.left(), gridBound.bottom());
-				glEnd();
-				
-			}
-		}
-	}
+	
+	
 	//判断地图是否可见
 	if(!geoMap->isVisible)
 		return;
@@ -97,6 +76,8 @@ void MyOpenGLWidget::paintGL(){
 		Layer *layer = geoMap->layers[i];
 		drawLayer(layer);
 	}
+	//判断索引情况,绘制索引边界
+	drawIndex();
 }
 
 void MyOpenGLWidget::resizeGL(int width, int height){
@@ -434,4 +415,81 @@ QPointF MyOpenGLWidget::screenCd2worldCd(QPointF screenPoint)
 	gluUnProject(winX, winY, winZ, modelview, projection, viewport, &x, &y, &z);
 	// ??这里的标准化坐标是上面-1，下面+1
 	return normalCd2worldCd(x, -y);
+}
+
+//绘制索引
+void MyOpenGLWidget::drawIndex()
+{
+	// TODO: 在此处添加实现代码.
+	if (geoMap->index != NULL && geoMap->index->isIndexCreated)
+	{
+		if (SpatialIndexType::GRID == geoMap->index->getIndexType())
+		{
+			//绘制线框
+			for (int i = 0; i < ((GridIndex*)geoMap->index)->grids.size(); i++)
+			{
+				Grid* grid = ((GridIndex*)geoMap->index)->grids.at(i);
+				QRectF gridBound = grid->gridBoundary;
+				if (geoMap->mapPrj != NULL)
+					gridBound = geoMap->mapPrj->getPrjRange(gridBound);
+				glBegin(GL_LINE_LOOP);
+				glColor3f(1, 1, 1);
+				glVertex2f(gridBound.left(), gridBound.top());
+				glVertex2f(gridBound.right(), gridBound.top());
+				glVertex2f(gridBound.right(), gridBound.bottom());
+				glVertex2f(gridBound.left(), gridBound.bottom());
+				glEnd();
+
+			}
+		}
+		else if(SpatialIndexType::QUADTREE == geoMap->index->getIndexType())
+		{
+			drawQuadTreeIndexNode(((QuadTreeIndex*)geoMap->index)->quadTree->root);
+		}
+	}
+}
+
+
+void MyOpenGLWidget::drawQuadTreeIndexNode(QuadNode* node)
+{
+	// TODO: 在此处添加实现代码.
+	if (true == node->isLeaf())
+	{
+		//叶节点绘制矩形框
+		QRectF gridBound = node->box;
+		if (geoMap->mapPrj != NULL)
+			gridBound = geoMap->mapPrj->getPrjRange(gridBound);
+		glBegin(GL_LINE_LOOP);
+		glColor3f(1, 1, 1);
+		glVertex2f(gridBound.left(), gridBound.top());
+		glVertex2f(gridBound.right(), gridBound.top());
+		glVertex2f(gridBound.right(), gridBound.bottom());
+		glVertex2f(gridBound.left(), gridBound.bottom());
+		glEnd();
+		qDebug() << "depth:" << node->depth;
+		for (int i = 0; i < node->pfeatures.size(); i++)
+		{
+			qDebug() << "     objname:" << node->pfeatures[i]->attributes.value("NAME");
+		}
+		
+	}
+	else
+	{
+		QRectF gridBound = node->box;
+		if (geoMap->mapPrj != NULL)
+			gridBound = geoMap->mapPrj->getPrjRange(gridBound);
+		glBegin(GL_LINE_LOOP);
+		glColor3f(1, 1, 1);
+		glVertex2f(gridBound.left(), gridBound.top());
+		glVertex2f(gridBound.right(), gridBound.top());
+		glVertex2f(gridBound.right(), gridBound.bottom());
+		glVertex2f(gridBound.left(), gridBound.bottom());
+		glEnd();
+		//qDebug() << "depth:" << node->depth;
+		//非叶结点遍历其子节点
+		for (int i = 0; i < 3; i++)
+		{
+			drawQuadTreeIndexNode(node->childNodes[i]);
+		}
+	}
 }
