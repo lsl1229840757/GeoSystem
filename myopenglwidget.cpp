@@ -466,28 +466,16 @@ void MyOpenGLWidget::drawQuadTreeIndexNode(QuadNode* node)
 		glVertex2f(gridBound.right(), gridBound.bottom());
 		glVertex2f(gridBound.left(), gridBound.bottom());
 		glEnd();
-		qDebug() << "depth:" << node->depth;
+		/*qDebug() << "depth:" << node->depth;
 		for (int i = 0; i < node->pfeatures.size(); i++)
 		{
 			qDebug() << "     objname:" << node->pfeatures[i]->attributes.value("NAME");
-		}
-		
+		}*/	
 	}
 	else
 	{
-		QRectF gridBound = node->box;
-		if (geoMap->mapPrj != NULL)
-			gridBound = geoMap->mapPrj->getPrjRange(gridBound);
-		glBegin(GL_LINE_LOOP);
-		glColor3f(1, 1, 1);
-		glVertex2f(gridBound.left(), gridBound.top());
-		glVertex2f(gridBound.right(), gridBound.top());
-		glVertex2f(gridBound.right(), gridBound.bottom());
-		glVertex2f(gridBound.left(), gridBound.bottom());
-		glEnd();
-		//qDebug() << "depth:" << node->depth;
 		//非叶结点遍历其子节点
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 4; i++)
 		{
 			drawQuadTreeIndexNode(node->childNodes[i]);
 		}

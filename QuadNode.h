@@ -6,6 +6,7 @@
 #include "geos.h"
 #include"MGeosUtil.h"
 #include "qdebug.h"
+#include "GeoPolygon.h"
 using namespace std;
 typedef enum {
 	UR = 0, // UR右上
@@ -29,7 +30,7 @@ public:
 	bool isLeaf();  //是否叶子结点
 	geos::geom::Geometry *geosBound;  //边界转为GEOS对象
 	void createQuadBranch();// 创建分支
-	void insertEle(Feature *fea,int k);
+	void insertEle(Feature *fea);
 	void splitNode();
 	void setNodeBoundary(QRectF bound);
 	// //生成子节点

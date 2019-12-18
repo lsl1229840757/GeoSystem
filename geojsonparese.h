@@ -70,13 +70,6 @@ public slots:
 	void setQuadTreeIndex();  //设置四叉树四叉树索引
 private:
 	Ui::GeoJsonPareseClass ui;
-
-public:
-	
-	
-	
-
-	
 };
 
 #endif // GEOJSONPARESE_H

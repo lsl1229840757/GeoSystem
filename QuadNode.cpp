@@ -39,15 +39,16 @@ void QuadNode::createQuadBranch()
 }
 
 
-void QuadNode::insertEle(Feature *fea,int k)
+void QuadNode::insertEle(Feature *fea)
 {
 	// TODO: 在此处添加实现代码.
 	if (isLeaf()==true)
 	{	//对于叶节点
-		if (this->eleNum + 1 > MAX_ELEM_NUM)
+		if (this->eleNum+1 > MAX_ELEM_NUM)
 		{
+			//qDebug() << "*********分割前********";
 			this->splitNode();
-			this->insertEle(fea,4);
+			this->insertEle(fea);
 		}
 		else 
 		{
@@ -55,26 +56,6 @@ void QuadNode::insertEle(Feature *fea,int k)
 			this->pfeatures.push_back(fea);
 			this->eleNum++;
 			QString test;
-			switch (k)
-			{
-			case 0:
-				test = "UR";
-				break;
-			case 1:
-				test = "UL";
-				break;
-			case 2:
-				test = "LL";
-				break;
-			case 3:
-				test = "LR";
-				break;
-			default:
-				test = "not";
-				break;
-			}
-
-			qDebug() << "depth:" << this->depth<<" from:"<<test << " feature:" <<  fea->attributes.value("NAME");
 		}
 		return;
 	}
@@ -85,7 +66,7 @@ void QuadNode::insertEle(Feature *fea,int k)
 		{
 			if (!fea->geosGeom->disjoint(this->childNodes[i]->geosBound))
 			{
-				this->childNodes[i]->insertEle(fea, i);
+				this->childNodes[i]->insertEle(fea);
 			}
 		}
 	}
@@ -97,18 +78,19 @@ void QuadNode::splitNode()
 	// TODO: 在此处添加实现代码.
 	double midVertical = (this->box.top() + this->box.bottom()) / 2;
 	double midHorizontal = (this->box.left() + this->box.right()) / 2;
-	//添加子节点
-	this->childNodes[UR] = createChildNode(QRectF(QPointF(midHorizontal, this->box.bottom()),QPointF(this->box.right(),midVertical)));
-	this->childNodes[UL] = createChildNode(QRectF(QPointF(this->box.left(), this->box.bottom()), QPointF(midHorizontal, midVertical)));
-	this->childNodes[LL] = createChildNode(QRectF(QPointF(this->box.left(), midVertical), QPointF(midHorizontal, this->box.top())));
-	this->childNodes[LR] = createChildNode(QRectF(QPointF(midHorizontal, midVertical), QPointF(this->box.right(), this->box.top())));
+	//添加子节点 
+	this->childNodes[UR] = createChildNode(QRectF(QPointF(midHorizontal, this->box.top()),QPointF(this->box.right(),midVertical)));
+	this->childNodes[UL] = createChildNode(QRectF(QPointF(this->box.left(), this->box.top()), QPointF(midHorizontal, midVertical)));
+	this->childNodes[LL] = createChildNode(QRectF(QPointF(this->box.left(), midVertical), QPointF(midHorizontal, this->box.bottom())));
+	this->childNodes[LR] = createChildNode(QRectF(QPointF(midHorizontal, midVertical), QPointF(this->box.right(), this->box.bottom())));
 	nChildCount = 4;
 	int nCount = this->eleNum;
 	for (int i = 0; i < nCount; i++)
 	{
-		this->insertEle(pfeatures[i],4);
+		this->insertEle(pfeatures[i]);
 		this->eleNum--;
 	}
+	//qDebug() << "-----------------------";
 	pfeatures.clear();  //清除非叶子结点所有目标
 }
 

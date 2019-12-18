@@ -34,7 +34,7 @@ void QuadTree::addFeatures(Layer *layer)
 	{
 		for (int i = 0; i < layer->features.size(); i++)
 		{
-			root->insertEle(layer->features.at(i),4);
+			root->insertEle(layer->features.at(i));
 		}
 	}
 }
