@@ -85,5 +85,7 @@ public:
 	void drawQuadTreeIndexNode(QuadNode* node);
 	// //设置投影后调用
 	void resetMaprange();
+public slots:
+	void zoomToLayer(Layer *layer);
 };
 #endif // MYOPENGLWIDGET_H

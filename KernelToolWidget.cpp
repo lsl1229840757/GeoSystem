@@ -94,6 +94,7 @@ void KernelToolWidget::addFieldComboItem(int itemID)
 	}
 	// TODO: 在此处添加实现代码.
 	//获取图层
+	ui.comboBox_field->clear();
 	Layer *layer = geoMap->layers[itemID];
 	//获取字段名
 	QStringList listHeader;
@@ -188,11 +189,11 @@ void KernelToolWidget::calculDefaultRadius()
 	double x_ = 0;
 	double y_ = 0;
 	for (int i = 0; i < this->points.size(); i++) {
-		x_ += this->points[i]->x;
-		y_ += this->points[i]->y;
+		x_ += population[i]*this->points[i]->x;
+		y_ += population[i]*this->points[i]->y;
 	}
-	x_ /= this->points.size();
-	y_ /= this->points.size();
+	x_ /= popSum;
+	y_ /= popSum;
 	//计算sd
 	double dxSum = 0;
 	double dySum = 0;
@@ -215,7 +216,7 @@ void KernelToolWidget::calculDefaultRadius()
 	sort(distances.begin(), distances.end());
 	//取中值
 	double dm = distances[distances.size()/2];
-	double searchRadius = 0.9 * min(sd, sqrt(1 / log(2))*dm)*powf(popSum, 0.2);
+	double searchRadius = 0.9 * min(sd, sqrt(1 / log(2))*dm)*powf(popSum, -0.2);
 	this->ui.lineEdit_radius->setText(QString::number(searchRadius));
 }
 

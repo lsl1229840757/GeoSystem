@@ -214,12 +214,16 @@ void GeoJsonParese::onPressed(QPoint pos)
 		int layerIndex = currentItem->data(ID_COLUMN, Qt::UserRole).toInt();
 		Layer* layer = dataSource->geoMaps[mapIndex]->layers[layerIndex];
 		QMenu *pMenu = new QMenu(this);
+		MyAction *zoomAction = new MyAction(mapIndex, layerIndex, tr("Zoom to Layer"), this);
 		MyAction* setStyleAction = new MyAction(mapIndex, layerIndex, tr("Set Style"), this);
 		MyAction *showAttrTableAction = new MyAction(mapIndex, layerIndex, tr("Attribute Table"), this);
 		connect(setStyleAction, SIGNAL(triggered()), setStyleAction, SLOT(mtriggle()));
 		connect(setStyleAction, SIGNAL(sendIndex(int, int)), this, SLOT(setStyle(int,int)));
 		connect(showAttrTableAction, SIGNAL(triggered()), showAttrTableAction, SLOT(mtriggle()));
 		connect(showAttrTableAction, SIGNAL(sendIndex(int, int)), this, SLOT(showAttrTable(int,int)));
+		connect(zoomAction, SIGNAL(triggered()), zoomAction, SLOT(mtriggle()));
+		connect(zoomAction, SIGNAL(sendIndex(int, int)), this, SLOT(zoomToMapLayer(int, int)));
+		pMenu->addAction(zoomAction);
 		pMenu->addAction(setStyleAction);
 		pMenu->addAction(showAttrTableAction);
 		pMenu->exec(QCursor::pos());
@@ -431,6 +435,9 @@ void GeoJsonParese::addNewWindow(GeoMap *map, QString name) {
 QTreeWidgetItem * GeoJsonParese::addTreeTopLevel(GeoMap* geoMap, int id, QString name)
 {
 	QString idStr = QString::number(id);
+	if (name.isEmpty()) {
+		name = idStr;
+	}
 	QTreeWidgetItem * item = new QTreeWidgetItem(QStringList() << "" << idStr << name);//显示出来的数据
 	ui.treeWidget->addTopLevelItem(item);
 	//绑定数据为map的索引
@@ -854,4 +861,10 @@ void GeoJsonParese::finishAccessAnalyse(vector<double> result, GeoMap *map, Laye
 	chartView->setFixedSize(QSize(600, 600));
 	chartView->show();
 	chartView->setWindowTitle(QString::fromLocal8Bit("可达性前10名展示"));
+}
+
+void GeoJsonParese::zoomToMapLayer(int mapIndex, int layerIndex)
+{
+	MyOpenGLWidget * myOpenGlWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(dataSource->geoMaps[mapIndex]);
+	myOpenGlWidget->zoomToLayer(dataSource->geoMaps[mapIndex]->layers[layerIndex]);
 }

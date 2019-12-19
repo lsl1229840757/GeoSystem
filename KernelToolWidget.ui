@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_layer" stretch="10,3">
+    <layout class="QHBoxLayout" name="horizontalLayout_layer" stretch="10">
      <property name="spacing">
       <number>10</number>
      </property>
@@ -39,30 +39,10 @@
        </item>
       </layout>
      </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_layerbtn">
-       <property name="topMargin">
-        <number>23</number>
-       </property>
-       <item>
-        <widget class="QPushButton" name="pushButton_layer">
-         <property name="font">
-          <font>
-           <family>Adobe Arabic</family>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Select</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_field" stretch="10,3">
+    <layout class="QHBoxLayout" name="horizontalLayout_field" stretch="10">
      <property name="spacing">
       <number>10</number>
      </property>
@@ -83,26 +63,6 @@
        </item>
        <item>
         <widget class="QComboBox" name="comboBox_field"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_fieldbtn">
-       <property name="topMargin">
-        <number>23</number>
-       </property>
-       <item>
-        <widget class="QPushButton" name="pushButton_field">
-         <property name="font">
-          <font>
-           <family>Adobe Arabic</family>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Select</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </item>

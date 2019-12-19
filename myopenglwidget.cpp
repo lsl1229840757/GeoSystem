@@ -650,3 +650,12 @@ void MyOpenGLWidget::resetMaprange()
 	this->centerPos = this->geoMap->maxRange.center();
 	isMouseMovement = false;
 }
+
+void MyOpenGLWidget::zoomToLayer(Layer *layer) {
+	QRectF range = layer->range;
+	if (!geoMap->mapPrj==NULL) {
+		range = geoMap->mapPrj->getPrjRange(range);
+	}
+	this->viewRange = range;
+	update();
+}

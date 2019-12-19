@@ -83,6 +83,7 @@ public slots:
 	void openAccessAnalyTool();
 	void setMapProjection();
 	void finishAccessAnalyse(vector<double> result, GeoMap* map, Layer* layer);
+	void zoomToMapLayer(int mapIndex, int layerIndex);
 private:
 	Ui::GeoJsonPareseClass ui;
 
