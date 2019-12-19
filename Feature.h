@@ -23,4 +23,5 @@ public:
 	QVariantMap attributes;  //映射记录各个字段的属性名与属性，QMap避免map不能存放变体的问题//QMap<QString, QVariant>
 	bool isSelected; //是否被查询后选中
 	bool isFirstProjeted;  //feature 是否第一次投影
+	void setT(time_t t);
 };

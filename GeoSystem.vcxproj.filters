@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="AccessibilityUtil.cpp" />
+    <ClCompile Include="AccessAnalyToolWidget.cpp" />
     <ClCompile Include="AudioInputWidget.cpp" />
     <ClCompile Include="AudioUtil.cpp" />
     <ClCompile Include="DatabaseWizard.cpp" />
@@ -9,6 +11,7 @@
     <ClCompile Include="EuclideanDistanceUtil.cpp" />
     <ClCompile Include="Feature.cpp" />
     <ClCompile Include="GdalUtil.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_AccessAnalyToolWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_AudioInputWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_AudioUtil.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_DatabaseWizard.cpp" />
@@ -18,6 +21,7 @@
     <ClCompile Include="GeneratedFiles\Debug\moc_MyAction.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_MyColorButton.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_myopenglwidget.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_MyStyleLine.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_MyTableWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_openglwindow.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_qpainterwidget.cpp" />
@@ -25,6 +29,7 @@
     <ClCompile Include="GeneratedFiles\Debug\moc_ToolWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_trianglewindow.cpp" />
     <ClCompile Include="GeneratedFiles\qrc_geojsonparese.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_AccessAnalyToolWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_AudioInputWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_AudioUtil.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_DatabaseWizard.cpp" />
@@ -34,6 +39,7 @@
     <ClCompile Include="GeneratedFiles\Release\moc_MyAction.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_MyColorButton.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_myopenglwidget.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_MyStyleLine.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_MyTableWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_openglwindow.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_qpainterwidget.cpp" />
@@ -65,12 +71,16 @@
     <ClCompile Include="MyColorButton.cpp" />
     <ClCompile Include="myopenglwidget.cpp" />
     <ClCompile Include="MyOpenGlWidgetFactory.cpp" />
+    <ClCompile Include="MyStyleLine.cpp" />
     <ClCompile Include="MyTableWidget.cpp" />
     <ClCompile Include="openglwindow.cpp" />
     <ClCompile Include="GeoPoint.cpp" />
     <ClCompile Include="GeoPolygon.cpp" />
     <ClCompile Include="GeoPolyline.cpp" />
     <ClCompile Include="qpainterwidget.cpp" />
+    <ClCompile Include="QuadNode.cpp" />
+    <ClCompile Include="QuadTree.cpp" />
+    <ClCompile Include="QuadTreeIndex.cpp" />
     <ClCompile Include="SldUtil.cpp" />
     <ClCompile Include="SpatialIndex.cpp" />
     <ClCompile Include="StyleWidget.cpp" />
@@ -78,36 +88,19 @@
     <ClCompile Include="ToolWidget.cpp" />
     <ClCompile Include="trianglewindow.cpp" />
     <ClCompile Include="triangulate.cpp" />
-    <ClCompile Include="QuadTreeIndex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="QuadNode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="QuadTree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_MyStyleLine.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_Bridge.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_MyStyleLine.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_Bridge.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="MyStyleLine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AccessibilityUtil.cpp">
-    <ClCompile Include="GeneratedFiles\Debug\moc_AccessAnalyToolWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_AccessAnalyToolWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AccessAnalyToolWidget.cpp">
+    <ClCompile Include="Bridge.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AccessibilityUtil.h" />
+    <ClInclude Include="GeneratedFiles\ui_AccessAnalyToolWidget.h" />
     <ClInclude Include="GeneratedFiles\ui_KernelToolWidget.h" />
     <ClInclude Include="DistanceUtil.h" />
     <ClInclude Include="EsriKernelUtil.h" />
@@ -127,6 +120,9 @@
     <ClInclude Include="MapPrjUtil.h" />
     <ClInclude Include="MGeosUtil.h" />
     <ClInclude Include="MouseDragAction.h" />
+    <ClInclude Include="QuadNode.h" />
+    <ClInclude Include="QuadTree.h" />
+    <ClInclude Include="QuadTreeIndex.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SldUtil.h" />
     <ClInclude Include="SpatialIndex.h" />
@@ -149,24 +145,11 @@
     <ClInclude Include="GeoPoint.h" />
     <ClInclude Include="GeoPolygon.h" />
     <ClInclude Include="GeoPolyline.h" />
-    <ClInclude Include="QuadTreeIndex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="QuadNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="QuadTree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AccessibilityUtil.h">
-      <Filter>Header Files</Filter>
-    <ClInclude Include="GeneratedFiles\ui_AccessAnalyToolWidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="geojsonparese.h" />
     <CustomBuild Include="geojsonparese.ui" />
+    <CustomBuild Include="AccessAnalyToolWidget.h" />
     <CustomBuild Include="AudioUtil.h" />
     <CustomBuild Include="AudioInputWidget.h" />
     <CustomBuild Include="KernelToolWidget.h" />
@@ -174,6 +157,7 @@
     <CustomBuild Include="MyAction.h" />
     <CustomBuild Include="MyColorButton.h" />
     <CustomBuild Include="MyTableWidget.h" />
+    <CustomBuild Include="MyStyleLine.h" />
     <CustomBuild Include="StyleWidget.h" />
     <CustomBuild Include="ToolWidget.h" />
     <CustomBuild Include="qpainterwidget.h" />
@@ -190,14 +174,9 @@
     <CustomBuild Include="AudioInputWidget.ui" />
     <CustomBuild Include="ToolWidget.ui" />
     <CustomBuild Include="KernelToolWidget.ui" />
-    <CustomBuild Include="MyStyleLine.h">
+    <CustomBuild Include="AccessAnalyToolWidget.ui" />
+    <CustomBuild Include="Bridge.h">
       <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="AccessAnalyToolWidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="AccessAnalyToolWidget.ui">
-      <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -209,19 +188,14 @@
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
       <ParseFiles>true</ParseFiles>
     </Filter>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-      <ParseFiles>true</ParseFiles>
-    </Filter>
     <Filter Include="Generated Files">
       <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
       <Extensions>moc;h;cpp</Extensions>
       <ParseFiles>true</ParseFiles>
     </Filter>
-    <Filter Include="Form Files">
-      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
-      <Extensions>ui</Extensions>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
       <ParseFiles>true</ParseFiles>
     </Filter>
   </ItemGroup>

@@ -532,9 +532,12 @@ void MyOpenGLWidget::setStyleByProperties(Layer * layer, QString propertyName)
 	for (int i = 0; i < propertyList.size(); i++) {
 		propertyList[i] = (propertyList[i] - min) / (max - min);
 		double ratio = 1.0 / colorList.size();
-		int colorIndex = propertyList[i] / ratio;
-		if (colorIndex == colorList.size()) {
-			colorIndex--;
+		int colorIndex = propertyList[i]/ratio;
+		if (colorIndex >= colorList.size()) {
+			colorIndex = colorList.size() - 1;
+		}
+		else if(colorIndex<0){
+			colorIndex = 0;
 		}
 		layer->features[i]->symbolStyle.fillColor = colorList[colorIndex];
 		layer->features[i]->symbolStyle.strokeColor = colorList[colorIndex];

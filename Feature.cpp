@@ -23,3 +23,8 @@ Feature::~Feature(void)
 		geosGeom = NULL;
 	}
 }
+
+void Feature::setT(time_t t)
+{
+	symbolStyle = SymbolStyle(t);
+}

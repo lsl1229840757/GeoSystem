@@ -22,7 +22,9 @@ public:
 	Layer* road;  //Â·Íø
 public slots:
 	void addLayerComboItem(QComboBox* comboBox);
-	void setComboItemToParam(int itemID);
+	void setComboItemToParamDemand(int itemID);
+	void setComboItemToParamRoad(int itemID);
+
 	void demandLayerChanged(int itemID);
 	void roadLayerChanged(int itemID);
 	void setCheckBoxToParam();

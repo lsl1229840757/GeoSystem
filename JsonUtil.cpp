@@ -71,6 +71,7 @@ GeoMap* JsonUtil::parseGeoJson(QString filePath){
 QRectF JsonUtil::parseFeature(QJsonObject feaJObj ,Layer* layer) throw(runtime_error){
     Feature* feature = new Feature;
 	layer->features.push_back(feature);
+	feature->setT(layer->t);
 	feature->featureID = layer->features.size() - 1;
     //½âÎöÊôĞÔ
     QJsonObject properties = feaJObj.take(PROPERTIES).toObject();

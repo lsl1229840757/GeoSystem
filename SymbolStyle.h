@@ -4,6 +4,7 @@ class SymbolStyle
 {
 public:
 	SymbolStyle();
+	SymbolStyle(time_t t);
 	~SymbolStyle();
 	//对应SLD标签
 	//point mark，暂时用不上
