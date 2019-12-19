@@ -4,6 +4,7 @@
 #include "Feature.h"
 #include "EuclideanDistanceUtil.h"
 #include "GeoPoint.h"
+#include "SnapUtil.h"
 using namespace std;
 class AccessibilityUtil
 {
@@ -15,5 +16,8 @@ public:
 	double getWeight(double distance);
 	double calculDistance(Feature *demandFeature, Feature *supplyFeature, Layer *road);
 	vector<vector<double>> calculOD(Layer* demand, Layer * supply, Layer *road);
+	SnapUtil snapUtil;   //路网分析工具
+	int getNearestNode(GeoPoint* pt);  //获得供给或需求点最近节点ID
+
 };
 

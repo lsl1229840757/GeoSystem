@@ -28,7 +28,7 @@ SnapUtil::~SnapUtil()
 			delete[] ODNetDistMtx[i];
 		}
 		delete[] ODNetDistMtx;
-		costMatrix = NULL;
+		ODNetDistMtx = NULL;
 	}
 }
 
@@ -218,6 +218,8 @@ void SnapUtil::calcuFloydDist()
 			}
 		}
 	}
+	qDebug() << "Floyd succeed!";
+	/*
 	for (i = 0; i < nodeCount; i++)
 	{
 		for (j = 0; j < nodeCount; j++)
@@ -225,5 +227,5 @@ void SnapUtil::calcuFloydDist()
 			cout << ODNetDistMtx[i][j] << "  ";
 		}
 		cout << endl;
-	}
+	}*/
 }

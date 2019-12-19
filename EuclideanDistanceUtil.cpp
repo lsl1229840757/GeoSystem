@@ -25,6 +25,6 @@ double EuclideanDistanceUtil::computeDistanceByLatLng(double lat1, double lng1, 
 	double b = fabs(lng1 * M_PI / 180.0 - lng2 * M_PI / 180.0);  //经度之差
 	double dst = 2 * asin((sqrt(pow(sin(a / 2), 2) + cos(radLat1) * cos(radLat2) * pow(sin(b / 2), 2))));
 	dst = dst * EARTH_RADIUS;
-	dst = round(dst * 10000);
+	dst = round(dst * 1000);   //原本是10000,结果大了10倍
 	return dst;
 }
