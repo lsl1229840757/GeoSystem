@@ -351,6 +351,7 @@
     <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="QuadTreeIndex.cpp" />
     <ClCompile Include="SldUtil.cpp" />
+    <ClCompile Include="SnapUtil.cpp" />
     <ClCompile Include="SpatialIndex.cpp" />
     <ClCompile Include="StyleWidget.cpp" />
     <ClCompile Include="SymbolStyle.cpp" />
@@ -605,6 +606,7 @@
     <ClInclude Include="QuadTreeIndex.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SldUtil.h" />
+    <ClInclude Include="SnapUtil.h" />
     <ClInclude Include="SpatialIndex.h" />
     <CustomBuild Include="StyleWidget.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

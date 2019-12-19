@@ -88,6 +88,7 @@
     <ClCompile Include="ToolWidget.cpp" />
     <ClCompile Include="trianglewindow.cpp" />
     <ClCompile Include="triangulate.cpp" />
+    <ClCompile Include="SnapUtil.cpp">
     <ClCompile Include="GeneratedFiles\Debug\moc_Bridge.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -145,6 +146,9 @@
     <ClInclude Include="GeoPoint.h" />
     <ClInclude Include="GeoPolygon.h" />
     <ClInclude Include="GeoPolyline.h" />
+    <ClInclude Include="SnapUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="geojsonparese.h" />
