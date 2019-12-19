@@ -4,6 +4,7 @@ static QString FILLOPACIRT = "fillOpacity";
 static QString STROKEWIDTH = "strokeWidth";
 static QString STROKECOLOR = "strokeColor";
 static QString STROKEOPACITY = "strokeOpacity";
+
 MyColorButton::MyColorButton(Feature* feature, QString type, QObject *parent): QPushButton()
 {
 	this->type = type;
@@ -17,7 +18,7 @@ MyColorButton::~MyColorButton()
 }
 
 void MyColorButton::openColorDialog() {
-	QColorDialog *m_pColorDialog = new QColorDialog;//调色板显示类
+	QColorDialog *m_pColorDialog = new QColorDialog; //调色板显示类
 	connect(m_pColorDialog, SIGNAL(colorSelected(QColor)), this, SLOT(getColor(QColor)));
 	m_pColorDialog->exec();
 }
