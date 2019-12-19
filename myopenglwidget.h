@@ -83,5 +83,7 @@ private:
 public:
 	void drawIndex();
 	void drawQuadTreeIndexNode(QuadNode* node);
+	// //设置投影后调用
+	void resetMaprange();
 };
 #endif // MYOPENGLWIDGET_H

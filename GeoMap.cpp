@@ -103,7 +103,8 @@ void GeoMap::resetFeaturePrjStatus()
 			for (int j = 0; j < layer->features.size(); j++)
 			{
 				//重置isFirstProjeted,回复第一次投影状态
-				layer->features.at(j)->isFirstProjeted = true;
+				//layer->features.at(j)->isFirstProjeted = true;
+				layer->features[i]->geometry->isProjeted = false;
 			}
 		}
 	}

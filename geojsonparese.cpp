@@ -79,13 +79,6 @@ void GeoJsonParese::parseGeoJson(){
 	if(!filePath.isEmpty()){
 		GeoMap* geoMap = JsonUtil::parseGeoJson(filePath);
 		//设置地图投影
-		//判断是否为经纬度
-		double &onex = geoMap->maxRange.topRight().rx();
-		double &oney = geoMap->maxRange.topRight().ry();
-		if (fabs(onex) <= 360 && fabs(oney) <= 90)
-			geoMap->setMapPrj(MapPrjType::MERCATOR);
-		//QString str = QString::number(feature.geometry->coordinates[0].toDouble())+","+QString::number(feature.geometry->coordinates[1].toDouble());
-		//ui.textBrowser->setText("coordinates:["+str+"]");
 		dataSource->geoMaps.push_back(geoMap);
 		//添加节点
 		addTreeTopLevel(geoMap, dataSource->geoMaps.size()-1, QString::fromStdString(geoMap->name));
@@ -101,11 +94,6 @@ void GeoJsonParese::readShp(){
 		OGRDataSource* poDS = GdalUtil::readFromGeoJson(filePath);
 		//TODO 报错机制
 		GeoMap *geoMap = GdalUtil::OGRDataSource2Map(poDS);
-		//设置地图投影前判断是否为经纬度，否则不投影
-		double &onex = geoMap->maxRange.topRight().rx();
-		double &oney = geoMap->maxRange.topRight().ry();
-		if (fabs(onex) <= 360 && fabs(oney) <= 90)
-			geoMap->setMapPrj(MapPrjType::MERCATOR); //默认使用墨卡托
 		dataSource->geoMaps.push_back(geoMap);
 		//添加节点
 		addTreeTopLevel(geoMap, dataSource->geoMaps.size() - 1, QString::fromStdString(geoMap->name));
@@ -132,11 +120,6 @@ void GeoJsonParese::readFromPgsql() {
 		geoMap = GdalUtil::OGRDataSource2Map(poDS,tableName);
 	}
 	if (geoMap != NULL){
-		//设置地图投影前判断是否为经纬度，否则不投影
-		double &onex = geoMap->maxRange.topRight().rx();
-		double &oney = geoMap->maxRange.topRight().ry();
-		if (fabs(onex) <= 360 && fabs(oney) <= 90)
-			geoMap->setMapPrj(MapPrjType::MERCATOR); //默认使用墨卡托
 		dataSource->geoMaps.push_back(geoMap);
 		//添加地图节点
 		addTreeTopLevel(geoMap, dataSource->geoMaps.size() - 1, QString::fromStdString(geoMap->name));
@@ -178,7 +161,9 @@ void GeoJsonParese::onPressed(QPoint pos)
 		GeoMap* map = dataSource->geoMaps[v.toInt()];
 		QMenu *pMenu = new QMenu(this);
 		QAction *drawTask = new QAction(tr("Draw Map"), this);
-		QAction *changeMapPrj = new QAction(tr("Change Map Projection"), this);
+		QMenu *mapPrjMenu = new QMenu(tr("Map Prejection"), this);
+		//QAction *changeMapPrj = new QAction(tr("Change Map Projection"), this);
+		QAction *addMapPfjMerc =new QAction(tr("Mercator Projection"), this);  //默认添加墨卡托投影
 		QAction *setStyleSLD = new QAction(tr("Set Style From SLD"), this);
 		QMenu *chooseIndex = new QMenu(tr("Choose Spatial Index"), this);
 		QAction *gridIndex = new QAction(tr("Grid Index"), this);
@@ -199,8 +184,11 @@ void GeoJsonParese::onPressed(QPoint pos)
 		chooseIndex->addAction(quadIndex);
 		chooseTool->addAction(kernelDens);
 		chooseTool->addAction(accessAnaly);
+		mapPrjMenu->addAction(addMapPfjMerc);
+		//mapPrjMenu->addAction(changeMapPrj);
 		connect(drawTask, SIGNAL(triggered()), this, SLOT(drawMap()));
-		connect(changeMapPrj, SIGNAL(triggered()), this, SLOT(changeMapProjection()));
+		//connect(changeMapPrj, SIGNAL(triggered()), this, SLOT(changeMapProjection()));
+		connect(addMapPfjMerc, SIGNAL(triggered()), this, SLOT(setMapProjection()));
 		connect(setStyleSLD, SIGNAL(triggered()), this, SLOT(setStyleFromSLD()));
 		connect(gridIndex, SIGNAL(triggered()), this, SLOT(gridInfo()));
 		connect(quadIndex, SIGNAL(triggered()), this, SLOT(setQuadTreeIndex()));
@@ -209,9 +197,11 @@ void GeoJsonParese::onPressed(QPoint pos)
 		connect(addLayerJson, SIGNAL(triggered()), this, SLOT(readGeoJsonToLayer()));
 		connect(addLayerPostgis, SIGNAL(triggered()), this, SLOT(readPostgisTolayer()));
 		connect(accessAnaly, SIGNAL(triggered()), this, SLOT(openAccessAnalyTool()));
+		
 		pMenu->addAction(drawTask);
 		pMenu->addMenu(addLayer);
-		pMenu->addAction(changeMapPrj);
+		pMenu->addMenu(mapPrjMenu);
+		//pMenu->addAction(changeMapPrj);
 		pMenu->addAction(setStyleSLD);
 		pMenu->addMenu(chooseIndex);
 		pMenu->addMenu(chooseTool);
@@ -748,11 +738,6 @@ void GeoJsonParese::readShpToLayer()
 		OGRDataSource* poDS = GdalUtil::readFromGeoJson(filePath);
 		//TODO 报错机制
 		GeoMap *geoMap = GdalUtil::OGRDataSource2Map(poDS);
-		//设置地图投影前判断是否为经纬度，否则不投影
-		double &onex = geoMap->maxRange.topRight().rx();
-		double &oney = geoMap->maxRange.topRight().ry();
-		if (fabs(onex) <= 360 && fabs(oney) <= 90)
-			geoMap->setMapPrj(MapPrjType::MERCATOR); //默认使用墨卡托
 		//添加图层·
 		addLayerToCurrentMap(geoMap, OpenFileType::SHP);
 	}
@@ -765,16 +750,9 @@ void GeoJsonParese::readGeoJsonToLayer()
 	QString filePath = QFileDialog::getOpenFileName(this, "GeoJson Parse", "", "GeoJson Files(*.geojson)");
 	if (!filePath.isEmpty()) {
 		GeoMap* geoMap = JsonUtil::parseGeoJson(filePath);
-		//设置地图投影
-		//判断是否为经纬度
-		double &onex = geoMap->maxRange.topRight().rx();
-		double &oney = geoMap->maxRange.topRight().ry();
-		if (fabs(onex) <= 360 && fabs(oney) <= 90)
-			geoMap->setMapPrj(MapPrjType::MERCATOR);
-		//添加图层·
+		//添加图层
 		addLayerToCurrentMap(geoMap, OpenFileType::GEOJSON);
 	}
-
 }
 
 
@@ -797,20 +775,7 @@ void GeoJsonParese::readPostgisToLayer()
 		//调用重载的转换函数，之后可以再加一个下拉框来确定打开的Table
 		geoMap = GdalUtil::OGRDataSource2Map(poDS, tableName);
 	}
-	if (geoMap != NULL) {
-		//设置地图投影前判断是否为经纬度，否则不投影
-		double &onex = geoMap->maxRange.topRight().rx();
-		double &oney = geoMap->maxRange.topRight().ry();
-		if (fabs(onex) <= 360 && fabs(oney) <= 90)
-			geoMap->setMapPrj(MapPrjType::MERCATOR); //默认使用墨卡托
-		//添加图层·
-		addLayerToCurrentMap(geoMap, OpenFileType::GEOJSON);
-	}
-	else {
-		log += "Loading data from PostgreSQL failed!\n";
-		ui.textBrowser->setText(log);
-	}
-	
+	addLayerToCurrentMap(geoMap, OpenFileType::GEOJSON);
 }
 
 
@@ -824,4 +789,38 @@ void GeoJsonParese::openAccessAnalyTool()
 	GeoMap* map = dataSource->geoMaps[vId.toInt()];
 	AccessAnalyToolWidget *accessToolWidget = new AccessAnalyToolWidget(map);
 	accessToolWidget->show();
+}
+
+
+void GeoJsonParese::setMapProjection()
+{
+	// TODO: 在此处添加实现代码.
+	//获取被选择item的id
+	QTreeWidgetItem *currentItem = ui.treeWidget->currentItem();
+	QVariant vId = currentItem->data(ID_COLUMN, Qt::UserRole);
+	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
+	GeoMap* currentMap = dataSource->geoMaps[vId.toInt()];
+	if (currentMap != NULL) {
+		//设置地图投影前判断是否为经纬度，否则不投影
+		double &onex = currentMap->maxRange.topRight().rx();
+		double &oney = currentMap->maxRange.topRight().ry();
+		if (fabs(onex) <= 360 && fabs(oney) <= 90)
+		{
+			currentMap->setMapPrj(MapPrjType::MERCATOR); //默认使用墨卡托
+			log += "Set projection successfully!\n";
+			ui.textBrowser->setText(log);
+		}
+		else
+		{
+			log += "Do not need projection!\n";
+			ui.textBrowser->setText(log);
+		}
+	}
+	else {
+		log += "Set projection failed!\n";
+		ui.textBrowser->setText(log);
+	}
+	MyOpenGLWidget* myOpenGlWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(currentMap);
+	myOpenGlWidget->resetMaprange();  //设置地图投影后重置range
+	myOpenGlWidget->update();
 }

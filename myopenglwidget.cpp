@@ -12,7 +12,8 @@ MyOpenGLWidget::MyOpenGLWidget(GeoMap *geoMap, QWidget *parent):QOpenGLWidget(pa
 	this->viewRange = normalRange;
 	//QPointF topRight = normalRange.topRight();
 	//初始化mouseZoom
-	mouseZoom = MouseZoomAction(this->viewRange);  //改成传入实际显示的range,避免投影坐标反算
+	mouseZoom = MouseZoomAction(this->viewRange);  
+	//改成传入实际显示的range,避免投影坐标反算
 	this->centerPos = geoMap->maxRange.center();
 	isMouseMovement = false;
 }
@@ -317,8 +318,20 @@ void MyOpenGLWidget::drawPolygon(mgeo::Geometry *geometry, SymbolStyle symbolSty
 				point->prjy = prjy;
 				point->isProjeted = true;
 			}
-			//投影完成
+			//原始数据投影完成
 			geometry->isProjeted = true;
+			//对三角剖分点投影
+			vector<GeoPolygon *> triangles = polygon->getTriangles();
+			for (int j = 0; j < triangles.size(); j++) {
+				for (int k = 0; k < triangles[j]->points.size(); k++) {
+					GeoPoint *point = triangles[j]->points[k];
+					double prjx, prjy;
+					geoMap->mapPrj->getXY(point->x, point->y, &prjx, &prjy);
+					point->prjx = prjx;
+					point->prjy = prjy;
+					point->isProjeted = true;
+				}
+			}
 		}
 	}
 	//开始三角剖分
@@ -431,8 +444,8 @@ bool MyOpenGLWidget::searchByClick(QPoint screenPoint)
 			geoMap->mapPrj->getBL(worldPoint.x(), worldPoint.y(), &l, &b);
 		}
 		else {
-			b = worldPoint.x();
-			l = worldPoint.y();
+			l = worldPoint.x();
+			b = worldPoint.y();
 		}
 		double dx = geoMap->maxRange.width() / 500;
 		string left = QString::number(l - dx).toStdString();
@@ -619,4 +632,21 @@ void MyOpenGLWidget::drawQuadTreeIndexNode(QuadNode* node)
 			drawQuadTreeIndexNode(node->childNodes[i]);
 		}
 	}
+}
+
+
+// //设置投影后调用
+void MyOpenGLWidget::resetMaprange()
+{
+	// TODO: 在此处添加实现代码.
+	//获取地图Range
+	QRectF normalRange = this->geoMap->getMapRange();
+	this->geoMap->resetFeaturePrjStatus(); //重置投影状态
+	//计算缩放比例
+	this->viewRange = normalRange;
+	//初始化mouseZoom
+	mouseZoom = MouseZoomAction(this->viewRange);
+	//改成传入实际显示的range,避免投影坐标反算
+	this->centerPos = this->geoMap->maxRange.center();
+	isMouseMovement = false;
 }

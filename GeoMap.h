@@ -7,6 +7,8 @@
 #include "MapPrjMercator.h"
 #include "qdebug.h"
 #include "SpatialIndex.h"
+#include "GeoPolygon.h"
+#include "GeoMultiPolygon.h"
 using namespace std;
 class GeoMap
 {

@@ -79,8 +79,10 @@ public slots:
 	void readGeoJsonToLayer();
 	void readPostgisToLayer();
 	void openAccessAnalyTool();
+	void setMapProjection();
 private:
 	Ui::GeoJsonPareseClass ui;
+
 };
 
 #endif // GEOJSONPARESE_H
