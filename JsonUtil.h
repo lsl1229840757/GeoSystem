@@ -19,6 +19,7 @@
 #include "geos.h"
 #include "MGeosUtil.h"
 #include "geos_c.h"
+#include <map>
 class JsonUtil
 {
 public:
@@ -28,6 +29,7 @@ public:
     QJsonObject static JsonRead(QString filePath) throw(runtime_error);
     //定义key中的常量，判断第一层结构
     static QString TYPE;
+	static QString NAME;
 	static QString FEATURECOLLECTION;
 	static QString GEOMETRYCOLLECTION;
 	static QString FEATURES;
@@ -57,5 +59,7 @@ public:
 	static void jsonWrite(QString destPath, QJsonObject* jsonObj);
 	static QJsonObject storeDbParams(QString tableName, QString dbname, QString addr, QString port, QString username, QString password);
 	static void loadDbParams(QJsonObject* pJsonObj, QString& tableName, QString& dbname, QString& addr, QString& port, QString& username, QString& password);
+	// //解析属性，转存为Attributes
+	static QVariantMap* parseProperty(QJsonObject *properties);
 };
 

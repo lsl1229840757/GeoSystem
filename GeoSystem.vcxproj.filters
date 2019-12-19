@@ -97,6 +97,13 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AccessibilityUtil.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_AccessAnalyToolWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_AccessAnalyToolWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AccessAnalyToolWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -153,6 +160,8 @@
     </ClInclude>
     <ClInclude Include="AccessibilityUtil.h">
       <Filter>Header Files</Filter>
+    <ClInclude Include="GeneratedFiles\ui_AccessAnalyToolWidget.h">
+      <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -183,6 +192,12 @@
     <CustomBuild Include="KernelToolWidget.ui" />
     <CustomBuild Include="MyStyleLine.h">
       <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AccessAnalyToolWidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AccessAnalyToolWidget.ui">
+      <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

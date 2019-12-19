@@ -31,6 +31,12 @@
 #include "AudioInputWidget.h"
 #include "KernelToolWidget.h"
 #include "QuadTreeIndex.h"
+#include "AccessAnalyToolWidget.h"
+typedef enum
+{
+	SHP,GEOJSON,POSTGRESQL
+}OpenFileType;
+
 class GeoJsonParese : public QMainWindow
 {
 	Q_OBJECT
@@ -45,6 +51,7 @@ public:
 	QString log;
 	MyOpenGlWidgetFactory myOpenGLWidgetFactory;
 	void initProject(GeoMap* map); //重置投影
+	void addLayerToCurrentMap(GeoMap* loaddataMap, OpenFileType type);
 public slots:
 	void showCurrentPos(QPointF currentPos);
 	void parseGeoJson();
@@ -68,6 +75,10 @@ public slots:
 	void refreshSelectFeature(QString replyStr);//工具函数，刷新渲染类
 	void openKernelTool(); //打开核密度工具面板
 	void setQuadTreeIndex();  //设置四叉树四叉树索引
+	void readShpToLayer();
+	void readGeoJsonToLayer();
+	void readPostgisToLayer();
+	void openAccessAnalyTool();
 private:
 	Ui::GeoJsonPareseClass ui;
 };
