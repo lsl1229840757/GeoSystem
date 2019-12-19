@@ -84,10 +84,13 @@ void AccessAnalyToolWidget::setCheckBoxToParam()
 
 void AccessAnalyToolWidget::finishSetParam()
 {
-	qDebug()<<QString::fromStdString(demandLayer->name) << "   " << QString::fromStdString(road->name);
-	for(int i=0;i<supplyLayers.size();i++)
-		qDebug() << QString::fromStdString(supplyLayers.at(i)->name);
-	this->close();  
+	AccessibilityUtil au;
+	vector<double> result = au.accessAnalyse(demandLayer, supplyLayers, road);
+	for (int i = 0; i < result.size(); i++)
+	{
+		demandLayer->features[i]->properties.insert("accessbility", result[i]);
+	}
+	emit finishAnalyse(result, geoMap, demandLayer);
 }
 
 

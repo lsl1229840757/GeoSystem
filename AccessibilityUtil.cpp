@@ -52,10 +52,10 @@ double AccessibilityUtil::getWeight(double distance)
 		return 1;
 	}
 	else if (distance > 400 && distance <= 1600) {
-		return -153.6558*pow(distance, 3) + 419.4604*pow(distance, 2) - 395.9706*distance + 201.1086;
+		return -153.6558*pow(distance/1000, 3) + 419.4604*pow(distance / 1000, 2) - 395.9706*distance / 1000 + 201.1086;
 	}
 	else if (distance > 1600 && distance <= 2400) {
-		return -92.8*pow(distance, 3) + 566.6*pow(distance, 2) - 1153.1*distance + 786.6;
+		return -92.8*pow(distance / 1000, 3) + 566.6*pow(distance / 1000, 2) - 1153.1*distance / 1000 + 786.6;
 	}
 	return 0.0;
 }

@@ -32,6 +32,8 @@
 #include "KernelToolWidget.h"
 #include "QuadTreeIndex.h"
 #include "AccessAnalyToolWidget.h"
+#include <QtCharts>
+#include<algorithm>
 typedef enum
 {
 	SHP,GEOJSON,POSTGRESQL
@@ -79,6 +81,7 @@ public slots:
 	void readGeoJsonToLayer();
 	void readPostgisToLayer();
 	void openAccessAnalyTool();
+	void finishAccessAnalyse(vector<double> result, GeoMap* map, Layer* layer);
 private:
 	Ui::GeoJsonPareseClass ui;
 };

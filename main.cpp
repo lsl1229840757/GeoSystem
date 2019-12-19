@@ -13,7 +13,6 @@
 #include "MapPrjMercator.h"
 #include "AccessibilityUtil.h"
 #include "EuclideanDistanceUtil.h"
-#include <QtCharts>
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
