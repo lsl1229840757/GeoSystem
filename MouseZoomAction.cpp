@@ -29,7 +29,7 @@ QRectF MouseZoomAction::zoomIn(QPointF centerPos)
 	//得到放大后地图的宽和高
 	double width = mapRange.width() * ratio;
 	double height = mapRange.height() * ratio;
-	QRectF zoomRange = QRect(mapRange.left(), mapRange.top(), width, height);
+	QRectF zoomRange = QRectF(mapRange.left(), mapRange.top(), width, height);
 	zoomRange.moveCenter(centerPos);
 	return zoomRange;
 }
@@ -44,7 +44,7 @@ QRectF MouseZoomAction::zoomOut(QPointF centerPos)
 	//得到放大后地图的宽和高
 	double width = mapRange.width() * ratio;
 	double height = mapRange.height() * ratio;
-	QRectF zoomRange = QRect(mapRange.left(), mapRange.top(), width, height);
+	QRectF zoomRange = QRectF(mapRange.left(), mapRange.top(), width, height);
 	zoomRange.moveCenter(centerPos);
 	return zoomRange;
 }
