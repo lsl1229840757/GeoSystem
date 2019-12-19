@@ -13,17 +13,43 @@
 #include "MapPrjMercator.h"
 #include "AccessibilityUtil.h"
 #include "EuclideanDistanceUtil.h"
+#include <QtCharts>
 int main(int argc, char *argv[])
 {
+	QApplication a(argc, argv);
+
+	//QBarSet *set0 = new QBarSet("Jane");
+	//*set0 << 1 << 2 << 3 << 4 << 5 << 6;
+
+	//QBarSeries *series = new QBarSeries();
+	//series->append(set0);
+
+	//QChart *chart = new QChart();
+	//chart->addSeries(series);
+
+	//QStringList categories;
+	//categories << "Jan" << "Feb" << "Mar" << "Apr" << "May" << "Jun";
+	//QBarCategoryAxis *axis = new QBarCategoryAxis();
+	//axis->append(categories);
+	//chart->createDefaultAxes();
+	//chart->setAxisX(axis, series);
+
+	//chart->legend()->setVisible(true);
+	//chart->legend()->setAlignment(Qt::AlignBottom);
+
+	//QChartView *chartView = new QChartView(chart);
+	//chartView->setRenderHint(QPainter::Antialiasing);
+
+	//chartView->show();
+
 
 	/*EuclideanDistanceUtil e;
 	double distance = e.computeDistanceByLatLng(39.9465141, 116.906654, 39.945908, 116.906084);
 	qDebug() << distance << endl;
 	system("pause");*/
-	//QApplication a(argc, argv);
-	//GeoJsonParese w;
-	//w.show();
-	//return a.exec();
+	GeoJsonParese w;
+	w.show();
+	return a.exec();
 
 	//MapPrjMercator * m = new MapPrjMercator;
 	//double x, y;
