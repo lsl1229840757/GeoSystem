@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>268</width>
-    <height>255</height>
+    <width>366</width>
+    <height>312</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,7 +40,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_btndema" stretch="0">
+      <layout class="QVBoxLayout" name="verticalLayout_btndema">
        <property name="spacing">
         <number>0</number>
        </property>
@@ -50,13 +50,6 @@
        <property name="topMargin">
         <number>23</number>
        </property>
-       <item>
-        <widget class="QPushButton" name="pushButton_demand">
-         <property name="text">
-          <string>PushButton</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
     </layout>
@@ -64,7 +57,7 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_supply">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="10,3">
+      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="10">
        <item>
         <widget class="QLabel" name="label_supply">
          <property name="font">
@@ -78,13 +71,6 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_supply">
-         <property name="text">
-          <string>PushButton</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
      <item>
@@ -93,7 +79,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="10,3">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="10">
      <property name="spacing">
       <number>2</number>
      </property>
@@ -114,26 +100,6 @@
        </item>
        <item>
         <widget class="QComboBox" name="comboBox_road"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_btnroad" stretch="0">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="sizeConstraint">
-        <enum>QLayout::SetDefaultConstraint</enum>
-       </property>
-       <property name="topMargin">
-        <number>23</number>
-       </property>
-       <item>
-        <widget class="QPushButton" name="pushButton_demand_2">
-         <property name="text">
-          <string>PushButton</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </item>
@@ -197,5 +163,22 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButton_cancel</sender>
+   <signal>clicked()</signal>
+   <receiver>AccessAnalyToolWidget</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>184</x>
+     <y>286</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>238</x>
+     <y>-12</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

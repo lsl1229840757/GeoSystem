@@ -13,8 +13,10 @@ AccessAnalyToolWidget::AccessAnalyToolWidget(GeoMap* map,QWidget *parent)
 	//connect(ui.comboBox_road, SIGNAL(currentIndexChanged(int)), this, SLOT(roadLayerChanged(int)));
 	connect(ui.comboBox_demand, SIGNAL(currentIndexChanged(int)), this, SLOT(setComboItemToParam(int)));
 	connect(ui.comboBox_road, SIGNAL(currentIndexChanged(int)), this, SLOT(setComboItemToParam(int)));
-	connect(ui.pushButton_supply, SIGNAL(clicked()), this, SLOT(setCheckBoxToParam()));
+	//connect(ui.pushButton_supply, SIGNAL(clicked()), this, SLOT(setCheckBoxToParam()));
+	connect(ui.pushButton_ok, SIGNAL(clicked()), this, SLOT(setCheckBoxToParam()));
 	connect(ui.pushButton_ok, SIGNAL(clicked()), this, SLOT(finishSetParam()));
+
 	addLayerComboItem(ui.comboBox_demand);
 	addLayerComboItem(ui.comboBox_road);
 	addCheckBox();

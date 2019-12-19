@@ -822,6 +822,7 @@ void GeoJsonParese::setMapProjection()
 	MyOpenGLWidget* myOpenGlWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(currentMap);
 	myOpenGlWidget->resetMaprange();  //设置地图投影后重置range
 	myOpenGlWidget->update();
+}
 void GeoJsonParese::finishAccessAnalyse(vector<double> result, GeoMap *map, Layer *layer)
 {
 	MyOpenGLWidget* myOpenGlWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(map);
