@@ -228,10 +228,24 @@ void MyOpenGLWidget::drawPoint(mgeo::Geometry *geometry, SymbolStyle symbolStyle
 			point->isProjeted = true;
 		}
 	}
-	glBegin(GL_POINTS);
-	glColor3f(1.0, 0.0, 0.0);
+	if (symbolStyle.markSize < geoMap->getMapRange().height() / 300) {
+		symbolStyle.markSize = geoMap->getMapRange().height() / 300;//markSize为地图的30分之一
+	}
+	//按照markSize绘制
+	glBegin(GL_POLYGON);
+	glColor3f(normalFillRed, normalFillGreen, normalFillBlue);
+	for (double rad = 0; rad < 2*M_PI; rad += M_PI / 20) {
+		glVertex2f(point->getX() + symbolStyle.markSize*cos(rad), point->getY() + symbolStyle.markSize*sin(rad));
+	}
+	glEnd();
+
+	//绘制stroke边界
+	glBegin(GL_LINE_LOOP);
+	glColor3f(normalStrokeRed, normalStrokeGreen, normalFillBlue);
+	for (double rad = 0; rad < 2*M_PI; rad += M_PI / 20) {
+		glVertex2f(point->getX() + symbolStyle.markSize*cos(rad), point->getY() + symbolStyle.markSize*sin(rad));
+	}
 	//获取点坐标
-	glVertex2f(point->getX(), point->getY());
 	glEnd();
 }
 
@@ -272,7 +286,6 @@ void MyOpenGLWidget::drawPolyline(mgeo::Geometry *geometry, SymbolStyle symbolSt
 	for (int j = 0; j < polyline->points.size(); j++) {
 		GeoPoint *point = polyline->points[j];
 		glColor3f(normalStrokeRed, normalStrokeGreen, normalStrokeBlue);
-		//最后一个元素时改变isLastPt
 		glVertex2f(point->getX(), point->getY());
 	}
 	glEnd();
@@ -412,19 +425,26 @@ bool MyOpenGLWidget::searchByClick(QPoint screenPoint)
 {
 	//使用空间索引搜索要素
 	if (geoMap->index != NULL && geoMap->index->isIndexCreated) {
+		QPointF worldPoint = screenCd2worldCd(screenPoint);
+		double b, l;
+		if (geoMap->mapPrj != NULL) {
+			geoMap->mapPrj->getBL(worldPoint.x(), worldPoint.y(), &l, &b);
+		}
+		else {
+			b = worldPoint.x();
+			l = worldPoint.y();
+		}
+		double dx = geoMap->maxRange.width() / 500;
+		string left = QString::number(l - dx).toStdString();
+		string right = QString::number(l + dx).toStdString();
+		string bottom = QString::number(b - dx).toStdString();
+		string up = QString::number(b + dx).toStdString();
+		string wktStr = "POLYGON ((" + left + " " + bottom + "," + left + " " + up + "," + right + " " + up + "," + right + " " + bottom + "," + left + " " + bottom + "))";
+		
 		if (geoMap->index->getIndexType() == SpatialIndexType::GRID) {
 			GridIndex* gridIndex = (GridIndex*)geoMap->index;
 			geos::io::WKTReader wktReader;
-			QPointF worldPoint = screenCd2worldCd(screenPoint);
-			double b, l;
-			if (geoMap->mapPrj != NULL) {
-				geoMap->mapPrj->getBL(worldPoint.x(), worldPoint.y(), &l, &b);
-			}
-			else {
-				b = worldPoint.x();
-				l = worldPoint.y();
-			}
-			Geometry* mousePoint = wktReader.read("Point (" + QString::number(l).toStdString() + " " + QString::number(b).toStdString() + ")");
+			Geometry* mousePoint = wktReader.read(wktStr);
 			for (int i = 0; i < gridIndex->grids.size(); i++) {
 				Grid* grid = gridIndex->grids[i];
 				if (!grid->geosBound->disjoint(mousePoint)) {
@@ -445,16 +465,7 @@ bool MyOpenGLWidget::searchByClick(QPoint screenPoint)
 		else if (geoMap->index->getIndexType() == SpatialIndexType::QUADTREE) {
 			QuadTreeIndex* quadIndex = (QuadTreeIndex*)geoMap->index;
 			geos::io::WKTReader wktReader;
-			QPointF worldPoint = screenCd2worldCd(screenPoint);
-			double b, l;
-			if (geoMap->mapPrj != NULL) {
-				geoMap->mapPrj->getBL(worldPoint.x(), worldPoint.y(), &l, &b);
-			}
-			else {
-				b = worldPoint.x();
-				l = worldPoint.y();
-			}
-			Geometry* mousePoint = wktReader.read("Point (" + QString::number(l).toStdString() + " " + QString::number(b).toStdString() + ")");
+			Geometry* mousePoint = wktReader.read(wktStr);
 			searchByQuad(mousePoint, quadIndex->quadTree->root);
 		}
 	}

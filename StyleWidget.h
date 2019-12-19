@@ -10,6 +10,7 @@
 #include "qcolordialog.h"
 #include "qdebug.h"
 #include "MyColorButton.h"
+#include "MyStyleLine.h"
 class StyleWidget : public QWidget
 {
 	Q_OBJECT

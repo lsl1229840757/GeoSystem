@@ -11,12 +11,19 @@
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
 #include "MapPrjMercator.h"
+#include "AccessibilityUtil.h"
+#include "EuclideanDistanceUtil.h"
 int main(int argc, char *argv[])
 {
-	QApplication a(argc, argv);
-	GeoJsonParese w;
-	w.show();
-	return a.exec();
+
+	/*EuclideanDistanceUtil e;
+	double distance = e.computeDistanceByLatLng(39.9465141, 116.906654, 39.945908, 116.906084);
+	qDebug() << distance << endl;
+	system("pause");*/
+	//QApplication a(argc, argv);
+	//GeoJsonParese w;
+	//w.show();
+	//return a.exec();
 
 	//MapPrjMercator * m = new MapPrjMercator;
 	//double x, y;

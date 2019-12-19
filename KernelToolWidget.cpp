@@ -188,8 +188,8 @@ void KernelToolWidget::calculDefaultRadius()
 	double x_ = 0;
 	double y_ = 0;
 	for (int i = 0; i < this->points.size(); i++) {
-		x_ += this->points[i]->getX();
-		y_ += this->points[i]->getY();
+		x_ += this->points[i]->x;
+		y_ += this->points[i]->y;
 	}
 	x_ /= this->points.size();
 	y_ /= this->points.size();
@@ -197,8 +197,8 @@ void KernelToolWidget::calculDefaultRadius()
 	double dxSum = 0;
 	double dySum = 0;
 	for (int i = 0; i < this->points.size(); i++) {
-		dxSum += this->population[i] * pow(this->points[i]->getX() - x_, 2);
-		dySum += this->population[i] * pow(this->points[i]->getY() - y_, 2);
+		dxSum += this->population[i] * pow(this->points[i]->x - x_, 2);
+		dySum += this->population[i] * pow(this->points[i]->y - y_, 2);
 	}
 	dxSum /= popSum;
 	dySum /= popSum;
@@ -206,8 +206,8 @@ void KernelToolWidget::calculDefaultRadius()
 	//º∆À„Dm
 	vector<double> distances;
 	for (int i = 0; i < this->points.size(); i++) {
-		double x = this->points[i]->getX();
-		double y = this->points[i]->getY();
+		double x = this->points[i]->x;
+		double y = this->points[i]->y;
 		double distance = sqrt(pow(x - x_, 2) + pow(y - y_, 2));
 		distance *= this->population[i];
 		distances.push_back(distance);

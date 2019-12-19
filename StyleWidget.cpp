@@ -18,7 +18,7 @@ static QString FILLOPACIRT = "fillOpacity";
 static QString STROKEWIDTH = "strokeWidth";
 static QString STROKECOLOR = "strokeColor";
 static QString STROKEOPACITY = "strokeOpacity";
-
+static QString MARKSIZE = "markSize";
 
 StyleWidget::StyleWidget(int mapIndex, int layerIndex, Layer *layer, QWidget *parent)
 	: QWidget(parent)
@@ -53,23 +53,29 @@ StyleWidget::StyleWidget(int mapIndex, int layerIndex, Layer *layer, QWidget *pa
 		Feature *feature = layer->features[i];
 		mgeo::Geometry *geometry = feature->geometry;
 		SymbolStyle symbolStyle = feature->symbolStyle;
+		QString name = feature->attributes["NAME"].toString();
+		if (name.isEmpty()) {
+			name = QString::number(i);
+		}
 		if (GeometryType::GEOPOINT == geometry->getGeometryType()) {
-		
-
-		}
-		else if (GeometryType::GEOPOLYLINE == geometry->getGeometryType()) {
-		
-		
-		
-		}
-		else if (GeometryType::GEOPOLYGON == geometry->getGeometryType() ||
-			GeometryType::GEOMULTIPOLYGON == geometry->getGeometryType()) {
-			//绘制边界颜色, 名字暂时设置为ID
-			QTreeWidgetItem *featureItem = addTreeTopLevel(i, QString::number(i));
+			QTreeWidgetItem *featureItem = addTreeTopLevel(i, name);
 			//多边形的Fill
 			addTreeNode(featureItem, FILLCOLOR, symbolStyle, feature);//fillColor
 			addTreeNode(featureItem, STROKECOLOR, symbolStyle, feature);//strokeColor
-			addTreeNode(featureItem, STROKEWIDTH, symbolStyle, feature);//strokeColor
+			addTreeNode(featureItem, MARKSIZE, symbolStyle, feature);//点大小
+		}
+		else if (GeometryType::GEOPOLYLINE == geometry->getGeometryType()) {
+			QTreeWidgetItem *featureItem = addTreeTopLevel(i, name);
+			addTreeNode(featureItem, STROKECOLOR, symbolStyle, feature);//strokeColor
+			addTreeNode(featureItem, STROKEWIDTH, symbolStyle, feature);//strokeWidth
+		}
+		else if (GeometryType::GEOPOLYGON == geometry->getGeometryType() ||
+			GeometryType::GEOMULTIPOLYGON == geometry->getGeometryType()) {
+			QTreeWidgetItem *featureItem = addTreeTopLevel(i, name);
+			//多边形的Fill
+			addTreeNode(featureItem, FILLCOLOR, symbolStyle, feature);//fillColor
+			addTreeNode(featureItem, STROKECOLOR, symbolStyle, feature);//strokeColor
+			addTreeNode(featureItem, STROKEWIDTH, symbolStyle, feature);//strokeWidth
 		}
 	}
 }
@@ -118,10 +124,21 @@ QTreeWidgetItem * StyleWidget::addTreeNode(QTreeWidgetItem *parent, QString type
 	}
 	else if (type.compare(STROKEWIDTH) == 0) {
 		QLabel *label = new QLabel("stroke width");
-		QPushButton *colorButton = new QPushButton();
 		parent->addChild(item);
 		ui.treeWidget->setItemWidget(item, 0, label);
-		ui.treeWidget->setItemWidget(item, 1, new QLabel(QString::number(symbol.strokeWidth)));
+		MyStyleLine *line = new MyStyleLine(feature, type);
+		line->setText(QString::number(feature->symbolStyle.strokeWidth));
+		ui.treeWidget->setItemWidget(item, 1, line);
+		connect(line, SIGNAL(mupdate()), this, SLOT(finishQColorDialog()));
+	}
+	else if (type.compare(MARKSIZE) == 0) {
+		QLabel *label = new QLabel("mark size");
+		parent->addChild(item);
+		ui.treeWidget->setItemWidget(item, 0, label);
+		MyStyleLine *line = new MyStyleLine(feature, type);
+		line->setText(QString::number(feature->symbolStyle.markSize));
+		ui.treeWidget->setItemWidget(item, 1, line);
+		connect(line, SIGNAL(mupdate()), this, SLOT(finishQColorDialog()));
 	}
 	item->setData(TYPE_COLUMN, Qt::UserRole, QVariant(type)); //绑定是哪种样式
 	return item;
