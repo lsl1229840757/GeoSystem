@@ -1,10 +1,11 @@
 #include "SymbolStyle.h"
-
+#include <ctime>
 
 
 SymbolStyle::SymbolStyle()
 {
-	fillColor = QColor(255, 0, 0);
+	srand(time(NULL));
+	fillColor = QColor(rand() % 255, rand() % 255, rand() % 255);
 	strokeWidth = 2.0;
 	strokeColor = QColor(255, 255, 0);
 	markSize = 5000;

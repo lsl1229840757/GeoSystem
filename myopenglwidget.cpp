@@ -229,7 +229,7 @@ void MyOpenGLWidget::drawPoint(mgeo::Geometry *geometry, SymbolStyle symbolStyle
 			point->isProjeted = true;
 		}
 	}
-	if (symbolStyle.markSize < geoMap->getMapRange().height() / 300) {
+	if (symbolStyle.markSize < geoMap->getMapRange().height() / 300 || symbolStyle.markSize > geoMap->getMapRange().height() / 100) {
 		symbolStyle.markSize = geoMap->getMapRange().height() / 300;//markSize为地图的30分之一
 	}
 	//按照markSize绘制

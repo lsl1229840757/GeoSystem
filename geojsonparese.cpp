@@ -195,7 +195,7 @@ void GeoJsonParese::onPressed(QPoint pos)
 		connect(kernelDens, SIGNAL(triggered()), this, SLOT(openKernelTool()));
 		connect(addLayerShp, SIGNAL(triggered()), this, SLOT(readShpToLayer()));
 		connect(addLayerJson, SIGNAL(triggered()), this, SLOT(readGeoJsonToLayer()));
-		connect(addLayerPostgis, SIGNAL(triggered()), this, SLOT(readPostgisTolayer()));
+		connect(addLayerPostgis, SIGNAL(triggered()), this, SLOT(readPostgisToLayer()));
 		connect(accessAnaly, SIGNAL(triggered()), this, SLOT(openAccessAnalyTool()));
 		
 		pMenu->addAction(drawTask);
@@ -788,10 +788,9 @@ void GeoJsonParese::openAccessAnalyTool()
 	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
 	GeoMap* map = dataSource->geoMaps[vId.toInt()];
 	AccessAnalyToolWidget *accessToolWidget = new AccessAnalyToolWidget(map);
+	connect(accessToolWidget, SIGNAL(finishAnalyse(vector<double>, GeoMap*, Layer*)), this, SLOT(finishAccessAnalyse(vector<double>, GeoMap*, Layer*)));
 	accessToolWidget->show();
 }
-
-
 void GeoJsonParese::setMapProjection()
 {
 	// TODO: 在此处添加实现代码.
@@ -823,4 +822,35 @@ void GeoJsonParese::setMapProjection()
 	MyOpenGLWidget* myOpenGlWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(currentMap);
 	myOpenGlWidget->resetMaprange();  //设置地图投影后重置range
 	myOpenGlWidget->update();
+void GeoJsonParese::finishAccessAnalyse(vector<double> result, GeoMap *map, Layer *layer)
+{
+	MyOpenGLWidget* myOpenGlWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(map);
+	myOpenGlWidget->setStyleByProperties(layer, "accessbility");
+	//排序
+	sort(result.begin(), result.end(), [](double x, double y) -> bool {  return x > y; });//降序排列
+	//绘制图表,展示前十名
+	int num = 10;
+	QBarSet *set0 = new QBarSet("Accessbility");
+	QBarSeries *series = new QBarSeries();
+	QStringList categories;
+	for (int i = 0; i < num; i++) {
+		categories << QString::number(i);
+		*set0 << result[i];
+	}
+	series->append(set0);
+	QChart *chart = new QChart();
+	chart->addSeries(series);
+	QBarCategoryAxis *axis = new QBarCategoryAxis();
+	axis->append(categories);
+	chart->createDefaultAxes();
+	chart->setAxisX(axis, series);
+
+	chart->legend()->setVisible(true);
+	chart->legend()->setAlignment(Qt::AlignBottom);
+
+	QChartView *chartView = new QChartView(chart);
+	chartView->setRenderHint(QPainter::Antialiasing);
+	chartView->setFixedSize(QSize(600, 600));
+	chartView->show();
+	chartView->setWindowTitle(QString::fromLocal8Bit("可达性前10名展示"));
 }
