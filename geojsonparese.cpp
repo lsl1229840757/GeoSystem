@@ -185,20 +185,37 @@ void GeoJsonParese::onPressed(QPoint pos)
 		QAction *quadIndex = new QAction(tr("Quadtree Index"), this);
 		QMenu *chooseTool = new QMenu(tr("Choose Tool"), this);
 		QAction *kernelDens = new QAction(tr("Kernel Density"), this);
+		QAction *accessAnaly = new QAction(tr("Access Analysis"), this);
+		QAction *addLayerShp = new QAction(tr("Add Layer From Shp"), this);
+		QAction *addLayerJson = new QAction(tr("Add Layer From GeoJson"), this);
+		QAction *addLayerPostgis = new QAction(tr("Add Layer From PostgreSQL"), this);
+		QList<QAction*> *addLayerList = new QList<QAction*>;
+		addLayerList->append(addLayerJson);
+		addLayerList->append(addLayerShp);
+		addLayerList->append(addLayerPostgis);
+		QMenu *addLayer = new QMenu(tr("Add Layer"), this);
+		addLayer->addActions(*addLayerList);
 		chooseIndex->addAction(gridIndex);
 		chooseIndex->addAction(quadIndex);
 		chooseTool->addAction(kernelDens);
+		chooseTool->addAction(accessAnaly);
 		connect(drawTask, SIGNAL(triggered()), this, SLOT(drawMap()));
 		connect(changeMapPrj, SIGNAL(triggered()), this, SLOT(changeMapProjection()));
 		connect(setStyleSLD, SIGNAL(triggered()), this, SLOT(setStyleFromSLD()));
 		connect(gridIndex, SIGNAL(triggered()), this, SLOT(gridInfo()));
 		connect(quadIndex, SIGNAL(triggered()), this, SLOT(setQuadTreeIndex()));
 		connect(kernelDens, SIGNAL(triggered()), this, SLOT(openKernelTool()));
+		connect(addLayerShp, SIGNAL(triggered()), this, SLOT(readShpToLayer()));
+		connect(addLayerJson, SIGNAL(triggered()), this, SLOT(readGeoJsonToLayer()));
+		connect(addLayerPostgis, SIGNAL(triggered()), this, SLOT(readPostgisTolayer()));
+		connect(accessAnaly, SIGNAL(triggered()), this, SLOT(openAccessAnalyTool()));
 		pMenu->addAction(drawTask);
+		pMenu->addMenu(addLayer);
 		pMenu->addAction(changeMapPrj);
 		pMenu->addAction(setStyleSLD);
 		pMenu->addMenu(chooseIndex);
 		pMenu->addMenu(chooseTool);
+		
 		pMenu->exec(QCursor::pos());//弹出右键菜单，菜单位置为光标位置
 	}
 	else {
@@ -684,4 +701,127 @@ void GeoJsonParese::setQuadTreeIndex()
 	myOpenGlWidget->update();
 	log += "Create Quadtree Spatial Index successfully!\n";
 	ui.textBrowser->setText(log);
+}
+
+
+void GeoJsonParese::addLayerToCurrentMap(GeoMap* loaddataMap,OpenFileType type)
+{
+	// TODO: 在此处添加实现代码.
+	//获取被选择item的id
+	QTreeWidgetItem *currentItem = ui.treeWidget->currentItem();
+	QVariant vId = currentItem->data(ID_COLUMN, Qt::UserRole);
+	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
+	GeoMap* currentMap = dataSource->geoMaps[vId.toInt()];
+	int nowIds = currentItem->childCount();  //现有的ID号数量
+	for (int i = 0; i < loaddataMap->layers.size(); i++)
+	{
+		currentMap->addLayer(loaddataMap->layers.at(i));
+		QString name = QString::fromStdString(loaddataMap->layers.at(i)->name);
+		addTreeNode(currentItem, loaddataMap, nowIds++, name);  //id添加后+1
+	}
+	switch (type)
+	{
+	case OpenFileType::SHP:
+		log += "Load shp to layer successfully!\n";
+		ui.textBrowser->setText(log);
+		break;
+	case OpenFileType::GEOJSON:
+		log += "Load geojson to layer successfully!\n";
+		ui.textBrowser->setText(log);
+		break;
+	case OpenFileType::POSTGRESQL:
+		log += "Load postgreSQL to layer successfully!\n";
+		ui.textBrowser->setText(log);
+		break;
+	}
+	MyOpenGLWidget *curGlWidget = myOpenGLWidgetFactory.getMyOpenGlWidget(currentMap);
+	curGlWidget->update();
+}
+
+
+void GeoJsonParese::readShpToLayer()
+{
+	// TODO: 在此处添加实现代码.
+	//读取文件
+	QString filePath = QFileDialog::getOpenFileName(this, "ShapeFile Parse", "", "ShapeFile Files(*.shp)");
+	if (!filePath.isEmpty()) {
+		OGRDataSource* poDS = GdalUtil::readFromGeoJson(filePath);
+		//TODO 报错机制
+		GeoMap *geoMap = GdalUtil::OGRDataSource2Map(poDS);
+		//设置地图投影前判断是否为经纬度，否则不投影
+		double &onex = geoMap->maxRange.topRight().rx();
+		double &oney = geoMap->maxRange.topRight().ry();
+		if (fabs(onex) <= 360 && fabs(oney) <= 90)
+			geoMap->setMapPrj(MapPrjType::MERCATOR); //默认使用墨卡托
+		//添加图层·
+		addLayerToCurrentMap(geoMap, OpenFileType::SHP);
+	}
+}
+
+
+void GeoJsonParese::readGeoJsonToLayer()
+{
+	// TODO: 在此处添加实现代码.
+	QString filePath = QFileDialog::getOpenFileName(this, "GeoJson Parse", "", "GeoJson Files(*.geojson)");
+	if (!filePath.isEmpty()) {
+		GeoMap* geoMap = JsonUtil::parseGeoJson(filePath);
+		//设置地图投影
+		//判断是否为经纬度
+		double &onex = geoMap->maxRange.topRight().rx();
+		double &oney = geoMap->maxRange.topRight().ry();
+		if (fabs(onex) <= 360 && fabs(oney) <= 90)
+			geoMap->setMapPrj(MapPrjType::MERCATOR);
+		//添加图层·
+		addLayerToCurrentMap(geoMap, OpenFileType::GEOJSON);
+	}
+
+}
+
+
+void GeoJsonParese::readPostgisToLayer()
+{
+	// TODO: 在此处添加实现代码.
+	//使用向导
+	DatabaseWizard wizard(this);
+	wizard.exec();
+	OGRDataSource *poDS = wizard.poDS;
+	if (poDS == NULL)
+		return;
+	//获取table名
+	QString tableName = wizard.tableLineEdit->text();
+	GeoMap *geoMap = NULL;
+	if (tableName == "") {
+		geoMap = GdalUtil::OGRDataSource2Map(poDS);
+	}
+	else {
+		//调用重载的转换函数，之后可以再加一个下拉框来确定打开的Table
+		geoMap = GdalUtil::OGRDataSource2Map(poDS, tableName);
+	}
+	if (geoMap != NULL) {
+		//设置地图投影前判断是否为经纬度，否则不投影
+		double &onex = geoMap->maxRange.topRight().rx();
+		double &oney = geoMap->maxRange.topRight().ry();
+		if (fabs(onex) <= 360 && fabs(oney) <= 90)
+			geoMap->setMapPrj(MapPrjType::MERCATOR); //默认使用墨卡托
+		//添加图层·
+		addLayerToCurrentMap(geoMap, OpenFileType::GEOJSON);
+	}
+	else {
+		log += "Loading data from PostgreSQL failed!\n";
+		ui.textBrowser->setText(log);
+	}
+	
+}
+
+
+void GeoJsonParese::openAccessAnalyTool()
+{
+	// TODO: 在此处添加实现代码.
+	//获取被选择item的id
+	QTreeWidgetItem *currentItem = ui.treeWidget->currentItem();
+	QVariant vId = currentItem->data(ID_COLUMN, Qt::UserRole);
+	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
+	GeoMap* map = dataSource->geoMaps[vId.toInt()];
+	AccessAnalyToolWidget *accessToolWidget = new AccessAnalyToolWidget(map);
+	accessToolWidget->show();
 }

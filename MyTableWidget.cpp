@@ -38,8 +38,10 @@ void MyTableWidget::addData()
 {
 	// TODO: 在此处添加实现代码.
 	for (int i = 0; i < rows; i++) {
-		QVariantMap::iterator iter = layer->features.at(i)->attributes.begin();
+		QVariantMap::iterator iter = layer->features.at(i)->attributes.begin();  //迭代
 		for (int j = 0; j < cols; j++) {
+			//QString attrType = iter.value().type();
+			//QString attr = iter.value().toString();
 			this->setItem(i, j, new QTableWidgetItem((const QString)iter.value().toString()));
 			iter++;
 		}

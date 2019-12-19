@@ -2,6 +2,7 @@
 //初始化静态变量
 QString JsonUtil::FEATURECOLLECTION = "FeatureCollection";
 QString JsonUtil::GEOMETRYCOLLECTION = "GeometryCollection";
+QString JsonUtil::NAME = "name";
 QString JsonUtil::FEATURES = "features";
 QString JsonUtil::TYPE = "type";
 QString JsonUtil::GEOMETRY = "geometry";
@@ -73,7 +74,9 @@ QRectF JsonUtil::parseFeature(QJsonObject feaJObj ,Layer* layer) throw(runtime_e
 	feature->featureID = layer->features.size() - 1;
     //解析属性
     QJsonObject properties = feaJObj.take(PROPERTIES).toObject();
+	QVariantMap *attrbutes = parseProperty(&properties);
     feature->properties = properties;
+	feature->attributes = *attrbutes;
     //获取geomery
     QJsonObject geomJObj = feaJObj.take(GEOMETRY).toObject();
     //开始解析geometry
@@ -98,7 +101,7 @@ void JsonUtil::parseFeatureCollection(QJsonObject geoJson, GeoMap* geoMap)
 			maxRange = maxRange.united(parseFeature(feaJObj, layer));
 		}
 	}
-
+	layer->name = geoJson.value(NAME).toString().toStdString();
 	layer->range = maxRange;
 	geoMap->addLayer(layer);
 	layer->layerID = geoMap->layers.size() - 1;
@@ -330,7 +333,6 @@ void JsonUtil::jsonWrite(QString destPath, QJsonObject* jsonObj)
 		qDebug()<<"could't open projects json"<<endl;
 		//QMessageBox::warning(NULL, QString("Error"), QString(r1.what()));
 	}
-	
 	QJsonDocument jsonDoc(*jsonObj);  //转为JsonDocument
 	writeFile.resize(0);  //清空文件原有的内容
 	writeFile.write(jsonDoc.toJson());  //写入json
@@ -364,4 +366,32 @@ void JsonUtil::loadDbParams(QJsonObject* pJsonObj, QString& tableName, QString& 
 		username = pJsonObj->value("username").toString();
 		password = pJsonObj->value("password").toString();
 	}
+}
+
+
+// //解析属性，转存为Attributes
+QVariantMap* JsonUtil::parseProperty(QJsonObject *properties)
+{
+	// TODO: 在此处添加实现代码.
+	QStringList keys = properties->keys();
+	QVariantMap* attr = new QVariantMap;
+	for (int i = 0; i < keys.size(); i++)
+	{
+		QString key = keys.at(i);
+		QString value;
+		if (QJsonValue::Type::String == properties->value(key).type())
+		{
+			value = properties->value(key).toString();
+		}
+		else if(QJsonValue::Type::Double == properties->value(key).type())
+		{
+			value = QString::number(properties->value(key).toDouble());
+		}
+		else
+		{
+			value = properties->value(key).toString();
+		}
+		attr->insert(key, QVariant(value));  //全部利用QString存储
+	}
+	return attr;
 }
