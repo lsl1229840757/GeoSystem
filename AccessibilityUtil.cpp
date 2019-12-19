@@ -62,11 +62,20 @@ double AccessibilityUtil::getWeight(double distance)
 
 double AccessibilityUtil::calculDistance(Feature * demand, Feature * supply, Layer * road)
 {
-	//这里直接计算大地线距离
+	if (snapUtil.ODNetDistMtx == NULL)
+	{
+		//没有OD矩阵时，说明第一次生成路网
+		snapUtil.createNetwork(road);
+		snapUtil.calcuFloydDist();  //弗洛伊德算法生成OD矩阵
+	}
+	//根据路网距离
 	EuclideanDistanceUtil distanceUtil;
 	GeoPoint* demandPoint = (GeoPoint*)demand->geometry;
 	GeoPoint* supplyPoint = (GeoPoint*)supply->geometry;
-	double distance = distanceUtil.computeDistanceByLatLng(demandPoint->y, demandPoint->x, supplyPoint->y, supplyPoint->x);
+	int demandNodeID = getNearestNode(demandPoint);  //获取最邻近的节点
+	int supplyNodeID = getNearestNode(supplyPoint);
+	double distance = snapUtil.ODNetDistMtx[demandNodeID][supplyNodeID];  //获取路网距离
+	//double distance = distanceUtil.computeDistanceByLatLng(demandPoint->y, demandPoint->x, supplyPoint->y, supplyPoint->x);
 	return distance;
 }
 
@@ -84,4 +93,23 @@ vector<vector<double>> AccessibilityUtil::calculOD(Layer* demand, Layer * supply
 		OD.push_back(ODRow);
 	}
 	return OD;
+}
+
+int AccessibilityUtil::getNearestNode(GeoPoint * pt)
+{
+	//以经纬度曼哈顿距离衡量离点最近的节点，加快速率
+	double manhatonDist = MAX_DIST;
+	int nodeID=0; //节点ID号
+	for (int i = 0; i < snapUtil.existPoints.size(); i++)
+	{
+		GeoPoint* nodept = snapUtil.existPoints.at(i);
+		//必须没有投影
+		if ((fabs(nodept->getX() - pt->getX()) + fabs(nodept->getY() - pt->getY())) < manhatonDist)
+		{
+			manhatonDist = fabs(nodept->getX() - pt->getX()) + fabs(nodept->getY() - pt->getY());
+			nodeID = i;
+		}
+	}
+	pt->ptId = nodeID;  //将最近节点的ID赋给该点
+	return nodeID;
 }
