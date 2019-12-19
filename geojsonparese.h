@@ -81,9 +81,11 @@ public slots:
 	void readGeoJsonToLayer();
 	void readPostgisToLayer();
 	void openAccessAnalyTool();
+	void setMapProjection();
 	void finishAccessAnalyse(vector<double> result, GeoMap* map, Layer* layer);
 private:
 	Ui::GeoJsonPareseClass ui;
+
 };
 
 #endif // GEOJSONPARESE_H
