@@ -8,7 +8,7 @@
 #include "qslider.h"
 #include "GeoMap.h"
 #include "qdebug.h"
-
+#include "AccessibilityUtil.h"
 class AccessAnalyToolWidget : public ToolWidget
 {
 	Q_OBJECT
@@ -28,10 +28,10 @@ public slots:
 	void setCheckBoxToParam();
 	void finishSetParam();
 signals:
-	void sendLayer(int itemID,QString layerName);
+	void sendLayer(int itemID, QString layerName);
+	void finishAnalyse(vector<double> result, GeoMap *map, Layer *layer);
 private:
 	Ui::AccessAnalyToolWidget ui;
-
 public:
 	
 	
