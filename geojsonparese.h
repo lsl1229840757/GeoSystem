@@ -34,6 +34,8 @@
 #include "AccessAnalyToolWidget.h"
 #include <QtCharts>
 #include<algorithm>
+#include "SnapUtil.h"
+
 typedef enum
 {
 	SHP,GEOJSON,POSTGRESQL

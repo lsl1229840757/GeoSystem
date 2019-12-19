@@ -21,6 +21,7 @@ GeoJsonParese::GeoJsonParese(QWidget *parent)
 	connect(ui.treeWidget,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(onPressed(QPoint)));
 	connect(ui.tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
+	
 	//添加检索框
 	
 	QPushButton *pSearchButton = new QPushButton();
@@ -651,6 +652,11 @@ void GeoJsonParese::showAttrTable(int mapIndex, int layerIndex)
 {
 	// TODO: 在此处添加实现代码.
 	Layer *layer = dataSource->geoMaps[mapIndex]->layers[layerIndex];
+
+	SnapUtil snap;
+	snap.createNetwork(layer);
+	snap.calcuFloydDist();
+
 	int rows = layer->features.size();
 	int cols = layer->features.back()->attributes.size();
 	if (0 == cols){
@@ -801,6 +807,7 @@ void GeoJsonParese::openAccessAnalyTool()
 void GeoJsonParese::setMapProjection()
 {
 	// TODO: 在此处添加实现代码.
+
 	//获取被选择item的id
 	QTreeWidgetItem *currentItem = ui.treeWidget->currentItem();
 	QVariant vId = currentItem->data(ID_COLUMN, Qt::UserRole);

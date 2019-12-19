@@ -18,4 +18,5 @@ public:
 	pair<double,double> getPtCoor(MapPrjUtil* mapPrj, bool isLastPt, bool &isFeaFirstPrj);
 	double getX();
 	double getY();
+	int ptId;
 };

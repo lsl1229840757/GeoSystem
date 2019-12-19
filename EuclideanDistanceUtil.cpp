@@ -21,8 +21,8 @@ double EuclideanDistanceUtil::computeDistanceByLatLng(double lat1, double lng1, 
 {
 	double radLat1 = lat1 * M_PI / 180.0;   //角度1˚ = π / 180
 	double radLat2 = lat2 * M_PI / 180.0;   //角度1˚ = π / 180
-	double a = radLat1 - radLat2;//纬度之差
-	double b = lng1 * M_PI / 180.0 - lng2 * M_PI / 180.0;  //经度之差
+	double a = fabs(radLat1 - radLat2);//纬度之差
+	double b = fabs(lng1 * M_PI / 180.0 - lng2 * M_PI / 180.0);  //经度之差
 	double dst = 2 * asin((sqrt(pow(sin(a / 2), 2) + cos(radLat1) * cos(radLat2) * pow(sin(b / 2), 2))));
 	dst = dst * EARTH_RADIUS;
 	dst = round(dst * 10000);

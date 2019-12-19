@@ -10,6 +10,9 @@ public:
 	~GeoPolyline(void);
 	vector<GeoPoint*> points;
 	GeometryType getGeometryType();
+	int beginPtId;
+	int endPtId;
+	double lineLenth;
 };
 
 
