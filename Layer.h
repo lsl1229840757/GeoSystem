@@ -14,4 +14,5 @@ public:
 	string name;
 	bool isVisble;
 	QRectF getLayerRange();
+	time_t t;
 };

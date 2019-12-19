@@ -16,6 +16,7 @@
 #include "QuadNode.h"
 #include "QuadTreeIndex.h"
 #include "geos.h"
+
 class MyOpenGLWidget : public QOpenGLWidget,protected QOpenGLFunctions
 {
 	Q_OBJECT

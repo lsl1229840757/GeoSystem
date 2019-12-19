@@ -329,6 +329,7 @@ Layer* GdalUtil::OGRLayer2Layer(OGRLayer *ogrLayer,int layerID)
 			//QMessageBox::warning(NULL, "Error", "Could not support this type");
 		}
 		layer->features.push_back(feature);
+		feature->setT(layer->t);
 	}
 	return layer;
 }

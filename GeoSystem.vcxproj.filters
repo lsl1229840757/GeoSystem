@@ -89,6 +89,13 @@
     <ClCompile Include="trianglewindow.cpp" />
     <ClCompile Include="triangulate.cpp" />
     <ClCompile Include="SnapUtil.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_Bridge.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_Bridge.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bridge.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -172,6 +179,9 @@
     <CustomBuild Include="ToolWidget.ui" />
     <CustomBuild Include="KernelToolWidget.ui" />
     <CustomBuild Include="AccessAnalyToolWidget.ui" />
+    <CustomBuild Include="Bridge.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GeoSystem.rc" />
@@ -180,6 +190,11 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+      <ParseFiles>true</ParseFiles>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>moc;h;cpp</Extensions>
       <ParseFiles>true</ParseFiles>
     </Filter>
     <Filter Include="Source Files">

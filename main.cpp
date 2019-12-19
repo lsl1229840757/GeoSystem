@@ -13,10 +13,35 @@
 #include "MapPrjMercator.h"
 #include "AccessibilityUtil.h"
 #include "EuclideanDistanceUtil.h"
+#include <QtWebEngineWidgets/QWebEngineView>
+#include <QtWebChannel/qwebchannel.h>
+#include "Bridge.h"
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
+	GeoJsonParese w;
+	w.show();
+	/*
+		LOADING
+	*/
+	//QWebEngineView* m_webView = new QWebEngineView();
+	//QWebChannel *channel = new QWebChannel();
+	//Bridge * instance = Bridge::instance();
+	//instance->m_webView = m_webView;
+	//channel->registerObject("bridge", (QObject*)instance);
+	//m_webView->page()->setWebChannel(channel);
+	//m_webView->page()->load(QUrl("file:///C:/Users/Administrator/Desktop/201706221500/index.html"));
+	//m_webView->show();
 
+	/*QString htmlPath = "C:\\Users\\Administrator\\Desktop\\201706221500\\index.html";
+	QFile file(htmlPath);
+	if (!file.open(QIODevice::ReadOnly))
+	{
+		return 0;
+	}
+	QString htmlData = file.readAll().constData();
+	file.close();
+	m_webView->page()->setHtml(htmlData, QUrl("C:\\Users\\Administrator\\Desktop\\201706221500"));*/
 	//QBarSet *set0 = new QBarSet("Jane");
 	//*set0 << 1 << 2 << 3 << 4 << 5 << 6;
 
@@ -46,8 +71,7 @@ int main(int argc, char *argv[])
 	double distance = e.computeDistanceByLatLng(39.9465141, 116.906654, 39.945908, 116.906084);
 	qDebug() << distance << endl;
 	system("pause");*/
-	GeoJsonParese w;
-	w.show();
+
 	return a.exec();
 
 	//MapPrjMercator * m = new MapPrjMercator;

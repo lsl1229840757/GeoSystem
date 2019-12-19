@@ -845,6 +845,9 @@ void GeoJsonParese::finishAccessAnalyse(vector<double> result, GeoMap *map, Laye
 	sort(result.begin(), result.end(), [](double x, double y) -> bool {  return x > y; });//降序排列
 	//绘制图表,展示前十名
 	int num = 10;
+	if (num > result.size()) {
+		num = result.size();
+	}
 	QBarSet *set0 = new QBarSet("Accessbility");
 	QBarSeries *series = new QBarSeries();
 	QStringList categories;

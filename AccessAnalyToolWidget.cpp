@@ -11,8 +11,8 @@ AccessAnalyToolWidget::AccessAnalyToolWidget(GeoMap* map,QWidget *parent)
 	//ui.comboBox_road->setCurrentText("");
 	//connect(ui.comboBox_demand, SIGNAL(currentIndexChanged(int)), this, SLOT(demandLayerChanged(int)));
 	//connect(ui.comboBox_road, SIGNAL(currentIndexChanged(int)), this, SLOT(roadLayerChanged(int)));
-	connect(ui.comboBox_demand, SIGNAL(currentIndexChanged(int)), this, SLOT(setComboItemToParam(int)));
-	connect(ui.comboBox_road, SIGNAL(currentIndexChanged(int)), this, SLOT(setComboItemToParam(int)));
+	connect(ui.comboBox_demand, SIGNAL(currentIndexChanged(int)), this, SLOT(setComboItemToParamDemand(int)));
+	connect(ui.comboBox_road, SIGNAL(currentIndexChanged(int)), this, SLOT(setComboItemToParamRoad(int)));
 	//connect(ui.pushButton_supply, SIGNAL(clicked()), this, SLOT(setCheckBoxToParam()));
 	connect(ui.pushButton_ok, SIGNAL(clicked()), this, SLOT(setCheckBoxToParam()));
 	connect(ui.pushButton_ok, SIGNAL(clicked()), this, SLOT(finishSetParam()));
@@ -47,14 +47,20 @@ void AccessAnalyToolWidget::addLayerComboItem(QComboBox *comboBox)
 
 
 
-void AccessAnalyToolWidget::setComboItemToParam(int itemID)
+void AccessAnalyToolWidget::setComboItemToParamDemand(int itemID)
 {
 	// TODO: 在此处添加实现代码.
 	if (itemID != 0) itemID -= 1;   //0位置为None
 	this->demandLayer = geoMap->layers[itemID];
-	this->road = geoMap->layers[itemID];
 }
 
+
+void AccessAnalyToolWidget::setComboItemToParamRoad(int itemID)
+{
+	// TODO: 在此处添加实现代码.
+	if (itemID != 0) itemID -= 1;   //0位置为None
+	this->road = geoMap->layers[itemID];
+}
 
 void AccessAnalyToolWidget::demandLayerChanged(int itemID)
 {
