@@ -185,6 +185,7 @@ void GeoJsonParese::onPressed(QPoint pos)
 		QAction *quadIndex = new QAction(tr("Quadtree Index"), this);
 		QMenu *chooseTool = new QMenu(tr("Choose Tool"), this);
 		QAction *kernelDens = new QAction(tr("Kernel Density"), this);
+		QAction *accessAnaly = new QAction(tr("Access Analysis"), this);
 		QAction *addLayerShp = new QAction(tr("Add Layer From Shp"), this);
 		QAction *addLayerJson = new QAction(tr("Add Layer From GeoJson"), this);
 		QAction *addLayerPostgis = new QAction(tr("Add Layer From PostgreSQL"), this);
@@ -197,7 +198,7 @@ void GeoJsonParese::onPressed(QPoint pos)
 		chooseIndex->addAction(gridIndex);
 		chooseIndex->addAction(quadIndex);
 		chooseTool->addAction(kernelDens);
-
+		chooseTool->addAction(accessAnaly);
 		connect(drawTask, SIGNAL(triggered()), this, SLOT(drawMap()));
 		connect(changeMapPrj, SIGNAL(triggered()), this, SLOT(changeMapProjection()));
 		connect(setStyleSLD, SIGNAL(triggered()), this, SLOT(setStyleFromSLD()));
@@ -207,6 +208,7 @@ void GeoJsonParese::onPressed(QPoint pos)
 		connect(addLayerShp, SIGNAL(triggered()), this, SLOT(readShpToLayer()));
 		connect(addLayerJson, SIGNAL(triggered()), this, SLOT(readGeoJsonToLayer()));
 		connect(addLayerPostgis, SIGNAL(triggered()), this, SLOT(readPostgisTolayer()));
+		connect(accessAnaly, SIGNAL(triggered()), this, SLOT(openAccessAnalyTool()));
 		pMenu->addAction(drawTask);
 		pMenu->addMenu(addLayer);
 		pMenu->addAction(changeMapPrj);
@@ -809,4 +811,17 @@ void GeoJsonParese::readPostgisToLayer()
 		ui.textBrowser->setText(log);
 	}
 	
+}
+
+
+void GeoJsonParese::openAccessAnalyTool()
+{
+	// TODO: 在此处添加实现代码.
+	//获取被选择item的id
+	QTreeWidgetItem *currentItem = ui.treeWidget->currentItem();
+	QVariant vId = currentItem->data(ID_COLUMN, Qt::UserRole);
+	QVariant vName = currentItem->data(NAME_COLUMN, Qt::UserRole);
+	GeoMap* map = dataSource->geoMaps[vId.toInt()];
+	AccessAnalyToolWidget *accessToolWidget = new AccessAnalyToolWidget(map);
+	accessToolWidget->show();
 }

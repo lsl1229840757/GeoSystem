@@ -31,6 +31,7 @@
 #include "AudioInputWidget.h"
 #include "KernelToolWidget.h"
 #include "QuadTreeIndex.h"
+#include "AccessAnalyToolWidget.h"
 typedef enum
 {
 	SHP,GEOJSON,POSTGRESQL
@@ -77,11 +78,9 @@ public slots:
 	void readShpToLayer();
 	void readGeoJsonToLayer();
 	void readPostgisToLayer();
+	void openAccessAnalyTool();
 private:
 	Ui::GeoJsonPareseClass ui;
-public:
-	
-
 };
 
 #endif // GEOJSONPARESE_H
