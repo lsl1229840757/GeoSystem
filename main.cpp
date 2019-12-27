@@ -19,19 +19,19 @@
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-	GeoJsonParese w;
-	w.show();
+	/*GeoJsonParese w;
+	w.show();*/
 	/*
 		LOADING
 	*/
-	//QWebEngineView* m_webView = new QWebEngineView();
-	//QWebChannel *channel = new QWebChannel();
-	//Bridge * instance = Bridge::instance();
-	//instance->m_webView = m_webView;
-	//channel->registerObject("bridge", (QObject*)instance);
-	//m_webView->page()->setWebChannel(channel);
-	//m_webView->page()->load(QUrl("file:///C:/Users/Administrator/Desktop/201706221500/index.html"));
-	//m_webView->show();
+	QWebEngineView* m_webView = new QWebEngineView();
+	QWebChannel *channel = new QWebChannel();
+	Bridge * instance = Bridge::instance();
+	instance->m_webView = m_webView;
+	channel->registerObject("bridge", (QObject*)instance);
+	m_webView->page()->setWebChannel(channel);
+	m_webView->page()->load(QUrl("file:///C:/Users/Administrator/Desktop/201706221500/index.html"));
+	m_webView->show();
 
 	/*QString htmlPath = "C:\\Users\\Administrator\\Desktop\\201706221500\\index.html";
 	QFile file(htmlPath);

@@ -653,10 +653,10 @@ void GeoJsonParese::showAttrTable(int mapIndex, int layerIndex)
 	// TODO: 在此处添加实现代码.
 	Layer *layer = dataSource->geoMaps[mapIndex]->layers[layerIndex];
 
-	SnapUtil snap;
+	/*SnapUtil snap;
 	snap.createNetwork(layer);
 	snap.calcuFloydDist();
-
+*/
 	int rows = layer->features.size();
 	int cols = layer->features.back()->attributes.size();
 	if (0 == cols){
